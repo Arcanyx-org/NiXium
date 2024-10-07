@@ -30,6 +30,10 @@
 	services.xserver.displayManager.gdm.enable = true;
 	services.xserver.desktopManager.gnome.enable = true;
 		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
+	environment.variables = {
+		# Required by moonlight for XWayland check bypass
+		QT_QPA_PLATFORM = "wayland";
+	};
 
 	# hardware.steam-hardware.enable = true;
 

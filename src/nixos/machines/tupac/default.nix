@@ -11,6 +11,12 @@
 		imports = [
 			self.nixosModules.default
 
+			# Machines
+			self.nixosModules.machine-morph
+			self.nixosModules.machine-mracek
+			self.nixosModules.machine-sinnenfreude
+			self.nixosModules.machine-tupac
+
 			# Users
 			self.nixosModules.users-kreyren
 			self.homeManagerModules."kreyren@tupac"
