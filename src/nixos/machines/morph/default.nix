@@ -14,7 +14,8 @@
 			# self.nixosModules.machine-tupac
 
 			# Users
-			# self.nixosModules.users-kreyren
+			self.nixosModules.users-kreyren
+			self.homeManagerModules."kreyren@morph"
 
 			# Files
 			./config/bootloader.nix
