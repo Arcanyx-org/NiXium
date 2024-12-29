@@ -10,13 +10,6 @@
 	flake.nixosModules."nixos-sinnenfreude" = {
 		imports = [
 			self.nixosModules.default
-			self.nixosModules.wifi-homeBaseKreyren # Deploy WiFi Configuration
-
-			# Machines
-			self.nixosModules.machine-morph
-			self.nixosModules.machine-mracek
-			self.nixosModules.machine-sinnenfreude
-			self.nixosModules.machine-tupac
 
 			# Users
 			self.nixosModules.users-kreyren

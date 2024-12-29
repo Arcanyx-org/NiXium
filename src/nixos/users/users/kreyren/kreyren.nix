@@ -22,7 +22,6 @@ in {
 			(mkIf config.virtualisation.docker.enable "docker")
 			"dialout" # To Access e.g. /dev/ttyUSB0 for USB debuggers
 			(mkIf config.programs.adb.enable "adbusers")
-			"video" # For Accessing The Video Devices (needed for sunshine only?)
 		];
 		openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" ];
 	};

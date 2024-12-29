@@ -21,10 +21,10 @@ in {
 				];
 
 			# SECURITY(Krey): Currently a necessary malware to keep the CPU functional.. Such is the curse of i686/amd64 systems
-			hardware.cpu.amd.updateMicrocode = mkForce true;
+			hardware.cpu.intel.updateMicrocode = mkForce true;
 
-			# NOTE(Krey): System designed to not need this, but it's required for the RX 570 to initialize for some fucking reason
-			hardware.enableRedistributableFirmware = mkForce true;
+			# NOTE(Krey): System designed to not need this
+			hardware.enableRedistributableFirmware = mkForce false;
 		}
 	];
 }

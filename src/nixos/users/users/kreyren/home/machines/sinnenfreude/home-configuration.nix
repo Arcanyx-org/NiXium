@@ -82,7 +82,11 @@ in {
 		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
-		pkgs.moonlight-qt # Moonlight client
+		aagl.anime-game-launcher # An Anime Game
+		pkgs.colobot
+		pkgs.etlegacy # Wolfenstein: Enemy Territory
+		pkgs.airshipper # Veloren
+		pkgs.mindustry
 
 		# Web Browsers
 		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser

@@ -7,12 +7,6 @@
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration
 
-			# Machines
-			self.nixosModules.machine-morph
-			self.nixosModules.machine-mracek
-			self.nixosModules.machine-sinnenfreude
-			self.nixosModules.machine-tupac
-
 			# Files
 			./services/binfmt.nix
 			./services/distributedBuilds.nix

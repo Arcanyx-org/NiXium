@@ -9,10 +9,6 @@ in {
 	# FIXME-SECURITY(Krey): Hardened kernel causes lot of issues, pending custom kernel
 	boot.kernelPackages = mkForce pkgs.linuxPackages;
 
-	# SECURITY(Krey): Blocked by applications
-	# * anime-game-launcher
-	security.unprivilegedUsernsClone = true;
-
 	# Kernel Modules
 	boot.kernelModules = [
 		"kvm-intel" # Use KVM
