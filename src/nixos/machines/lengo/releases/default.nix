@@ -3,5 +3,6 @@
 {
 	imports = [
 		./stable
+		./unstable
 	];
 }

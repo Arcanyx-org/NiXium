@@ -7,3 +7,6 @@
 [submodule "vendor/ragenix"]
 	path = vendor/ragenix
 	url = git@github.com:NiXium-org/ragenix.git
+[submodule "vendor/jovian-nixos"]
+	path = vendor/jovian-nixos
+	url = https://github.com/appsforartists/Jovian-NixOS

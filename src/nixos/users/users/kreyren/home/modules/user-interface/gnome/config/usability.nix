@@ -28,6 +28,7 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 					workspaces-only-on-primary=false;
 					experimental-features = [
 						"scale-monitor-framebuffer" # Enable Fractional Scaling
+						"variable-refresh-rate" # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154
 					];
 				};
 			};

@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 # Kernel Management of LENGO
 
@@ -6,8 +6,8 @@ let
 	inherit (lib) mkForce;
 in {
 	# FIXME(Krey): Move on harneded kernel, tbd how to manage
-	# FIXME(Krey): Go back to stable once https://www.gamingonlinux.com/2024/12/new-linux-kernel-patch-submitted-to-improve-lenovo-legion-series-support-including-lenovo-legion-go/ ends up in LFS
-	boot.kernelPackages = mkForce pkgs.linuxPackages;
+	# FIXME(Krey): Add this patch https://lkml.org/lkml/2024/12/17/1611
+	boot.kernelPackages = mkForce pkgs.linuxPackages_6_12;
 
 	boot.kernelParams = [
 		# SECURITY(Krey): Used to manage CPU Vulnerabilities
@@ -16,12 +16,16 @@ in {
 		"mds=off" # Paranoid enforcement, shouldn't be needed..
 	];
 
+	# Zenpower is said to be better for modern AMD things
+	boot.extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
+
 	boot.kernelModules = [
 		"kvm-amd" # Use KVM
 		"usb-storage" # Use USB drives on hardened kernel
+		"zenpower"
 	];
 
-	boot.blacklistedKernelModules = [ ];
+	boot.blacklistedKernelModules = ["k10temp"];
 
 	# SECURITY(Krey): Has vulnerable CPU so this has to be managed
 	security.allowSimultaneousMultithreading = mkForce false; # Disable Simultaneous Multi-Threading as on this system it exposes unwanted attack vectors and CPU vulnerabilities
