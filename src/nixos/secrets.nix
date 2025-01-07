@@ -16,6 +16,7 @@ let
 
 	all-systems = [
 		ignucius-system
+		lengo-system
 		morph-system
 		mracek-system
 		sinnenfreude-system
@@ -28,7 +29,7 @@ in {
 	] ++ all-systems;
 
 	"./users/kreyren/home/modules/vpn/kreyren-wireproxy-protonvpn-config.age".publicKeys = [
-		kreyren sinnenfreude-system
+		kreyren sinnenfreude-system lengo-system
 	];
 
 	# Kira (user)

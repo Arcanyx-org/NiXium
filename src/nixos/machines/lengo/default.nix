@@ -9,7 +9,7 @@
 
 			# Users
 			self.nixosModules.users-kreyren
-			# self.homeManagerModules."kreyren@lengo"
+				self.homeManagerModules."kreyren@lengo"
 
 			# Files
 			./services/binfmt.nix
