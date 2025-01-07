@@ -68,6 +68,7 @@ in {
 	services.fstrim.enable = true;
 
 	# Jovian
+	# FIXME(Krey): Add this
 	# jovian.devices.legiongo.enable = true;
 
 	age.secrets.lengo-ssh-ed25519-private.file = ../secrets/lengo-ssh-ed25519-private.age; # Declare private key
