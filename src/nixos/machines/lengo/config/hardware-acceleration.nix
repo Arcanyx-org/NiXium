@@ -37,7 +37,22 @@ in mkMerge [
 			# For 32 bit applications
 			hardware.graphics.extraPackages32 = with pkgs; [
 				driversi686Linux.amdvlk
-];
+			];
+		};
+
+		# FIXME-QA(Krey): Duplicate Code
+		"25.05" = {
+			hardware.graphics.enable = true;
+			hardware.graphics.enable32Bit = true;
+
+			# AMDVLK
+			hardware.graphics.extraPackages = with pkgs; [
+				amdvlk
+			];
+			# For 32 bit applications
+			hardware.graphics.extraPackages32 = with pkgs; [
+				driversi686Linux.amdvlk
+			];
 		};
 	}."${lib.trivial.release}" or (throw "Release not implemented: ${lib.trivial.release}")
 ]

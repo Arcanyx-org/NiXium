@@ -1,4 +1,4 @@
-{ config, moduleWithSystem, ... }:
+{ self, config, moduleWithSystem, ... }:
 
 # Management of NixOS systems
 
@@ -22,6 +22,8 @@ in {
 		{
 			# Keep this sorted
 			imports = [
+				self.inputs.jovian.nixosModules.default
+
 				nixosModules.programs-git
 				nixosModules.programs-wakeonlan
 

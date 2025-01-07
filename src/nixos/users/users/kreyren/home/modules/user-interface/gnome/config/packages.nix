@@ -26,6 +26,13 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 				pkgs.pinentry-gnome3 # Needed for inputting passwords
 			];
 		};
+		# FIXME-QA(Krey): Duplicate Code
+		"25.05" = {
+			home.packages = [
+				pkgs.dconf-editor
+				pkgs.pinentry-gnome3 # Needed for inputting passwords
+			];
+		};
 	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
 
 	{

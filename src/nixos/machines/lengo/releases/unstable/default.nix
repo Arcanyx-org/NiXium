@@ -1,14 +1,14 @@
 { inputs, lib, self, config, ... }:
 
-# Declaration for STABLE release of NixOS for LENGO
+# Declaration for UNSTABLE release of NixOS for LENGO
 
 let
 	inherit (lib) mkForce;
 in {
-	flake.nixosConfigurations."nixos-lengo-stable" = inputs.nixpkgs.lib.nixosSystem {
+	flake.nixosConfigurations."nixos-lengo-unstable" = inputs.nixpkgs-unstable.lib.nixosSystem {
 		system = "x86_64-linux";
 
-		pkgs = import inputs.nixpkgs {
+		pkgs = import inputs.nixpkgs-unstable {
 			system = "x86_64-linux";
 			config.allowUnfree = mkForce false; # Forbid proprietary code
 			config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
@@ -32,16 +32,16 @@ in {
 			}
 
 			# Principles
-			self.inputs.ragenix.nixosModules.default
-			self.inputs.sops.nixosModules.sops
-			self.inputs.hm.nixosModules.home-manager
-			self.inputs.disko.nixosModules.disko
+			self.inputs.ragenix-unstable.nixosModules.default
+			self.inputs.sops-unstable.nixosModules.sops
+			self.inputs.hm-unstable.nixosModules.home-manager
+			self.inputs.disko-unstable.nixosModules.disko
 			self.inputs.lanzaboote.nixosModules.lanzaboote
 			self.inputs.impermanence.nixosModules.impermanence
-			self.inputs.arkenfox.hmModules.default
+			self.inputs.arkenfox-unstable.hmModules.default
 
 			# An Anime Game
-			self.inputs.aagl.nixosModules.default {
+			self.inputs.aagl-unstable.nixosModules.default {
 				networking.mihoyo-telemetry.block = true; # Block miHoYo telemetry servers
 				nix.settings = {
 					substituters = [ "https://ezkea.cachix.org" ];
@@ -78,8 +78,8 @@ in {
 
 	# Task to perform installation of LENGO in NixOS distribution, stable release
 	perSystem = { system, pkgs, inputs', self', ... }: {
-		packages.nixos-lengo-stable-install = pkgs.writeShellApplication {
-				name = "nixos-lengo-stable-install";
+		packages.nixos-lengo-unstable-install = pkgs.writeShellApplication {
+				name = "nixos-lengo-unstable-install";
 				bashOptions = [
 					"errexit" # Exit on False Return
 					"posix" # Run in POSIX mode
@@ -96,27 +96,27 @@ in {
 					pkgs.util-linux # mountpoint
 				];
 				runtimeEnv = {
-					systemDevice = self.nixosConfigurations.nixos-lengo-stable.config.disko.devices.disk.system.device;
+					systemDevice = self.nixosConfigurations.nixos-lengo-unstable.config.disko.devices.disk.system.device;
 
-					systemSwapDevice = self.nixosConfigurations.nixos-lengo-stable.config.disko.devices.disk.system.content.partitions.swap.device;
+					systemSwapDevice = self.nixosConfigurations.nixos-lengo-unstable.config.disko.devices.disk.system.content.partitions.swap.device;
 
-					secretPasswordPath = self.nixosConfigurations.nixos-lengo-stable.config.age.secrets.lengo-disks-password.file;
+					secretPasswordPath = self.nixosConfigurations.nixos-lengo-unstable.config.age.secrets.lengo-disks-password.file;
 
-					secretSSHHostKeyPath = self.nixosConfigurations.nixos-lengo-stable.config.age.secrets.lengo-ssh-ed25519-private.file;
+					secretSSHHostKeyPath = self.nixosConfigurations.nixos-lengo-unstable.config.age.secrets.lengo-ssh-ed25519-private.file;
 
-					derivation = "nixos-lengo-stable";
+					derivation = "nixos-lengo-unstable";
 
 					machineName = "lengo";
 				};
-				text = builtins.readFile ./lengo-nixos-stable-install.sh;
+				text = builtins.readFile ./lengo-nixos-unstable-install.sh;
 			};
 
 		# Declare for `nix run`
-		apps.nixos-lengo-stable-install.program = self'.packages.nixos-lengo-stable-install;
+		apps.nixos-lengo-unstable-install.program = self'.packages.nixos-lengo-unstable-install;
 
 		# Unattended installer
-		packages.nixos-lengo-stable-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
-			pkgs = import inputs.nixpkgs {
+		packages.nixos-lengo-unstable-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
+			pkgs = import inputs.nixpkgs-unstable {
 				inherit system;
 				config.allowUnfree = true;
 			};
@@ -158,7 +158,7 @@ in {
 						];
 
 						serviceConfig = {
-							ExecStart = "${pkgs.nix}/bin/nix run github:kreyren/nixos-config/add-lengo#nixos-lengo-stable-install";
+							ExecStart = "${pkgs.nix}/bin/nix run github:kreyren/nixos-config/add-lengo#nixos-lengo-unstable-install";
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
@@ -187,6 +187,6 @@ in {
 			};
 		};
 
-		apps.nixos-lengo-stable-unattended-installer-iso.program = self'.packages.nixos-lengo-stable-unattended-installer-iso;
+		apps.nixos-lengo-unstable-unattended-installer-iso.program = self'.packages.nixos-lengo-unstable-unattended-installer-iso;
 	};
 }
