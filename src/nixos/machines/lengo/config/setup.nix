@@ -47,7 +47,7 @@ in {
 	# Desktop Environment
 	services.xserver.enable = true;
 	services.xserver.displayManager.gdm.enable = true;
-	services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has issues rn
+	# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has issues rn
 	services.xserver.desktopManager.gnome.enable = true;
 		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
 		services.xserver.displayManager.gdm.autoSuspend = false;
@@ -70,6 +70,9 @@ in {
 	# Jovian
 	# FIXME(Krey): Add this
 	# jovian.devices.legiongo.enable = true;
+	services.handheld-daemon.enable = true;
+	services.handheld-daemon.ui.enable = true;
+	services.handheld-daemon.user = "kreyren";
 
 	age.secrets.lengo-ssh-ed25519-private.file = ../secrets/lengo-ssh-ed25519-private.age; # Declare private key
 

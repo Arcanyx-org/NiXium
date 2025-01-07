@@ -6,6 +6,7 @@ let
 	inherit (lib) mkForce;
 in {
 	# FIXME(Krey): Move on harneded kernel, tbd how to manage
+	# FIXME(Krey): Go back to stable once https://www.gamingonlinux.com/2024/12/new-linux-kernel-patch-submitted-to-improve-lenovo-legion-series-support-including-lenovo-legion-go/ ends up in LFS
 	boot.kernelPackages = mkForce pkgs.linuxPackages;
 
 	boot.kernelParams = [
