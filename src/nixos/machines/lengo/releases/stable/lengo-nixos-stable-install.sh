@@ -24,7 +24,7 @@ warn() { printf "WARNING: %s\n" "$1" ;} # Warning Helper
 # FIXME(Krey): This should be managed for all used scripts e.g. runtimeEnv
 # Refer to https://github.com/srid/flake-root/discussions/5 for details tldr flake-root doesn't currently allow parsing the specific commit
 #[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits" | jq -r '.[0].sha')"
-[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits?sha=central" | jq -r '.[0].sha')"
+[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:kreyren/nixos-config/$(curl -s -X GET "https://api.github.com/repos/kreyren/nixos-config/commits?sha=add-lengo" | jq -r '.[0].sha')"
 
 ### [END] Export this outside [END] ###
 

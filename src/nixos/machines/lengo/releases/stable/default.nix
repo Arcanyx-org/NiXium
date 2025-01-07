@@ -153,7 +153,7 @@ in {
 						];
 
 						serviceConfig = {
-							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-lengo-stable-install";
+							ExecStart = "${pkgs.nix}/bin/nix run github:kreyren/nixos-config/add-lengo#nixos-lengo-stable-install";
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
@@ -164,6 +164,7 @@ in {
 					};
 
 					# Connect to FreeNet if the system doesn't have access to the internet by itself
+					networking.wireless.enable = true;
 					networking.wireless.networks."FreeNet" = { };
 				}
 

@@ -39,5 +39,5 @@
 	];
 
 	# Module export to other systems in the infrastructure
-	flake.nixosModules.machine-ignucius = ./lib/lengo-export.nix;
+	flake.nixosModules.machine-lengo = ./lib/lengo-export.nix;
 }
