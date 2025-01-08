@@ -12,11 +12,10 @@ status() { printf "STATUS: %s\n" "$1" ;} # Status Helper
 warn() { printf "WARNING: %s\n" "$1" ;} # Warning Helper
 
 # FIXME-QA(Krey): This should be a runtimeInput
-sucess() { # Successfull Termination Helper
-	case "$1" in
-		"") exit 0 ;;
-		*) printf "SUCCESS: %s\n" "$1"
-	esac
+# shellcheck disable=SC2120 # Argument is optional
+success() { # Successfull Termination Helper
+	printf "SUCCESS: %s\n" "${1:-"Task Finished Successfully"}"
+	exit 0
 }
 
 # FIXME(Krey): This should be managed for all used scripts e.g. runtimeEnv
@@ -42,7 +41,7 @@ hostname="$(hostname --short)"
 		--option eval-cache false \
 		--show-trace || die 1 "Verification of the current system failed"
 
-	sucess
+	success
 }
 
 # FIXME-QA(Krey): Hacky af
@@ -74,7 +73,7 @@ nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | se
 		esac
 	done
 
-	sucess
+	success
 }
 
 [ "$#" != 1 ] || {
@@ -88,7 +87,7 @@ nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | se
 		--option eval-cache false \
 		--show-trace || die 1 "Verification of the derivation '$derivation' failed"
 
-	sucess
+	success
 }
 
 # If special argument `all` is used as second argument then process all releases and distros that match the first argument as machine name
@@ -117,7 +116,7 @@ nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | se
 		*) echo "System '$system' reports undeclared status state: $status"
 	esac
 
-	sucess
+	success
 }
 
 # Process Arguments

@@ -25,7 +25,12 @@ in {
 		"zenpower"
 	];
 
-	boot.blacklistedKernelModules = ["k10temp"];
+	boot.blacklistedKernelModules = [
+		# FIXME-QA(Krey): Junior Nix Dev Figured this out without knowing why and i am blindly following his config.. figure out if it's actually a good idea to prefer zenpower over k10temp
+		"k10temp"
+		# The driver causes conflicts with ACPI, so it's disabled (https://forums.gentoo.org/viewtopic-t-1068292-start-0.html)
+		"lpc_ich"
+	];
 
 	# SECURITY(Krey): Has vulnerable CPU so this has to be managed
 	security.allowSimultaneousMultithreading = mkForce false; # Disable Simultaneous Multi-Threading as on this system it exposes unwanted attack vectors and CPU vulnerabilities

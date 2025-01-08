@@ -3,13 +3,11 @@
 # Setup of LENGO
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) mkForce mkIf;
 in {
 	networking.hostName = "lengo";
 
 	boot.impermanence.enable = true; # Use impermanence
-
-	boot.plymouth.enable = true;
 
 	nix.distributedBuilds = false; # Perform distributed builds
 
@@ -45,12 +43,12 @@ in {
 	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
 
 	# Desktop Environment
-	services.xserver.enable = true;
-	services.xserver.displayManager.gdm.enable = false;
+	# services.xserver.enable = true;
+	# services.xserver.displayManager.gdm.enable = true;
 	# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has issues rn
-	services.xserver.desktopManager.gnome.enable = true;
-		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
-		services.xserver.displayManager.gdm.autoSuspend = false;
+	# services.xserver.desktopManager.gnome.enable = true;
+	# 	programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
+	# 	services.xserver.displayManager.gdm.autoSuspend = false;
 
 	# FIXME(Krey): Figure out how to handle this
 	# Japanese Keyboard Input
@@ -75,28 +73,50 @@ in {
 	services.handheld-daemon.ui.enable = true;
 	services.handheld-daemon.user = "kira";
 
+	# To input decrypting password in initrd
+	# FIXME(Krey): This currently doesn't work complains about wrong symbol in the config and that it can't find the framebuffer device
+	boot.initrd.unl0kr.enable = true;
+		# unl0kr is not designed to work with plymouth
+		boot.plymouth.enable = mkForce false;
+
+	# To get rid of black borders around windows on GNOME using AMDVLK (https://gitlab.gnome.org/GNOME/gtk/-/issues/6890)
+	# environment.variables.GSK_RENDERER = "ngl";
+
+	# Kodi
+	services.xserver.enable = true;
+	services.xserver.desktopManager.kodi.enable = true;
+	services.xserver.displayManager.lightdm.greeter.enable = true;
+
 	# Jovian
-	jovian.devices.legiongo.enable = true;
-	jovian.steam.desktopSession = "gnome";
-	jovian.steam = {
-		user = "kira";
-		enable = true;
-		autoStart = true;
-	};
-	# FIXME(Krey): Fails due to missing python3
-	jovian.decky-loader = {
-		user = "kira";
-		enable = true;
-	};
-	programs.steam = {
-		enable = true;
-		extest.enable = true;
-		remotePlay.openFirewall = true;
-		extraCompatPackages = [
-			pkgs.proton-ge-bin
-		];
-	};
-	# ~/.steam/steam/.cef-enable-remote-debugging
+	# jovian.devices.legiongo.enable = true;
+	# jovian.steam.desktopSession = "gnome";
+	# jovian.steam = {
+	# 	user = "kira";
+	# 	enable = true;
+	# 	autoStart = true;
+	# };
+	# jovian.decky-loader = {
+	# 	user = "kira";
+	# 	enable = true;
+	# };
+	# programs.steam = {
+	# 	enable = true;
+	# 	extest.enable = true;
+	# 	remotePlay.openFirewall = true;
+	# 	extraCompatPackages = [
+	# 		pkgs.proton-ge-bin
+	# 	];
+	# };
+	# # hardware.steam-hardware.enable = false;
+	# # Enable CEF mode as currently it's required to get UI to load (https://github.com/Jovian-Experiments/Jovian-NixOS/issues/460)
+	# systemd.services.setUserPersistPermissions = {
+	# 	description = "Enable CEF Mode for Steam UI";
+	# 	wantedBy = [ "multi-user.target" ];
+	# 	after = [ "local-fs.target" ];  # Ensure this runs after the filesystem is mounted
+	# 	script = builtins.concatStringsSep "\n" [
+	# 		"${pkgs.su}/bin/su kira --command '${pkgs.coreutils}/bin/touch /home/kira/.steam/steam/.cef-enable-remote-debugging'"
+	# 	];
+	# };
 
 	age.secrets.lengo-ssh-ed25519-private.file = ../secrets/lengo-ssh-ed25519-private.age; # Declare private key
 

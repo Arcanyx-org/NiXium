@@ -9,7 +9,7 @@
 
 			# Users
 			self.nixosModules.users-kira
-				# self.homeManagerModules."kira@lengo"
+				self.homeManagerModules."kira@lengo"
 
 			# Files
 			./services/binfmt.nix
