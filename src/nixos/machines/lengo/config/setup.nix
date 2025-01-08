@@ -73,19 +73,19 @@ in {
 	# HHH
 	services.handheld-daemon.enable = true;
 	services.handheld-daemon.ui.enable = true;
-	services.handheld-daemon.user = "kreyren";
+	services.handheld-daemon.user = "kira";
 
 	# Jovian
 	jovian.devices.legiongo.enable = true;
 	jovian.steam.desktopSession = "gnome";
 	jovian.steam = {
-		user = "kreyren";
+		user = "kira";
 		enable = true;
 		autoStart = true;
 	};
 	# FIXME(Krey): Fails due to missing python3
 	jovian.decky-loader = {
-		user = "kreyren";
+		user = "kira";
 		enable = true;
 	};
 	programs.steam = {
@@ -96,6 +96,7 @@ in {
 			pkgs.proton-ge-bin
 		];
 	};
+	# ~/.steam/steam/.cef-enable-remote-debugging
 
 	age.secrets.lengo-ssh-ed25519-private.file = ../secrets/lengo-ssh-ed25519-private.age; # Declare private key
 

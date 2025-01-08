@@ -8,8 +8,8 @@
 			self.nixosModules.default # Load NiXium's Global configuration
 
 			# Users
-			self.nixosModules.users-kreyren
-				self.homeManagerModules."kreyren@lengo"
+			self.nixosModules.users-kira
+				# self.homeManagerModules."kira@lengo"
 
 			# Files
 			./services/binfmt.nix
