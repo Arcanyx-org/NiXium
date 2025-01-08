@@ -23,7 +23,7 @@ in mkMerge [
 			# For 32 bit applications
 			hardware.opengl.extraPackages32 = with pkgs; [
 				driversi686Linux.amdvlk
-];
+			];
 		};
 
 		"24.11" = {
