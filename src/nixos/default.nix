@@ -22,7 +22,7 @@ in {
 		{
 			# Keep this sorted
 			imports = [
-				self.inputs.jovian.nixosModules.default
+				# self.inputs.jovian.nixosModules.default
 
 				nixosModules.programs-git
 				nixosModules.programs-wakeonlan
