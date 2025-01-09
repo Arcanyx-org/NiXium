@@ -1243,17 +1243,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1736258803,
-        "narHash": "sha256-SWLAyd6dKYYcUp3XVLu9vjMfA5DK8dWQsyY1rUDmjUU=",
-        "ref": "refs/heads/legiongo",
-        "rev": "5dbd893c4da2ea7a85c1d562651cc362a7c37b0b",
-        "revCount": 1065,
-        "type": "git",
-        "url": "file:///home/kreyren/src/NiXium/vendor/jovian-nixos"
+        "lastModified": 1732657297,
+        "narHash": "sha256-YHITj3LCfZb5qsyhtRTHM4FrRFDOTFXxBBFayZ05BtA=",
+        "owner": "appsforartists",
+        "repo": "Jovian-NixOS",
+        "rev": "e51a63d6bf7e6bbc4850c33646a0fdb0fd856ba0",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/kreyren/src/NiXium/vendor/jovian-nixos"
+        "owner": "appsforartists",
+        "ref": "legiongo",
+        "repo": "Jovian-NixOS",
+        "type": "github"
       }
     },
     "lanzaboote": {

@@ -96,7 +96,8 @@
 
 		# Jovian
 		jovian = {
-			url = "git+file:///home/kreyren/src/NiXium/vendor/jovian-nixos";
+			url = "github:appsforartists/Jovian-NixOS/legiongo";
+			# url = "git+file:///home/kreyren/src/NiXium/vendor/jovian-nixos";
 			inputs.nixpkgs.follows = "nixpkgs-unstable";
 		};
 
