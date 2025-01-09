@@ -8,6 +8,7 @@
 			self.nixosModules.default # Load NiXium's Global configuration
 
 			# Users
+			self.nixosModules.users-kreyren
 			self.nixosModules.users-kira
 				self.homeManagerModules."kira@lengo"
 
