@@ -43,12 +43,14 @@ in {
 	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
 
 	# Desktop Environment
-	services.xserver.enable = true;
-	services.xserver.displayManager.gdm.enable = true;
-	services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has issues rn
-	services.xserver.desktopManager.gnome.enable = true;
-		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
-		services.xserver.displayManager.gdm.autoSuspend = false;
+	# services.xserver.enable = true;
+	# services.xserver.displayManager.gdm.enable = true;
+	# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has issues rn
+	# services.xserver.desktopManager.gnome.enable = true;
+	# 	programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
+	# 	services.xserver.displayManager.gdm.autoSuspend = false;
+	# # To get rid of black borders around windows on GNOME using AMDVLK (https://gitlab.gnome.org/GNOME/gtk/-/issues/6890)
+	# environment.variables.GSK_RENDERER = "ngl";
 
 	# FIXME(Krey): Figure out how to handle this
 	# Japanese Keyboard Input
@@ -79,13 +81,10 @@ in {
 		# unl0kr is not designed to work with plymouth
 		boot.plymouth.enable = mkForce false;
 
-	# To get rid of black borders around windows on GNOME using AMDVLK (https://gitlab.gnome.org/GNOME/gtk/-/issues/6890)
-	# environment.variables.GSK_RENDERER = "ngl";
-
 	# Kodi
-	# services.xserver.enable = true;
-	# services.xserver.desktopManager.kodi.enable = true;
-	# services.xserver.displayManager.lightdm.greeter.enable = true;
+	services.xserver.enable = true;
+	services.xserver.desktopManager.kodi.enable = true;
+	services.xserver.displayManager.lightdm.greeter.enable = true;
 
 	# Jovian
 	# jovian.devices.legiongo.enable = true;
