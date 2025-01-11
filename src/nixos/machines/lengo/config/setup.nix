@@ -2,6 +2,8 @@
 
 # Setup of LENGO
 
+# Boot: See what it is taking most time: `systemd-analyze critical-chain`
+
 let
 	inherit (lib) mkForce mkIf;
 in {
@@ -43,14 +45,36 @@ in {
 	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
 
 	# Desktop Environment
-	# services.xserver.enable = true;
-	# services.xserver.displayManager.gdm.enable = true;
-	# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has issues rn
-	# services.xserver.desktopManager.gnome.enable = true;
-	# 	programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
-	# 	services.xserver.displayManager.gdm.autoSuspend = false;
-	# # To get rid of black borders around windows on GNOME using AMDVLK (https://gitlab.gnome.org/GNOME/gtk/-/issues/6890)
-	# environment.variables.GSK_RENDERER = "ngl";
+	services.xserver.enable = false;
+	services.xserver.desktopManager.kodi.enable = true;
+	services.xserver.displayManager.gdm.enable = true;
+		services.xserver.displayManager.gdm.wayland = true; # Do not use wayland as it has issues rn
+		# FIXME(Krey): Enable screen keyboard by default in GDM (minor inconvinience)
+			# This doesn't work?
+			# systemd.services.enable-screen-keyboard-gdm = {
+			# 	description = "Enable Screen Keyboard in GDM";
+			# 	wantedBy = [ "multi-user.target" ];
+			# 	after = [ "local-fs.target" ];  # Ensure this runs after the filesystem is mounted
+			# 	script = builtins.concatStringsSep "\n" [
+			# 		"${pkgs.glib}/bin/gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true"
+			# 	];
+			# };
+	services.xserver.desktopManager.gnome.enable = true;
+		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
+		services.xserver.displayManager.gdm.autoSuspend = false;
+	# To get rid of black borders around windows on GNOME using AMDVLK (https://gitlab.gnome.org/GNOME/gtk/-/issues/6890)
+	environment.variables.GSK_RENDERER = "ngl";
+	services.displayManager.defaultSession = "gnome";
+
+	# Steam
+	programs.steam = {
+		enable = true;
+		extest.enable = true;
+		remotePlay.openFirewall = true;
+		extraCompatPackages = [
+			pkgs.proton-ge-bin
+		];
+	};
 
 	# FIXME(Krey): Figure out how to handle this
 	# Japanese Keyboard Input
@@ -73,18 +97,21 @@ in {
 	# HHH
 	services.handheld-daemon.enable = true;
 	services.handheld-daemon.ui.enable = true;
-	services.handheld-daemon.user = "kira";
+	# TODO(Krey): Change on `kira` later
+		services.handheld-daemon.user = "kreyren";
 
 	# To input decrypting password in initrd
 	# FIXME(Krey): This currently doesn't work complains about wrong symbol in the config and that it can't find the framebuffer device
 	boot.initrd.unl0kr.enable = true;
 		# unl0kr is not designed to work with plymouth
 		boot.plymouth.enable = mkForce false;
+		boot.initrd.unl0kr.settings = {
+			keyboard.autohide = false;
+			theme.default = "breezy-dark";
+		};
 
-	# Kodi
-	services.xserver.enable = true;
-	services.xserver.desktopManager.kodi.enable = true;
-	services.xserver.displayManager.lightdm.greeter.enable = true;
+	# Rotate screen
+	boot.kernelParams = ["fbcon=rotate:3"]; # Rotate screen on landscape
 
 	# Jovian
 	# jovian.devices.legiongo.enable = true;

@@ -9,6 +9,7 @@
 
 			# Users
 			self.nixosModules.users-kreyren
+				self.homeManagerModules."kreyren@lengo"
 			self.nixosModules.users-kira
 				self.homeManagerModules."kira@lengo"
 
