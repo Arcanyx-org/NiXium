@@ -7,7 +7,9 @@ let
 in {
 	# FIXME(Krey): Move on harneded kernel, tbd how to manage
 	# FIXME(Krey): Add this patch https://lkml.org/lkml/2024/12/17/1611
-	boot.kernelPackages = mkForce pkgs.linuxPackages_6_12;
+	# NOTE(Krey): Causes GDM to fail to load
+		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_12;
+	boot.kernelPackages = mkForce pkgs.linuxPackages;
 
 	boot.kernelParams = [
 		# SECURITY(Krey): Used to manage CPU Vulnerabilities

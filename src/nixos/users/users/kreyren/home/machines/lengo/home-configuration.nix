@@ -45,14 +45,11 @@ in {
 		# FIXME(Krey): It's ET: Legacy, what's proprietary there?
 		"etlegacy"
 		"etlegacy-assets"
-
-		# Flexibility of communication with some projects that hate privacy or what the fuck
-		"discord"
 	];
 
 	home.packages = [
 		# Instant-Chats
-				(mkIf config.gtk.enable pkgs.fractal) # GTK4+ Matrix Client Written in Rust
+				# (mkIf config.gtk.enable pkgs.fractal) # GTK4+ Matrix Client Written in Rust
 			# FIXME-QA(Krey): Enable this on QT-based desktop environments
 				# pkgs.nheko # QT-based Matrix Client
 
@@ -130,7 +127,8 @@ in {
 		pkgs.vlc
 
 		# Keyboard
-		pkgs.gnomeExtensions.gjs-osk
+		# FIXME-PKGS(Krey): Bump this in pkgs
+		# pkgs.gnomeExtensions.gjs-osk
 	];
 
 	# Per-system adjustments to the GNOME Extensions
