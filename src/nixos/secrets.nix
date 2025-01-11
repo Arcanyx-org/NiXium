@@ -6,6 +6,7 @@ let
 	kira = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICWLIYYAXRUD0+bg5CXsxh9F4spvqCz4jaxvtGMsezl/";
 
 	# Systems
+	flexy-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFSY5vNrQFfnDqBOqse2AHSWY1hIIpZWiBYTdQEIYnV9";
 	ignucius-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
 	morph-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFJh5Bd1p4GGCAvNkfoWoflrRIFnoj43b2aMs0GxmULs";
 	mracek-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8d9Nz64gE+x/+Dar4zknmXMAZXUAxhF1IgrA9DO4Ma";
@@ -15,6 +16,7 @@ let
 	lengo-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOWBw3MYmx7bTJPBKd51kFxXXSJDJEenLKR2R55VkwDU";
 
 	all-systems = [
+		flexy-system
 		ignucius-system
 		lengo-system
 		morph-system
@@ -39,6 +41,27 @@ in {
 
 	"./users/users/kira/home/modules/vpn/kira-wireproxy-protonvpn-config.age".publicKeys = [
 		kira kreyren tupac-system
+	];
+
+	# FLEXY (system)
+	"./machines/flexy/secrets/flexy-disks-password.age".publicKeys = [
+		kreyren flexy-system
+	];
+
+	"./machines/flexy/secrets/flexy-onion.age".publicKeys = [
+		kreyren
+	] ++ all-systems;
+
+	"./machines/flexy/secrets/flexy-ssh-ed25519-private.age".publicKeys = [
+		kreyren flexy-system
+	];
+
+	"./machines/flexy/secrets/flexy-onion-openssh-private.age".publicKeys = [
+		kreyren flexy-system
+	];
+
+	"./machines/flexy/secrets/flexy-builder-ssh-ed25519-private.age".publicKeys = [
+		kreyren flexy-system
 	];
 
 	# IGNUCIUS (system)
