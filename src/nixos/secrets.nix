@@ -31,7 +31,7 @@ in {
 	] ++ all-systems;
 
 	"./users/users/kreyren/home/modules/vpn/kreyren-wireproxy-protonvpn-config.age".publicKeys = [
-		kreyren sinnenfreude-system lengo-system
+		kreyren sinnenfreude-system
 	];
 
 	# Kira (user)
@@ -127,7 +127,7 @@ in {
 		kreyren morph-system
 	];
 
-	"./machines/morph/secrets/morph-onion.age".publicKeys = [
+	"./machines/morph/secrets/morph-openssh-onion.age".publicKeys = [
 		kreyren
 	] ++ all-systems;
 
