@@ -1,8 +1,10 @@
-{ self, ... }:
+{ self, config, ... }:
 
 # Flake management of FLEXY system
 
-{
+let
+	inherit (config.flake) nixosModules;
+in {
 	flake.nixosModules."nixos-flexy" = {
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration
@@ -30,6 +32,12 @@
 			./services/distributedBuilds.nix
 			./services/openssh.nix
 			./services/tor.nix
+
+			nixosModules.machine-ignucius
+			nixosModules.machine-morph
+			nixosModules.machine-mracek
+			nixosModules.machine-sinnenfreude
+			# nixosModules.machine-tupac
 		];
 	};
 
