@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, unstable, ... }:
 
 # Setup of LENGO
 
@@ -94,9 +94,9 @@ in {
 	# Enable sensors
 	hardware.sensor.iio.enable = true;
 
-	# HHH
-	services.handheld-daemon.enable = true;
-	services.handheld-daemon.ui.enable = true;
+	# HHD
+	services.handheld-daemon.enable = false;
+	services.handheld-daemon.ui.enable = false;
 	# TODO(Krey): Change on `kira` later
 		services.handheld-daemon.user = "kreyren";
 
@@ -111,7 +111,10 @@ in {
 		};
 
 	# Rotate screen
-	boot.kernelParams = ["fbcon=rotate:3"]; # Rotate screen on landscape
+	boot.kernelParams = [
+		"fbcon=rotate:3" # Rotate screen on landscape
+		"amdgpu.ppfeaturemask=0xffffffff" # Enable overclocking
+	];
 
 	# Jovian
 	# jovian.devices.legiongo.enable = true;
@@ -143,6 +146,40 @@ in {
 	# 		"${pkgs.su}/bin/su kira --command '${pkgs.coreutils}/bin/touch /home/kira/.steam/steam/.cef-enable-remote-debugging'"
 	# 	];
 	# };
+
+	# Make sure that the controllers are usable
+	# [  +0.018043] input: Lenovo Legion Controller for Windows as /devices/pci0000:00/0000:00:08.1/0000:c2:00.3/usb1/1-3/1-3:1.0/input>
+	# [  +0.147181] usb 1-3: New USB device found, idVendor=17ef, idProduct=6182, bcdDevice= 1.00
+	# [  +0.000015] usb 1-3: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+	# [  +0.000006] usb 1-3: Product: Legion Controller for Windows
+	# [  +0.028101] input:   Legion Controller for Windows  Touchpad as /devices/pci0000:00/0000:00:08.1/0000:c2:00.3/usb1/1-3/1-3:1.1/>
+	services.udev.extraRules = builtins.concatStringsSep "\n" [
+		"ACTION==\"add\", ATTRS{idVendor}==\"17ef\", ATTRS{idProduct}==\"6182\", RUN+=\"/sbin/modprobe xpad\" RUN+=\"/bin/sh -c 'echo 17ef 6182 > /sys/bus/usb/drivers/xpad/new_id'\""
+	];
+
+	systemd.services.lactd = {
+		wantedBy = [ "multi-user.target" ];
+		after = [ "multi-user.target" ];
+		description = "AMDGPU Control Daemon";
+		serviceConfig = {
+			ExecStart = "${unstable.lact}/bin/lact daemon";
+		};
+	};
+	environment.systemPackages = [ unstable.lact ];
+
+	boot.blacklistedKernelModules = [ "xpad" ];
+
+	# systemd.services.xboxdrv = {
+	# 	wantedBy = [ "multi-user.target" ];
+	# 	after = [ "network.target" ];
+	# 	serviceConfig = {
+	# 		Type = "forking";
+	# 		User = "root";
+	# 		ExecStart = "${pkgs.xboxdrv}/bin/xboxdrv --daemon --detach --pid-file /var/run/xboxdrv.pid --dbus disabled --silent --detach-kernel-driver --deadzone 4000 --deadzone-trigger 10% --mimic-xpad-wireless";
+	# 	};
+	# };
+
+	hardware.xpadneo.enable = true;
 
 	age.secrets.lengo-ssh-ed25519-private.file = ../secrets/lengo-ssh-ed25519-private.age; # Declare private key
 
