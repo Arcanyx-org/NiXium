@@ -119,6 +119,7 @@ in {
 		pkgs.nextcloud-client
 		# FIXME(Krey): To be managed..
 		#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
+		pkgs.sc-controller
 
 		# Video
 		pkgs.stremio # Media Server Client
