@@ -128,8 +128,8 @@ in {
 		pkgs.vlc
 
 		# Keyboard
-		# FIXME-PKGS(Krey): Bump this in pkgs
-		# pkgs.gnomeExtensions.gjs-osk
+		# FIXME(Krey): Results in read-only file system error?
+		pkgs.gnomeExtensions.gjs-osk
 	];
 
 	# Per-system adjustments to the GNOME Extensions
@@ -137,6 +137,8 @@ in {
 	dconf.settings = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
 		# Set power management for a scenario where user is logged-in
 		"org/gnome/settings-daemon/plugins/power" = {
+			# The Light Sensor has an RGB emitter right next to it that makes it unusable
+				ambient-enabled = false;
 			power-button-action = "hibernate";
 			sleep-inactive-ac-timeout = 600; # 60*10=600 Seconds -> 10 Minutes
 			sleep-inactive-ac-type = "suspend";

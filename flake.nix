@@ -8,7 +8,10 @@
 			nixpkgs-staging.url = "github:nixos/nixpkgs/staging";
 			nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-			nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+			nixpkgs = {
+				# url = "github:nixos/nixpkgs/nixos-24.11";
+				url = "git+file:///nix/persist/NiXium/vendor/nixpkgs-stable";
+			};
 
 			nixpkgs-23_05.url = "github:nixos/nixpkgs/nixos-23.05";
 			nixpkgs-23_11.url = "github:nixos/nixpkgs/nixos-23.11";

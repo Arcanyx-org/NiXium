@@ -9,6 +9,7 @@ in {
 	# FIXME(Krey): Add this patch https://lkml.org/lkml/2024/12/17/1611
 	# NOTE(Krey): Causes GDM to fail to load
 		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_12;
+		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_11;
 	boot.kernelPackages = mkForce pkgs.linuxPackages;
 
 	boot.kernelParams = [
@@ -18,14 +19,27 @@ in {
 		"mds=off" # Paranoid enforcement, shouldn't be needed..
 	];
 
-	# Zenpower is said to be better for modern AMD things
-	boot.extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
+	boot.extraModulePackages = with config.boot.kernelPackages; [
+		zenpower # Zenpower is said to be better for modern AMD things
+		# Doesn't seem to provide anything beneficial
+			lenovo-legion-module
+	];
 
 	boot.kernelModules = [
-		"kvm-amd" # Use KVM
-		"usb-storage" # Use USB drives on hardened kernel
+		# Auto-Generated
+			"kvm-amd" # Use KVM
+			"usb-storage" # Use USB drives on hardened kernel
+
 		"zenpower"
+
+		# Doesn't seem to provide anything beneficial
+			# "lenovo-legion-module"
 	];
+
+	# Neither of the settings work
+		# environment.systemPackages = [
+		# 	pkgs.lenovo-legion
+		# ];
 
 	boot.blacklistedKernelModules = [
 		# FIXME-QA(Krey): Junior Nix Dev Figured this out without knowing why and i am blindly following his config.. figure out if it's actually a good idea to prefer zenpower over k10temp

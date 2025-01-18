@@ -31,13 +31,13 @@ in mkMerge [
 			hardware.graphics.enable32Bit = true;
 
 			# AMDVLK
-			hardware.graphics.extraPackages = with pkgs; [
-				amdvlk
-			];
-			# For 32 bit applications
-			hardware.graphics.extraPackages32 = with pkgs; [
-				driversi686Linux.amdvlk
-			];
+			# hardware.graphics.extraPackages = with pkgs; [
+			# 	amdvlk
+			# ];
+			# # For 32 bit applications
+			# hardware.graphics.extraPackages32 = with pkgs; [
+			# 	driversi686Linux.amdvlk
+			# ];
 		};
 
 		# FIXME-QA(Krey): Duplicate Code
