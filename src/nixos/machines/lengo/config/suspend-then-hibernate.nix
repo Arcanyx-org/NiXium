@@ -3,8 +3,7 @@
 # Module that implements suspend-then-hibernate for LENGO
 
 let
-	# NOTE(Krey): 60 seems too little
-	hibernateSeconds = "120";
+	hibernateSeconds = "60";
 in {
 	services.logind = {
 		powerKey = "suspend-then-hibernate"; # Standard power off

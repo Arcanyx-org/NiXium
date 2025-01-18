@@ -6,16 +6,16 @@ let
 	inherit (lib) mkIf mkForce;
 in mkIf config.services.openssh.enable {
 	# Import the private key for an onion service
-	# age.secrets.lengo-onion-openssh-private = {
-	# 	file = ../secrets/lengo-onion-openssh-private.age;
+	age.secrets.lengo-onion-openssh-private = {
+		file = ../secrets/lengo-onion-openssh-private.age;
 
-	# 	owner = "tor";
-	# 	group = "tor";
+		owner = "tor";
+		group = "tor";
 
-	# 	path = "/var/lib/tor/onion/openssh/hs_ed25519_secret_key";
+		path = "/var/lib/tor/onion/openssh/hs_ed25519_secret_key";
 
-	# 	symlink = false; # Appears to not work as symlink
-	# };
+		symlink = false; # Appears to not work as symlink
+	};
 
 	services.tor.relay.onionServices."openssh".map = mkIf config.services.tor.enable config.services.openssh.ports; # Provide hidden SSH
 
