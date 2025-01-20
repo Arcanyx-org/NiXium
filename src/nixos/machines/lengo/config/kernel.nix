@@ -10,6 +10,7 @@ in {
 	# NOTE(Krey): Causes GDM to fail to load
 		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_12;
 		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_11;
+		# boot.kernelPackages = mkForce pkgs.linuxPackages_xanmod_stable;
 	boot.kernelPackages = mkForce pkgs.linuxPackages;
 
 	boot.kernelParams = [
@@ -22,7 +23,7 @@ in {
 	boot.extraModulePackages = with config.boot.kernelPackages; [
 		zenpower # Zenpower is said to be better for modern AMD things
 		# Doesn't seem to provide anything beneficial
-			lenovo-legion-module
+			# lenovo-legion-module
 	];
 
 	boot.kernelModules = [
@@ -47,10 +48,4 @@ in {
 		# The driver causes conflicts with ACPI, so it's disabled (https://forums.gentoo.org/viewtopic-t-1068292-start-0.html)
 		"lpc_ich"
 	];
-
-	# SECURITY(Krey): Has vulnerable CPU so this has to be managed
-	security.allowSimultaneousMultithreading = mkForce false; # Disable Simultaneous Multi-Threading as on this system it exposes unwanted attack vectors and CPU vulnerabilities
-
-	# SECURITY(Krey): Handled externally via coreboot management
-	hardware.cpu.intel.updateMicrocode = mkForce false; # Whether to update the intel CPU microcode on system bootup
 }

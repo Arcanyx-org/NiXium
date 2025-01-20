@@ -175,7 +175,7 @@ in {
 		# programs.corectrl.enable = true;
 
 	# Controllers
-		boot.blacklistedKernelModules = [ "xpad" ];
+		# boot.blacklistedKernelModules = [ "xpad" ];
 
 		# systemd.services.xboxdrv = {
 		# 	wantedBy = [ "multi-user.target" ];
@@ -187,7 +187,9 @@ in {
 		# 	};
 		# };
 
-		hardware.xpadneo.enable = true;
+		# hardware.xpadneo.enable = true;
+
+	services.sunshine.enable = true;
 
 	age.secrets.lengo-ssh-ed25519-private.file = ../secrets/lengo-ssh-ed25519-private.age; # Declare private key
 
