@@ -53,13 +53,6 @@ in {
 			# FIXME-QA(Krey): Enable this on QT-based desktop environments
 				# pkgs.nheko # QT-based Matrix Client
 
-			# Session uses system proxy by default which breaks functionality
-			(pkgs.session-desktop.overrideAttrs (super: {
-				postInstall = ''
-					wrapProgram $out/bin/session-desktop \
-						--append-flags "--no-proxy-server"
-				'';
-			}))
 			# Temporary managment of IRC until it's implemented in our matrix server
 			pkgs.hexchat # Unmaintained package, no better known for the protocol
 
@@ -119,7 +112,6 @@ in {
 		pkgs.nextcloud-client
 		# FIXME(Krey): To be managed..
 		#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
-		pkgs.sc-controller
 
 		# Video
 		pkgs.stremio # Media Server Client
@@ -176,7 +168,6 @@ in {
 				"__network-tx_max__"
 				"__network-rx_max__"
 				"_battery_rate_"
-				"_fan_thinkpad_fan1_"
 			];
 		};
 	};

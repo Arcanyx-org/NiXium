@@ -38,6 +38,10 @@ in {
 
 			# FIXME-QA(Krey): Should only be applied if `streamio` is installed
 			".stremio-server/stremio-cache"
+
+			# SC-Controller
+				# FIXME(Krey): These should have sc-controller nixosConfiguration module defined and set it there
+				".config/scc"
 		];
 		files = [
 			# FIXME-PURITY(Krey): This should be managed declaratively

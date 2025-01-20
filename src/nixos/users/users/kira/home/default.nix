@@ -17,6 +17,9 @@ in {
 						./home.nix
 
 						homeManagerModules.modules-kira
+
+						# FIXME-QA(Krey): This is kinda weird and i haven't yet decided how to handle it as it should be per-system configurable
+						homeManagerModules.ui-gnome-theme-generic-kira # Use Generic GNOME Theme
 					];
 				};
 
