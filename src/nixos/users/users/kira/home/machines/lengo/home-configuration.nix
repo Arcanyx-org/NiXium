@@ -53,9 +53,7 @@ in {
 		polymc.polymc
 
 		# Games
-		aagl-unstable.anime-game-launcher # An Anime Game <3
 		pkgs.etlegacy # Wolfenstein: Enemy Territory
-		pkgs.airshipper # Veloren
 		pkgs.mindustry
 
 		# Web Browsers
@@ -80,8 +78,10 @@ in {
 		pkgs.vlc
 
 		# Keyboard
-		# FIXME(Krey): Outdated..
 		pkgs.gnomeExtensions.gjs-osk
+
+		# Utilities
+		pkgs.sc-controller # Steam Controller Software
 	];
 
 	# Per-system adjustments to the GNOME Extensions
@@ -92,6 +92,24 @@ in {
 			power-button-action = "hibernate";
 			sleep-inactive-ac-timeout = 600; # 60*10=600 Seconds -> 10 Minutes
 			sleep-inactive-ac-type = "suspend";
+		};
+
+		# OSKGJS
+		"org/gnome/shell/extensions/gjsosk" = {
+			background-a-dark = "0.93000000715255737";
+			background-b-dark = "0.0";
+			background-g-dark = "0.0";
+			background-r-dark = "0.0";
+			border-spacing-px = 2;
+			font-bold = true;
+			font-size-px = 19;
+			landscape-height-percent = 45;
+			landscape-width-percent = 100;
+			layout-landscape = 4;
+			layout-portrait = 8;
+			outer-spacing-px = 0;
+			round-key-corners = true;
+			snap-spacing-px = 0;
 		};
 
 		# System Monitor
@@ -125,8 +143,8 @@ in {
 				"_memory_usage_"
 				"__network-tx_max__"
 				"__network-rx_max__"
-				"_battery_rate_"
-				"_fan_thinkpad_fan1_"
+				# FIXME(Krey): No Data on Battery as of Jan 20th 2025
+					# "_battery_rate_"
 			];
 		};
 	};

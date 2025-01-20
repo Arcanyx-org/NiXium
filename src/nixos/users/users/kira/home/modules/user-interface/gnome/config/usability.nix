@@ -1,6 +1,6 @@
 { lib, nixosConfig, ... }:
 
-# Kreyren's Module for Various Usability Tweaks on GNOME
+# Kira's Module for Various Usability Tweaks on GNOME
 
 let
 	inherit (lib) mkIf mkMerge;
@@ -24,8 +24,8 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 				};
 
 				"org/gnome/mutter" = {
-					dynamic-workspaces=true;
-					workspaces-only-on-primary=false;
+					dynamic-workspaces = true;
+					workspaces-only-on-primary = false;
 					experimental-features = [
 						"scale-monitor-framebuffer" # Enable Fractional Scaling
 						"variable-refresh-rate" # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154

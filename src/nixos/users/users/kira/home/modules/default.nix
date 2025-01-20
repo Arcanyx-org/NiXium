@@ -5,9 +5,11 @@ let
 in {
 	flake.homeManagerModules.modules-kira.imports = [
 		homeManagerModules.system-kira
+		homeManagerModules.ui-kira
 	];
 
 	imports = [
 		./system
+		./user-interface
 	];
 }
