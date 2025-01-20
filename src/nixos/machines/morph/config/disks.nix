@@ -35,7 +35,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=1G"
+					"size=5G"
 					"defaults"
 					"mode=755"
 				];
