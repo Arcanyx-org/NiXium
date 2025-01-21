@@ -15,7 +15,7 @@ in {
 
 	# services.gitea.enable = true;
 	services.monero.enable = true;
-	# services.murmur.enable = false;
+	services.murmur.enable = true;
 	# services.navidrome.enable = false;
 	services.openssh.enable = true;
 	services.tor.enable = true;

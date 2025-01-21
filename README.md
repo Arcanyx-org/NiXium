@@ -84,6 +84,22 @@ Configurtion: https://github.com/Arcanyx-org/NiXium/blob/central/src/nixos/machi
 
 This service is mostly used internally to organize private projects. We recommend you to use the [Vikunja Cloud Services](https://vikunja.cloud) instead to support the upstream developers if you are not in position to self-host it.
 
+### [MurMur](https://www.mumble.info)
+
+Our (currently) testing implementation of [MurMur](https://www.mumble.info), the Mumble Server as a mean for private voice conversations.
+
+```
+Recommended MapAddress: murmur.nx
+Hostname: pgqyexxdjo43b4eafijcspg5xpqwgtzil7xthg3y53f3uyznyvv2ucid.onion
+Port: 64738
+Server Password: theMurMuring
+
+Providing system: mracek.systems.nx
+Configurtion: https://github.com/Arcanyx-org/NiXium/blob/central/src/nixos/machines/mracek/services/murmur/murmur.nix
+```
+
+This server is currently Tor-Only with plans to make it available via clearnet at a later date.
+
 ## Claim of "NX" Custom Top Level Domain
 
 This repository claims the "NX" as it's Custom Top Level Domain ("cTLD") and kindly asks all DNS providers and Network Solutions to acknowledge it, we don't recognize the Internet Corporation for Assigned Names and Numbers ("ICANN") as authority due to their monopolistic position on assignments of Top Level Domains and their unreasonable high fees for cTLDs to attempt to decentralize this assignment.
