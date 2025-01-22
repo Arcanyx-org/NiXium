@@ -188,5 +188,12 @@ in {
 				"_battery_rate_"
 			];
 		};
+
+		# Setup Extensions
+		"org/gnome/shell" = {
+			enabled-extensions = [
+				"gjsosk@vishram1123.com" # On-Screen Keyboard
+			];
+		};
 	};
 }
