@@ -136,6 +136,24 @@ in {
 			sleep-inactive-ac-type = "suspend";
 		};
 
+		# OSKGJS
+		"org/gnome/shell/extensions/gjsosk" = {
+			background-a-dark = "0.93000000715255737";
+			background-b-dark = "0.0";
+			background-g-dark = "0.0";
+			background-r-dark = "0.0";
+			border-spacing-px = 2;
+			font-bold = true;
+			font-size-px = 19;
+			landscape-height-percent = 45;
+			landscape-width-percent = 100;
+			layout-landscape = 4;
+			layout-portrait = 8;
+			outer-spacing-px = 0;
+			round-key-corners = true;
+			snap-spacing-px = 0;
+		};
+
 		# System Monitor
 		"org/gnome/gnome-system-monitor" = {
 			show-dependencies = false;

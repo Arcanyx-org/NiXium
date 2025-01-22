@@ -78,7 +78,15 @@ in {
 		pkgs.vlc
 
 		# Keyboard
-		pkgs.gnomeExtensions.gjs-osk
+			# pkgs.gnomeExtensions.gjs-osk
+			# FIXME(Krey): Remove this once it arrives in nixpkgs - https://github.com/Vishram1123/gjs-osk/issues/85
+			(pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
+				src = pkgs.fetchzip {
+					url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
+					hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
+					stripRoot = false;
+				};
+			}))
 
 		# Utilities
 		pkgs.sc-controller # Steam Controller Software
@@ -143,8 +151,13 @@ in {
 				"_memory_usage_"
 				"__network-tx_max__"
 				"__network-rx_max__"
-				# FIXME(Krey): No Data on Battery as of Jan 20th 2025
-					# "_battery_rate_"
+			];
+		};
+
+		# Setup Extensions
+		"org/gnome/shell" = {
+			enabled-extensions = [
+				"gjsosk@vishram1123.com" # On-Screen Keyboard
 			];
 		};
 	};
