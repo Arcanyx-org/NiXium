@@ -13,6 +13,7 @@ in {
 
 	nix.distributedBuilds = true; # Perform distributed builds if requested
 
+	services.sunshine.enable = true;
 	services.openssh.enable = true;
 	services.tor.enable = true;
 	# FIXME(Krey): Kernel Panic on wake-up

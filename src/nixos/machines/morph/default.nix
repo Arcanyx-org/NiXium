@@ -9,6 +9,7 @@
 
 			# Users
 			self.nixosModules.users-kreyren
+			self.homeManagerModules."kreyren@morph"
 
 			# Files
 			./config/bootloader.nix
@@ -27,6 +28,7 @@
 			./services/binfmt.nix
 			./services/distributedBuilds.nix
 			./services/openssh.nix
+			./services/sunshine.nix
 			./services/tor.nix
 		];
 	};
