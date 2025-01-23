@@ -1,3 +1,10 @@
+
+**RED ALERT:** Quantum Computer Cybersecurity Crisis
+
+Quantum Computers that are efficient enough to break encryption are assumed to be available, NiXium is in crisis mode to try to mitigate the threat in our infrastructure.
+
+---
+
 # NiXium (N/X)
 
 Transparent Nix-based Open-Source Infrastructure as Code (OSS IaaC) Management Solution for Multiple Systems and Domains designed to be a reliable tool for mission-critical tasks in paranoid and high-security environment.
@@ -53,6 +60,8 @@ Without MapAddress: somewhereInTheDarks45h5f8h76sd7f98h7sd9h6sg876hsl.org
 With MapAddress: cool-service.nx
 
 ### [Monero Node](https://www.getmonero.org/resources/moneropedia/node.html)
+
+**OFFLINE DUE TO QUANTUM CRISIS**
 
 We provide a private [Monero Node](https://www.getmonero.org/resources/moneropedia/node.html) for all viewers of this repository to process your [Monero](https://en.wikipedia.org/wiki/Monero) transactions through our transparent infrastructure:
 
