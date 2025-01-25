@@ -61,7 +61,7 @@ With MapAddress: cool-service.nx
 
 ### [Monero Node](https://www.getmonero.org/resources/moneropedia/node.html)
 
-**OFFLINE DUE TO QUANTUM CRISIS**
+**OFFLINE DUE TO QUANTUM CRISIS: https://github.com/monero-project/research-lab/issues/131#issuecomment-2613839657**
 
 We provide a private [Monero Node](https://www.getmonero.org/resources/moneropedia/node.html) for all viewers of this repository to process your [Monero](https://en.wikipedia.org/wiki/Monero) transactions through our transparent infrastructure:
 
