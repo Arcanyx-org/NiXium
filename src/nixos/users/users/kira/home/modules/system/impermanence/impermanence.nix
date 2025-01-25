@@ -27,8 +27,6 @@ in {
 			# FIXME-QA(Krey): Should only be applied if direnv is used
 			".local/share/direnv"
 
-			".local/share/Steam"
-
 			".local/share/PolyMC"
 
 			(mkIf nixosConfig.services.flatpak.enable ".local/share/flatpak")
@@ -42,11 +40,18 @@ in {
 			# SC-Controller
 				# FIXME(Krey): These should have sc-controller nixosConfiguration module defined and set it there
 				".config/scc"
+
+			# Steam
+				# ".local/share/Steam/steamapps/common"
+				".local/share/Steam"
 		];
 		files = [
 			# FIXME-PURITY(Krey): This should be managed declaratively
 			".config/monitors.xml"
 			(mkIf config.programs.nix-index.enable ".cache/nix-index/files")
+
+			# Steam
+			# ".local/share/Steam/config/config.vdf"
 		];
 
 		allowOther = true; # FIXME-DOCS(Krey): What is this used for?
