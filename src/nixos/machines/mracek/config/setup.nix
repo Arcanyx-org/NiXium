@@ -22,6 +22,8 @@ in {
 	services.tor.enable = true;
 	# services.vaultwarden.enable = false; # Testing..
 	services.vikunja.enable = true;
+	# Zabbix
+		services.zabbixServer.enable = true;
 
 	# Management for https://github.com/NixOS/nixpkgs/issues/287194#issuecomment-2162085415, proposed workaround https://discourse.nixos.org/t/logrotate-config-fails-due-to-missing-group-30000/28501/2
 	services.logrotate.checkConfig = false;
