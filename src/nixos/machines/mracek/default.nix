@@ -18,6 +18,7 @@
 			./services/tor.nix
 			./services/vaultwarden.nix
 			./services/vikunja.nix
+			./services/znc.nix
 
 			./config/bootloader.nix
 			./config/disks.nix
