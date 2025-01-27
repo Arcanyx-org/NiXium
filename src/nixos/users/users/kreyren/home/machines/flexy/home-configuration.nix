@@ -131,6 +131,17 @@ in {
 		pkgs.freetube # YouTube Client
 		pkgs.mpv
 		pkgs.vlc
+
+		# Keyboard
+			# pkgs.gnomeExtensions.gjs-osk
+			# FIXME(Krey): Remove this once it arrives in nixpkgs - https://github.com/Vishram1123/gjs-osk/issues/85
+			(pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
+				src = pkgs.fetchzip {
+					url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
+					hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
+					stripRoot = false;
+				};
+			}))
 	];
 
 	# Per-system adjustments to the GNOME Extensions
@@ -152,9 +163,9 @@ in {
 			border-spacing-px = 2;
 			font-bold = true;
 			font-size-px = 19;
-			landscape-height-percent = 45;
-			landscape-width-percent = 100;
-			layout-landscape = 4;
+			landscape-height-percent = 40;
+			landscape-width-percent = 70;
+			layout-landscape = 6;
 			layout-portrait = 8;
 			outer-spacing-px = 0;
 			round-key-corners = true;
