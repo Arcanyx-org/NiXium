@@ -19,6 +19,13 @@ in {
 	programs.appimage = {
 		enable = true;
 		binfmt = true;
+		package = pkgs.appimage-run.override {
+			extraPkgs = pkgs: [
+				# FIXME(Krey): Once we figure out what packages are in general needed for appimages then move this into a global configuration
+				# Some packages need this dependency, added for utility - https://github.com/NixOS/nixpkgs/issues/350383#issuecomment-2433316461
+				pkgs.libepoxy
+			];
+		};
 	};
 
 	services.openssh.enable = true;
@@ -58,11 +65,11 @@ in {
 	services.fprintd.enable = true;
 		services.fprintd.tod.enable = false;
 
-	# FIXME(Krey): Figure out how to handle this
 	# Japanese Keyboard Input
-	# i18n.inputMethod.enable = true;
-	# i18n.inputMethod.type = "fcitx5";
-	# i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
+		# FIXME(Krey): Figure out how to handle this, it should automatically add the `mozn` to the config to use japanese input
+		i18n.inputMethod.enable = true;
+		i18n.inputMethod.type = "fcitx5";
+		i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
 
 	# Power Management
 	powerManagement.enable = true; # Enable Power Management
