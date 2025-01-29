@@ -1,0 +1,19 @@
+{
+    "@context" : "http://schema.org",
+    "version": "0.0.1",
+    "@type" : "Organization",
+    "organizationType" : "Informal collective",
+    "name" : "NiXium",
+    "tagLine" : "providing services for everyone",
+    "homeUrl" : "https://librehoster.example",
+    "logo" : "https://librehoster.example/logo.png",
+    "description": "libre service provider",
+    "communicationLanguages": ["en", "fr", "nl"],
+    "contactUrl": "https://librehoster.example/contact",
+    "privacyPolicyUrl" : "https://librehoster.example/policy/privacy",
+    "termsOfServiceUrl" : "https://librehoster.example/policy/tos",
+    "isServiceProvider" : true,
+    "foundingDate": "YYYY",
+    "dateCreated": "YYYY-MM-DDTHH:MM:SSZ",
+    "dateModified": "2018-11-10T22:32:54Z"
+}
