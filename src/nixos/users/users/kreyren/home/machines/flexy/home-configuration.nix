@@ -137,8 +137,10 @@ in {
 			# FIXME(Krey): Remove this once it arrives in nixpkgs - https://github.com/Vishram1123/gjs-osk/issues/85
 			(pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
 				src = pkgs.fetchzip {
-					url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
-					hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
+					# url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
+					# hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
+					url = "https://github.com/Kreyren/gjs-osk/archive/refs/heads/fix-lockscreen.zip";
+					hash = "sha256-mnp0EBUWmqZxC9s9kYe3LCAi4fx4hRg76bX+vHEYYqo=";
 					stripRoot = false;
 				};
 			}))
