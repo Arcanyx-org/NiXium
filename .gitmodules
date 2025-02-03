@@ -7,3 +7,7 @@
 [submodule "vendor/ragenix"]
 	path = vendor/ragenix
 	url = git@github.com:NiXium-org/ragenix.git
+[submodule "vendor/gjs-osk"]
+	path = vendor/gjs-osk
+	url = git@github.com:Kreyren/gjs-osk.git
+	branch = central
