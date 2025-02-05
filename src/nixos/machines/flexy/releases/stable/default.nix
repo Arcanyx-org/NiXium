@@ -12,6 +12,9 @@ in {
 			system = "x86_64-linux";
 			config.allowUnfree = mkForce false; # Forbid proprietary code
 			config.nvidia.acceptLicense = mkForce false; # Nvidia, Fuck You!
+			config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+				"libfprint-2-tod1-vfs0090"
+			];
 		};
 
 		modules = [
