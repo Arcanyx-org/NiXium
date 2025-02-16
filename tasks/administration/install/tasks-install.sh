@@ -1,10 +1,37 @@
-# shellcheck shell=sh # POSIX
-set +u # Do not fail on nounset as we use command-line arguments for logic
+#@ This POSIX Shell Script is executed in an isolated reproducible environment managed by Nix <https://github.com/NixOS/nix>, which handles dependencies, ensures deterministic function imports, sets any needed variables and performs strict linting prior to script execution to capture common issues for quality assurance.
+
+### [START] Export this outside [START] ###
+
+# FIXME-QA(Krey): This should be a runtimeInput
+die() { printf "FATAL: %s\n" "$2"; exit ;} # Termination Helper
+
+# FIXME-QA(Krey): This should be a runtimeInput
+status() { printf "STATUS: %s\n" "$1" ;} # Status Helper
+
+# FIXME-QA(Krey): This should be a runtimeInput
+warn() { printf "WARNING: %s\n" "$1" ;} # Warning Helper
+
+# Termination Helper
+command -v success 1>/dev/null || success() {
+	case "$1" in
+		"") : ;;
+		*) printf "SUCCESS: %s\n" "$1"
+	esac
+
+	exit 0
+}
+
+# FIXME(Krey): This should be managed for all used scripts e.g. runtimeEnv
+# Refer to https://github.com/srid/flake-root/discussions/5 for details tldr flake-root doesn't currently allow parsing the specific commit
+#[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits" | jq -r '.[0].sha')"
+[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits?sha=central" | jq -r '.[0].sha')"
+
+# shellcheck disable=SC2034 # It's not expected to be always used
+hostname="$(hostname --short)" # Capture the hostname of the current system
+
+### [END] Export this outside [END] ###
 
 # Refer to https://github.com/nix-community/disko/issues/657#issuecomment-2146978563 for implementation notes
-
-# FIXME(Krey): Implement better management for this so that ideally `die` is always present by default
-command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;} # Termination Helper
 
 distro="$1"
 system="$2"

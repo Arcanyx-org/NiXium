@@ -1,4 +1,4 @@
-{ config, lib, ...}:
+{ config, lib, pkgs, ...}:
 
 # Global Management of Impermanence
 
@@ -36,18 +36,16 @@ in mkIf config.boot.impermanence.enable {
 		boot.initrd.systemd.suppressedUnits = [ "systemd-machine-id-commit.service" ];
 		systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
 
-
-	# The configuration will deploy the user directories owned by root:root which will cause the user's home manager to fail deployment due to permission denied error, so we need to change the ownership before home-manager setup
-		# Plan A
-		# system.activationScripts.change-ownership-persist-users = ''chown root:users /nix/persist/users''; # Set Permission Of the Persistent Users Directory
-
-		# Plan B
-			# systemd.tmpfiles.rules = [
-			# 	"d /persist/home/${username} 0700 ${username} users"
-			# 	# We need to explicitly set ownership on the home directory when using impermanence.
-			# 	# Otherwise, it will be owned as root, and home-manager will fail.
-			# 	"d /home/${username} 0700 ${username} users"
-			# ];
+	# Set permission for the users directory
+	systemd.services.setUserPersistPermissions = {
+		description = "Set ownership and permissions for /nix/persist/users";
+		wantedBy = [ "multi-user.target" ];
+		after = [ "local-fs.target" ];  # Ensure this runs after the filesystem is mounted
+		script = builtins.concatStringsSep "\n" [
+			"${pkgs.coreutils}/bin/chown root:users /nix/persist/users"
+			"${pkgs.coreutils}/bin/chmod 770 /nix/persist/users"
+		];
+	};
 
 	age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Add impermenant path for keys
 

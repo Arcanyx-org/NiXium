@@ -26,12 +26,13 @@ in {
 		openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" ];
 	};
 
-	# system.activationScripts.make-homedir-kreyren = builtins.concatStringsSep "\n" [
-	# 	"mkdir /nix/persist/users/kreyren"
-	# 	"chown kreyren:users /nix/persist/users/kreyren" # Set Permission Of the Persistent Users Directory
-	# ];
-
 	users.users.root.openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" ]; # Allow root access for all systems for kreyren
 
 	nix.settings.trusted-users = [ "kreyren" ]; # Add Kreyren in Trusted-Users
+
+	# Set Password for Virtual Machine Checks
+	virtualisation.vmVariantWithDisko.users.users.kreyren = {
+		hashedPasswordFile = mkForce null;
+		password = "a"; # Fastest to brute force password
+	};
 }

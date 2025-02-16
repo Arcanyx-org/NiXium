@@ -48,7 +48,7 @@ in mkMerge [
 				system = {
 					device = diskoDevice;
 					type = "disk";
-					imageSize = "50G"; # Size of the generated image
+					imageSize = "30G"; # Size of the generated image
 					content = {
 						type = "gpt";
 						partitions = {
@@ -76,7 +76,7 @@ in mkMerge [
 									type = "luks";
 									settings.allowDiscards = true;
 
-									passwordFile = config.age.secrets.ignucius-disks-password.path;
+									# passwordFile = config.age.secrets.ignucius-disks-password.path;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -115,39 +115,39 @@ in mkMerge [
 								};
 							};
 
-							swap = {
-								priority = 2;
-								size = "30G";
-								content = {
-									name = "swap";
-									type = "luks";
+							# swap = {
+							# 	priority = 2;
+							# 	size = "30G";
+							# 	content = {
+							# 		name = "swap";
+							# 		type = "luks";
 
-									settings.allowDiscards = true;
+							# 		settings.allowDiscards = true;
 
-									passwordFile = config.age.secrets.ignucius-disks-password.path;
+							# 		# passwordFile = config.age.secrets.ignucius-disks-password.path;
 
-									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
+							# 		initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
-									extraFormatArgs = [
-										"--use-random" # use true random data from /dev/random, will block until enough entropy is available
-										"--label=CRYPT_SWAP"
-									];
+							# 		extraFormatArgs = [
+							# 			"--use-random" # use true random data from /dev/random, will block until enough entropy is available
+							# 			"--label=CRYPT_SWAP"
+							# 		];
 
-									extraOpenArgs = [
-										"--timeout 10"
-									];
+							# 		extraOpenArgs = [
+							# 			"--timeout 10"
+							# 		];
 
-									content = {
-										# FIXME-QA(Krey): Add label 'SWAP'
-										type = "swap";
-										resumeDevice = true; # resume from hiberation from this device
+							# 		content = {
+							# 			# FIXME-QA(Krey): Add label 'SWAP'
+							# 			type = "swap";
+							# 			resumeDevice = true; # resume from hiberation from this device
 
-										extraArgs = [
-											"--label SWAP"
-										];
-									};
-								};
-							};
+							# 			extraArgs = [
+							# 				"--label SWAP"
+							# 			];
+							# 		};
+							# 	};
+							# };
 						};
 					};
 				};

@@ -4,3 +4,6 @@ result
 system.raw
 *.log
 tmp
+
+# QEMU Files
+*.fd

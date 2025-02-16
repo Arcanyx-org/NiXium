@@ -1,3 +1,6 @@
 {
-	imports = [ ./verify ];
+	imports = [
+		./verify
+		./vm
+	];
 }
