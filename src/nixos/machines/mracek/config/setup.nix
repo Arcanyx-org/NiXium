@@ -14,8 +14,7 @@ in {
 	nix.distributedBuilds = true; # Perform distributed builds
 
 	# services.gitea.enable = true;
-	# SECURITY-QUANTUM(Krey): Taken off-line due to quantum crisis
-		services.monero.enable = false;
+	services.monero.enable = true;
 	# services.murmur.enable = false;
 	# services.navidrome.enable = false;
 	services.openssh.enable = true;

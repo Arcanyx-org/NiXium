@@ -1,10 +1,3 @@
-
-**RED ALERT:** Quantum Computer Cybersecurity Crisis
-
-Quantum Computers that are efficient enough to break encryption are assumed to be available, NiXium is in crisis mode to try to mitigate the threat in our infrastructure.
-
----
-
 # NiXium (N/X)
 
 Transparent Nix-based Open-Source Infrastructure as Code (OSS IaaC) Management Solution for Multiple Systems and Domains designed to be a reliable tool for mission-critical tasks in paranoid and high-security environment.
@@ -56,12 +49,10 @@ We are using:
 
 All of our services are provided primarely through onion routing, for ease of use we recommend that you configure [MapAddress](https://manpages.org/tor) so that you can use easily memorable URLs instead of the long and cryptic Onion URLs.
 
-Without MapAddress: somewhereInTheDarks45h5f8h76sd7f98h7sd9h6sg876hsl.org
+Without MapAddress: somewhereInTheDarks45h5f8h76sd7f98h7sd9h6sg876hsl.org<br/>
 With MapAddress: cool-service.nx
 
 ### [Monero Node](https://www.getmonero.org/resources/moneropedia/node.html)
-
-**OFFLINE DUE TO QUANTUM CRISIS: https://github.com/monero-project/research-lab/issues/131#issuecomment-2613839657**
 
 We provide a private [Monero Node](https://www.getmonero.org/resources/moneropedia/node.html) for all viewers of this repository to process your [Monero](https://en.wikipedia.org/wiki/Monero) transactions through our transparent infrastructure:
 
@@ -76,7 +67,33 @@ Providing system: mracek.systems.nx
 Configurtion: https://github.com/Arcanyx-org/NiXium/blob/central/src/nixos/machines/mracek/services/monero.nix
 ```
 
-The node is set up to communicate with the outside world exclusively via Tor including it's synchronization with the blockchain for added security and privacy.
+The node is set up to communicate with the outside world exclusively via Tor-only including it's synchronization with the blockchain for added security and privacy.
+
+#### Beware of deanonymization methods using probabilistic attacks
+
+Please be aware of the probabilistic attack demonstrated by [chainlysis](https://www.chainalysis.com) that can successfully deanonymize the transactions and identities of monero users if:
+
+0. You use an insecure Operating System with proprietary code components.
+1. You do not use Tor or have it configured incorrectly.
+2. If you do not run your own node then you won't get the benefit of [Dandelion++](https://web.getmonero.org/2020/04/18/dandelion-implemented.html) which is assumed to significantly reduce the effectiveness of the probabilistic attacks.
+3. you are changing the default fee rate and ensuring that your used wallet doesn't change this in an indentifiable way.
+4. Use exchange services that require [Know Your Customer](https://en.wikipedia.org/wiki/Know_your_customer) identification e.g. photo of Citizen ID Card <ins>or share data with threat actors</ins>.
+
+References:
+* Original Leaked presentation: http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/monero-chain.mp4
+* Detailed explanation on: http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/post/6de54b143e669e368af6
+
+For those reasons we currently do not recommend stack wallet until the following issue is addressed: https://github.com/cypherstack/stack_wallet/issues/1066
+
+To manage the risk of rogue exchange services, consider using [Haveno](https://haveno.exchange).
+
+#### Post-Quantum Threat
+
+All encrypted transactions on Monero are most likely being harvested by threat actors in a technique called [Harvest Now, Decrypt Later](https://en.wikipedia.org/wiki/Harvest_now,_decrypt_later) which stores the encrypted data until a breakthrough in technology is discovered that enables them to be decrypted.
+
+Monero is currently vulnerable to this threat until the [FCMP++](https://www.reddit.com/r/Monero/comments/1fxee4h/explained_moneros_fcmp_explained_for_beginners)/[Carrot](https://github.com/jeffro256/carrot/blob/master/carrot.md) functionality is implemented.
+
+* https://github.com/monero-project/research-lab/issues/131#issuecomment-2613839657
 
 ### [Vikunja](https://vikunja.io)
 
@@ -141,11 +158,41 @@ For financial aid to help us maintain the system and continue provide the public
 
 ### Donate - Hardware
 
-We are almost always accepting any functional or broken hardware (notebooks, phones, PCs, etc..) to either refurbish for resell or add to our infrastructure.
+Maintaining a secure infrastructure is a challenging task to do in an independent and reliable way, for that we ask for your help in sourcing the hardware to aid us in being able to provide the needed processing resources for our workflow.
 
 If you want to donate Hardware then contact [@Kreyren](https://github.com/Kreyren) or make a new issue, preferably in the central europe area.
 
-Kreyren: I also accept broken/locked iDevices (please don't send me stolen devices, return them to their owners instead) as apple often artificially shortens their lifespan through various means e.g. serilizing the replacement parts, making the glass replacement extremly uneconomical, etc.. to force their customers to buy a new model and I like to mess with Apple by fixing them and selling them for cheap, [installing Linux on them](https://git.dotya.ml/kreyren/kreyren/issues/81) or [making new PCBs with better chips](https://git.dotya.ml/kreyren/kreyren/issues/30)~
+#### Apple M1~M4 Pro/Max/Ultra
+
+We mainly want the chips from these devices to put them on OSHW hardware so even devices that suffered a fatal hardware failure are very appreciated.
+
+#### Snapdragon 845
+
+Devices with Snapdragon 845 such as OnePlus 6, Xiaomi Mi 8, Xiaomi POCO F1, etc.. have linux mainline support and can be salvaged for single board computers or personal devices for the infrastructure members or to refurbish them and provide them with pre-installed linux distribution for the general public.
+
+#### [Xiaomi POCO X3 Pro (xiaomi-vayu)](https://wiki.postmarketos.org/wiki/Xiaomi_POCO_X3_Pro_(xiaomi-vayu))
+
+Next-Gen Mobile device with projected decent linux mainline support which often suffers a hardware failure due to insufficient cooling that melts the solder on internal electronics to render them disfuncitonal to be a point of interest for development.
+
+#### Snapdragon X Elite
+
+Point of interest device for development. - Potential for use in thin clients
+
+#### Snapdragon XR2
+
+Point of Interest device for VR/AR development.
+
+#### Intel Z690-A/Z790-P
+
+Point of interest for x86 coreboot and hardening development as on-demand alternative to arm.
+
+#### AMD Phoenix
+
+Devices with AMD Phoenix architecture are projected to have Proof-of-Concept code for [OpenSIL](https://github.com/openSIL/openSIL) to be used for development and research so that our infrastructure has the option of smooth transition if needed.
+
+#### Broken Hardware
+
+We are almost always accepting any functional or broken hardware (notebooks, phones, PCs, etc..) to either refurbish for resell or add to our infrastructure.
 
 # References
 

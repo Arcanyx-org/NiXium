@@ -14,6 +14,7 @@ command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;} # Ter
 	nixos-rebuild switch \
 		--flake "git+file://$FLAKE_ROOT#nixos-$hostname-stable" \
 		--option eval-cache false \
+		--verbose \
 		--show-trace || die 1 "Deployment of the stable release of NixOS distribution on the current system failed"
 
 	exit 0 # Success
@@ -29,6 +30,7 @@ command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;} # Ter
 	nixos-rebuild switch \
 		--flake "git+file://$FLAKE_ROOT#$derivation" \
 		--option eval-cache false \
+		--verbose \
 		--target-host "root@$machine.systems.nx" || die 1 "Deployment of the configured derivation '$derivation' on machine '$machine' failed"
 
 		exit 0 # Success
