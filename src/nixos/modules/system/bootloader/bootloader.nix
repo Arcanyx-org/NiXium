@@ -5,5 +5,5 @@
 let
 	inherit (lib) mkDefault;
 in {
-	boot.loader.timeout = mkDefault null; # Skip the bootloader menu unless the spacebar is held during the boot
+	boot.loader.timeout = mkDefault 0; # Skip the bootloader menu unless the spacebar is held during the boot
 }

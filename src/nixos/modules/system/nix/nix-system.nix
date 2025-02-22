@@ -4,7 +4,7 @@
 
 let
 	inherit (builtins) toFile;
-	inherit (lib) mkDefault mkIf;
+	inherit (lib) mkDefault mkForce mkIf;
 in {
 	nix = {
 		# package = pkgs.nixUnstable;
@@ -22,7 +22,9 @@ in {
 
 		# Set Flake Registries
 		registry = {
-			nixpkgs = { flake = self.inputs.nixpkgs; };
+			# FIXME(Krey): This needs to be applied depending on the used release
+				nixpkgs = mkForce { flake = self.inputs.nixpkgs-unstable; };
+			stable = { flake = self.inputs.nixpkgs; };
 			unstable = { flake = self.inputs.nixpkgs-unstable; };
 			master = { flake = self.inputs.nixpkgs-master; };
 			staging = { flake = self.inputs.nixpkgs-staging; };

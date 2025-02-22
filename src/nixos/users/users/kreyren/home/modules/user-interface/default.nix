@@ -5,9 +5,11 @@ let
 in {
 	flake.homeManagerModules.ui-kreyren.imports = [
 		homeManagerModules.ui-gnome-kreyren
+		homeManagerModules.ui-kodi-kreyren
 	];
 
 	imports = [
 		./gnome
+		./kodi
 	];
 }

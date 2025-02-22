@@ -28,4 +28,8 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
 	"24.11" = {
 		# Deprecated with GNOME 47
 	};
+	# FIXME-QA(Krey): Duplicate code
+	"25.05" = {
+		# Deprecated with GNOME 47
+	};
 }."${lib.trivial.release}" or (throw "The NixOS Release '${lib.trivial.release}' is not implemented")

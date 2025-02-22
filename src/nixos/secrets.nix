@@ -12,9 +12,11 @@ let
 	sinnenfreude-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji";
 	tsvetan-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdqMVQ3TO5ckmk9nepAY/7zLHy555EkzBJxpfTIwuT5";
 	tupac-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEmYpmNkpSkSSk1FnxHvPb8JlbeYh2lf3d5u8MBqGpHP";
+	lengo-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOWBw3MYmx7bTJPBKd51kFxXXSJDJEenLKR2R55VkwDU";
 
 	all-systems = [
 		ignucius-system
+		lengo-system
 		morph-system
 		mracek-system
 		sinnenfreude-system
@@ -22,20 +24,20 @@ let
 	];
 in {
 	# Kreyren (user)
-	"./users/kreyren/kreyren-user-password.age".publicKeys = [
+	"./users/users/kreyren/kreyren-user-password.age".publicKeys = [
 		kreyren
 	] ++ all-systems;
 
-	"./users/kreyren/home/modules/vpn/kreyren-wireproxy-protonvpn-config.age".publicKeys = [
-		kreyren sinnenfreude-system
+	"./users/users/kreyren/home/modules/vpn/kreyren-wireproxy-protonvpn-config.age".publicKeys = [
+		kreyren sinnenfreude-system lengo-system
 	];
 
 	# Kira (user)
-	"./users/kira/kira-user-password.age".publicKeys = [
+	"./users/users/kira/kira-user-password.age".publicKeys = [
 		kreyren kira
 	] ++ all-systems;
 
-	"./users/kira/home/modules/vpn/kira-wireproxy-protonvpn-config.age".publicKeys = [
+	"./users/users/kira/home/modules/vpn/kira-wireproxy-protonvpn-config.age".publicKeys = [
 		kira kreyren tupac-system
 	];
 
@@ -64,6 +66,26 @@ in {
 		kreyren ignucius-system
 	];
 
+	# LENGO (system)
+	"./machines/lengo/secrets/lengo-builder-ssh-ed25519-private.age".publicKeys = [
+		kreyren lengo-system
+	];
+
+	"./machines/lengo/secrets/lengo-disks-password.age".publicKeys = [
+		kreyren lengo-system
+	];
+
+	"./machines/lengo/secrets/lengo-onion-openssh-private.age".publicKeys = [
+		kreyren lengo-system
+	];
+
+	"./machines/lengo/secrets/lengo-onion.age".publicKeys = [
+		kreyren
+	] ++ all-systems;
+
+	"./machines/lengo/secrets/lengo-ssh-ed25519-private.age".publicKeys = [
+		kreyren lengo-system
+	];
 
 	# MORPH (system)
 	"./machines/morph/secrets/morph-builder-ssh-ed25519-private.age".publicKeys = [

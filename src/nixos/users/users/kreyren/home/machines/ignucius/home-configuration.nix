@@ -177,5 +177,12 @@ in {
 				"_fan_thinkpad_fan1_"
 			];
 		};
+
+		# Setup Extensions
+		"org/gnome/shell" = {
+			enabled-extensions = [
+				"gjsosk@vishram1123.com" # On-Screen Keyboard
+			];
+		};
 	};
 }

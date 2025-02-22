@@ -136,10 +136,6 @@ in {
 		pkgs.gnomeExtensions.gsconnect
 		pkgs.gnomeExtensions.custom-accent-colors
 
-		# Fonts
-		# This was recommended, because nerdfonts might have issues with rendering -- https://github.com/TanvirOnGH/nix-config/blob/nix%2Bhome-manager/desktop/customization/font.nix#L4-L39
-		(pkgs.nerdfonts.override { fonts = [ "Noto" "FiraCode"]; }) # Needed for starship
-
 		# FIXME_QA(Krey): Figure out how to enable this only on GNOME
 		# FIXME(Krey): on NixOS 23.11 it's pinentry-gnome, but on unstable it's pinentry-gnome3
 		pkgs.pinentry-gnome3

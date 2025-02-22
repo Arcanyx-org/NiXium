@@ -1,0 +1,80 @@
+cat .config/scc/config.json
+{
+    "autoswitch": [],
+    "autoswitch_osd": true,
+    "controllers": {
+        "evF0C420E": {
+            "icon": "evdev-0.svg",
+            "idle_timeout": 600,
+            "input_rotation_l": 20,
+            "input_rotation_r": -20,
+            "led_level": 80,
+            "menu_cancel": "B",
+            "menu_confirm": "A",
+            "menu_control": "STICK",
+            "name": "evF0C420E",
+            "osd_alignment": 0
+        }
+    },
+    "drivers": {
+        "ds4drv": true,
+        "ds5drv": true,
+        "evdevdrv": true,
+        "fake": false,
+        "hiddrv": true,
+        "sc_by_bt": true,
+        "sc_by_cable": true,
+        "sc_dongle": true,
+        "steamdeck": true
+    },
+    "enable_sniffing": false,
+    "fix_xinput": true,
+    "gesture_colors": {
+        "background": "160c00ff",
+        "grid": "004000ff",
+        "line": "ffffff1a"
+    },
+    "gui": {
+        "autokill_daemon": false,
+        "enable_status_icon": false,
+        "minimize_on_start": false,
+        "minimize_to_status_icon": true,
+        "news": {
+            "enabled": true,
+            "last_version": "0.4.8.21"
+        }
+    },
+    "ignore_serials": true,
+    "osd_colors": {
+        "background": "101010",
+        "border": "101010",
+        "menuitem_border": "101010",
+        "menuitem_hilight": "202020",
+        "menuitem_hilight_border": "16FF26",
+        "menuitem_hilight_text": "16FF26",
+        "menuseparator": "2e3436",
+        "text": "16BF24"
+    },
+    "osd_style": "Classic.gtkstyle.css",
+    "osk_colors": {
+        "button1": "101010",
+        "button1_border": "101010",
+        "button2": "2e3436",
+        "button2_border": "2e3436",
+        "hilight": "7A7A7A",
+        "pressed": "B0B0B0",
+        "text": "16BF24"
+    },
+    "output": {
+        "axes": [[-32768, 32767], [-32768, 32767], [-32768, 32767], [-32768, 32767], [0, 255], [0, 255], [-1, 1], [-1, 1]],
+        "buttons": 11,
+        "name": "Microsoft X-Box 360 pad",
+        "product": "0x028e",
+        "rumble": true,
+        "vendor": "0x045e",
+        "version": "0x110"
+    },
+    "recent_max": 10,
+    "recent_profiles": ["Desktop", "XBox Controller with High Precision Camera", "XBox Controller"],
+    "windows_opacity": 0.95
+}
