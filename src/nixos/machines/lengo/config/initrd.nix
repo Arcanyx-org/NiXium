@@ -12,8 +12,6 @@
 		"usb_storage"
 		"sd_mod"
 		"sdhci_pci"
-		# May be needed
-		# "usbhid"
 	];
 	boot.initrd.kernelModules = [ ];
 

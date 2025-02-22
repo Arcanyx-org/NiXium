@@ -9,7 +9,7 @@
 #! * https://gist.github.com/polamjag/a76f34a4991b35f9434a
 
 # This doesn't seem to change anything?
-			# * https://forums.gentoo.org/viewtopic-t-1068292-start-0.html
+	# * https://forums.gentoo.org/viewtopic-t-1068292-start-0.html
 
 # Refer to https://linrunner.de/tlp/settings for configuration reference
 

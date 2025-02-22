@@ -20,6 +20,7 @@ in {
 		"mds=off" # Paranoid enforcement, shouldn't be needed..
 	];
 
+	# FIXME-QA(Krey): Junior Nix Dev Figured this out without knowing why and i am blindly following his config.. figure out if it's actually a good idea to prefer zenpower over k10temp
 	boot.extraModulePackages = with config.boot.kernelPackages; [
 		zenpower # Zenpower is said to be better for modern AMD things
 		# Doesn't seem to provide anything beneficial
@@ -43,7 +44,6 @@ in {
 		# ];
 
 	boot.blacklistedKernelModules = [
-		# FIXME-QA(Krey): Junior Nix Dev Figured this out without knowing why and i am blindly following his config.. figure out if it's actually a good idea to prefer zenpower over k10temp
 		"k10temp"
 		# The driver causes conflicts with ACPI, so it's disabled (https://forums.gentoo.org/viewtopic-t-1068292-start-0.html)
 		"lpc_ich"

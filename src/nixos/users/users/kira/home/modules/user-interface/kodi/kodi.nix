@@ -1,6 +1,6 @@
 { config, lib, pkgs, nixosConfig,... }:
 
-# Temporary research file
+# NOTE(Krey): Temporary research file for kodi development to see how we want to manage it
 
 # FIXME-DOCS(Krey): This file is getting complicated, document what packages are needed for what version and what reason
 

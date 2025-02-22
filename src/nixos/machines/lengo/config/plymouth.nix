@@ -2,7 +2,7 @@
 
 # Plymouth management of LENGO
 
-# FIXME(Krey): Add solution to input encryption password via touchscreen
+# FIXME(Krey): Add solution to input encryption password via touchscreen -> Concluded to be impossible and using unl0kr instead
 
 let
 	inherit (lib) mkIf;

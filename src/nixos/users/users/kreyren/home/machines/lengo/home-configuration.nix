@@ -61,67 +61,72 @@ in {
 
 		pkgs.libreoffice
 
-		# TODO(Krey): Takes ages to build on the local system, pending compute server
-		polymc.polymc
-
 		# 3D Printing Slicers
-		pkgs.prusa-slicer
-		pkgs.super-slicer-beta # Prusa-slicer fork by community. Includes additional features, but lags behind in releases
-		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+			pkgs.prusa-slicer
+			pkgs.super-slicer-beta # Prusa-slicer fork by community. Includes additional features, but lags behind in releases
+			pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
-		aagl.anime-game-launcher # An Anime Game <3
-		pkgs.colobot
-		pkgs.etlegacy # Wolfenstein: Enemy Territory
-		pkgs.airshipper # Veloren
-		pkgs.mindustry
+			aagl.anime-game-launcher # An Anime Game <3
+			pkgs.colobot
+			pkgs.etlegacy # Wolfenstein: Enemy Territory
+			pkgs.airshipper # Veloren
+			pkgs.mindustry
+			polymc.polymc
 
 		# Web Browsers
-		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
-		(pkgs.brave.overrideAttrs (super: {
-			postInstall = ''
-				wrapProgram $out/bin/brave \
-					--append-flags "--no-proxy-server"
-			'';
-		})) # Standard Insecure Web Browser
+			pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
+			(pkgs.brave.overrideAttrs (super: {
+				postInstall = ''
+					wrapProgram $out/bin/brave \
+						--append-flags "--no-proxy-server"
+				'';
+			})) # Standard Insecure Web Browser
 
 		# Engineering
-		pkgs.blender
-		pkgs.freecad
-		pkgs.gimp
-		pkgs.kicad-small
+			pkgs.blender
+			pkgs.freecad
+			pkgs.gimp
+			pkgs.kicad-small
 
 		# Utility
-		pkgs.keepassxc
-		pkgs.yt-dlp
-		pkgs.android-tools
-		pkgs.picocom # Interface for Serial Console devices
-		pkgs.bottles # Wine Management Tool
-		pkgs.mtr # Packet Loss Tester
-		pkgs.sc-controller # Steam Controller Software
-		pkgs.monero-gui
-		pkgs.dialect # Language Translator
-		pkgs.endeavour # To-Do Notes
-		# FIXME-QA(Krey): As of 24th Jun 2024 this doesn't build
-			# pkgs.gaphor # Mind Maps
-		# TODO(Krey): This should probably be applied depending on the used UI
-			pkgs.kooha # Screen Recorder
-		# FIXME(Krey): Broken in stable
-		pkgs.qbittorrent # Torrents
-		pkgs.tealdeer # TLDR Pages Implementation
-		pkgs.nextcloud-client
-		# FIXME(Krey): To be managed..
-		#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
+			pkgs.keepassxc
+			pkgs.yt-dlp
+			pkgs.android-tools
+			pkgs.picocom # Interface for Serial Console devices
+			pkgs.bottles # Wine Management Tool
+			pkgs.mtr # Packet Loss Tester
+			pkgs.sc-controller # Steam Controller Software
+			pkgs.monero-gui
+			pkgs.dialect # Language Translator
+			pkgs.endeavour # To-Do Notes
+			# FIXME-QA(Krey): As of 24th Jun 2024 this doesn't build
+				# pkgs.gaphor # Mind Maps
+			# TODO(Krey): This should probably be applied depending on the used UI
+				pkgs.kooha # Screen Recorder
+			# FIXME(Krey): Broken in stable
+			pkgs.qbittorrent # Torrents
+			pkgs.tealdeer # TLDR Pages Implementation
+			pkgs.nextcloud-client
+			# FIXME(Krey): To be managed..
+			#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
 
 		# Video
-		pkgs.stremio # Media Server Client
-		pkgs.freetube # YouTube Client
-		pkgs.mpv
-		pkgs.vlc
+			pkgs.stremio # Media Server Client
+			pkgs.freetube # YouTube Client
+			pkgs.mpv
+			pkgs.vlc
 
 		# Keyboard
-		# FIXME(Krey): Results in read-only file system error?
-		pkgs.gnomeExtensions.gjs-osk
+			# pkgs.gnomeExtensions.gjs-osk
+			# FIXME(Krey): Remove this once it arrives in nixpkgs - https://github.com/Vishram1123/gjs-osk/issues/85
+			(pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
+				src = pkgs.fetchzip {
+					url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
+					hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
+					stripRoot = false;
+				};
+			}))
 	];
 
 	# Per-system adjustments to the GNOME Extensions

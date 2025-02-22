@@ -10,7 +10,7 @@ in {
 			security.unprivilegedUsernsClone = mkForce true; # Required for current development stack (vscodium)
 
 			# This disables hibernation, so keep it false
-			security.protectKernelImage = mkForce false;
+				security.protectKernelImage = mkForce false;
 		}
 	];
 }

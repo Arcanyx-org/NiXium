@@ -1,6 +1,6 @@
 { lib, nixosConfig, ... }:
 
-# Kira's Module for Adjusting the Nightlight (blu-light filter) on GNOME
+# Kira's Module for Adjusting the Nightlight (blue-light filter) on GNOME
 
 let
 	inherit (lib) mkIf mkMerge;
