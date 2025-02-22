@@ -1,6 +1,6 @@
 { lib, pkgs, nixosConfig, ... }:
 
-# kira's Generic GNOME Theme
+# Kira's Generic GNOME Theme
 
 # This theme is mostly used as a fallback in case the other themes fail to deploy on new GNOME release, so keep it simple and compatible
 

@@ -23,7 +23,7 @@ in {
 
 	services.openssh.enable = true;
 	services.tor.enable = true;
-	# TODO(Krey): Pending Management
+	# FIXME(Krey): Pending Management, seems to add a lot of pain with not enough benefit
 		services.usbguard.dbus.enable = false;
 	services.clamav.daemon.enable = true;
 	services.printing.enable = true;
@@ -102,7 +102,7 @@ in {
 	services.handheld-daemon.enable = false;
 	services.handheld-daemon.ui.enable = false;
 	# TODO(Krey): Change on `kira` later
-		services.handheld-daemon.user = "kreyren";
+		services.handheld-daemon.user = "kira";
 
 	# To input decrypting password in initrd
 	# FIXME(Krey): This currently doesn't work complains about wrong symbol in the config and that it can't find the framebuffer device
@@ -162,6 +162,7 @@ in {
 	];
 
 	# Overclocking
+		# FIXME(Krey): Move this back on stable once stabilized
 		systemd.services.lactd = {
 			wantedBy = [ "multi-user.target" ];
 			after = [ "multi-user.target" ];
@@ -172,7 +173,8 @@ in {
 		};
 		environment.systemPackages = [ unstable.lact ];
 
-		# programs.corectrl.enable = true;
+		# NOTE(Krey): Doesn't seem to work correctly and seem funcitonaly inferior to lact
+			# programs.corectrl.enable = true;
 
 	# Controllers
 		# boot.blacklistedKernelModules = [ "xpad" ];

@@ -2,7 +2,7 @@
 
 # Hardware-acceleration management of LENGO
 
-# APU: AMD Z1 Extreme
+# APU: AMD Z1 Extreme (Rebranded AMD Ryzen 7840U)
 
 let
 	inherit (lib) mkMerge;

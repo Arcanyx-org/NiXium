@@ -38,6 +38,7 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 					# Web Browser
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
 						name = "Open Web Browser";
+						# FIXME(Krey): Replace with full path to the nixium's firefox with config adjustments by the user
 						# command = "${pkgs.firefox-esr}/bin/firefox-esr";
 						command = "firefox-esr";
 						binding = "<Super>t";

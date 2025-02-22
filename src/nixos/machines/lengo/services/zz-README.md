@@ -1,1 +1,1 @@
-MRACEK's service-specific configuration directory
+LENGO's service-specific configuration directory

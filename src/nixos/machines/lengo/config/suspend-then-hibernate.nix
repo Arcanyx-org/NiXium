@@ -3,15 +3,12 @@
 # Module that implements suspend-then-hibernate for LENGO
 
 let
-	hibernateSeconds = "60";
+	# NOTE(Krey): After tests in the wild by the user the original 60 doesn't seem sufficient as the device hibernates too quickly and has decent battery life to have a functional battery life with 300s (5 min)
+	hibernateSeconds = "300";
 in {
 	services.logind = {
-		powerKey = "suspend-then-hibernate"; # Standard power off
+		powerKey = "suspend-then-hibernate"; # Hibernate on button press
 		powerKeyLongPress = "poweroff"; # PowerOff
-		# Hibernate if not connected to the battery and unused for hibernateSeconds
-		lidSwitch = "suspend-then-hibernate";
-		# Only suspend if on external power to speed up charging
-		lidSwitchExternalPower = "suspend";
 	};
 
 	systemd.sleep.extraConfig = "HibernateDelaySec=${hibernateSeconds}";

@@ -9,10 +9,10 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 		{
 			dconf.settings = {
 				"org/gnome/desktop/peripherals/touchpad" = {
-						edge-scrolling-enabled = false;
-						natural-scroll = true;
-						two-finger-scrolling-enabled = true;
-					};
+					edge-scrolling-enabled = false;
+					natural-scroll = true;
+					two-finger-scrolling-enabled = true;
+				};
 			};
 		}
 ])
