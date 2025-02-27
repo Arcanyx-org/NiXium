@@ -1,20 +1,9 @@
 [submodule "vendor/impermanence"]
 	path = vendor/impermanence
-	url = git@github.com:Arcanyx-org/impermanence.git
-	branch = central
+	url = git@github.com:NiXium-org/impermanence.git
 [submodule "vendor/agenix"]
 	path = vendor/agenix
-	url = git@github.com:Arcanyx-org/agenix.git
-	branch = central
+	url = git@github.com:NiXium-org/agenix.git
 [submodule "vendor/ragenix"]
 	path = vendor/ragenix
-	url = git@github.com:Arcanyx-org/ragenix.git
-	branch = central
-[submodule "vendor/jovian-nixos"]
-	path = vendor/jovian-nixos
-	url = git@github.com:Arcanyx-org/Jovian-NixOS.git
-	branch = central
-[submodule "vendor/nixpkgs-stable"]
-	path = vendor/nixpkgs-stable
-	url = git@github.com:Arcanyx-org/nixpkgs-stable.git
-	branch = central
+	url = git@github.com:NiXium-org/ragenix.git
