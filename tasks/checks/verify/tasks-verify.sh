@@ -1,22 +1,47 @@
-# shellcheck shell=sh # POSIX
-set +u # Do not fail on nounset as we use command-line arguments for logic
+#@ This POSIX Shell Script is executed in an isolated reproducible environment managed by Nix <https://github.com/NixOS/nix>, which handles dependencies, ensures deterministic function imports, sets any needed variables and performs strict linting prior to script execution to capture common issues for quality assurance.
 
-hostname="$(hostname --short)" # Capture the hostname of the current system
+### [START] Export this outside [START] ###
 
-# FIXME(Krey): Implement better management for this so that ideally `die` is always present by default
-command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;} # Termination Helper
+# FIXME-QA(Krey): This should be a runtimeInput
+die() { printf "FATAL: %s\n" "$2"; exit ;} # Termination Helper
+
+# FIXME-QA(Krey): This should be a runtimeInput
+status() { printf "STATUS: %s\n" "$1" ;} # Status Helper
+
+# FIXME-QA(Krey): This should be a runtimeInput
+warn() { printf "WARNING: %s\n" "$1" ;} # Warning Helper
+
+# FIXME-QA(Krey): This should be a runtimeInput
+# shellcheck disable=SC2120 # Argument is optional
+success() { # Successfull Termination Helper
+	printf "SUCCESS: %s\n" "${1:-"Task Finished Successfully"}"
+	exit 0
+}
+
+# FIXME(Krey): This should be managed for all used scripts e.g. runtimeEnv
+# Refer to https://github.com/srid/flake-root/discussions/5 for details tldr flake-root doesn't currently allow parsing the specific commit
+#[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits" | jq -r '.[0].sha')"
+[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits?sha=central" | jq -r '.[0].sha')"
+
+# shellcheck disable=SC2034 # hostname is not required to be always used
+hostname="$(hostname --short)"
+
+### [END] Export this outside [END] ###
 
 # Check current system if no argument is provided
 [ "$#" != 0 ] || {
-	# FIXME(Krey): This needs logic to determine the distribution and release
-	echo "Checking current system: $hostname"
+	machine="$1"
+	derivation="$(grep "$machine" "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
+
+	# FIXME(Krey): It's possible that current system has deployed a configuration that is different from the one in the repo -> Get this derivation somewhere on the filesystem and try to read that first
+	status "Checking current system's configured derivation: $derivation"
 
 	nixos-rebuild dry-build \
-		--flake "git+file://$FLAKE_ROOT#nixos-$hostname-stable" \
+		--flake "git+file://$FLAKE_ROOT#$derivation" \
 		--option eval-cache false \
 		--show-trace || die 1 "Verification of the current system failed"
 
-	exit 0 # Success
+	success
 }
 
 # FIXME-QA(Krey): Hacky af
@@ -47,40 +72,42 @@ nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | se
 			*) echo "System '$system' reports undeclared status state: $status"
 		esac
 	done
+
+	success
 }
 
-# Assume that we are always checking against nixos distribution with stable release
 [ "$#" != 1 ] || {
-	system="$1"
+	machine="$1"
+	derivation="$(grep "$machine" "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
 
-	echo "Checking stable release of system '$system' in NixOS distribution"
+	status "Checking configured release: $derivation"
 
 	nixos-rebuild dry-build \
-		--flake "git+file://$FLAKE_ROOT#nixos-$system-stable" \
+		--flake "git+file://$FLAKE_ROOT#$derivation" \
 		--option eval-cache false \
-		--show-trace || die 1 "Verification of the '$system' system on NixOS distribution using stable release failed"
+		--show-trace || die 1 "Verification of the derivation '$derivation' failed"
 
-	exit 0 # Success
+	success
 }
 
-# If special argument `all` is used as second argument then process all releases and distros that match the first argument as system name
+# If special argument `all` is used as second argument then process all releases and distros that match the first argument as machine name
 [ "$2" != "all" ] ||  {
-	system="$1"
+	machine="$1"
 
-	echo "Checking all distributions that contain machine '$1'"
+	STATUS "Checking all distributions that contain machine '$machine'"
 
 	# NixOS Distribution
-	status="$(cat "$FLAKE_ROOT/src/nixos/machines/$system/status")"
+	status="$(cat "$FLAKE_ROOT/src/nixos/machines/$machine/status")"
 	distro="nixos"
 
 	case "$status" in
 		"OK")
-			for release in $(find "$FLAKE_ROOT/src/nixos/machines/$system/releases/"* -maxdepth 0 -type d | sed -E "s#^$FLAKE_ROOT/src/nixos/machines/$system/releases/##g" | sed -E "s#.nix##g" | tr '\n' ' '); do
-				echo "Checking system '$system' in distribution '$distro', release '$release'"
+			for release in $(find "$FLAKE_ROOT/src/nixos/machines/$machine/releases/"* -maxdepth 0 -type d | sed -E "s#^$FLAKE_ROOT/src/nixos/machines/$machine/releases/##g" | sed -E "s#.nix##g" | tr '\n' ' '); do
+				echo "Checking machine '$machine' in distribution '$distro', release '$release'"
 
 				nixos-rebuild \
 					dry-build \
-					--flake "git+file://$FLAKE_ROOT#nixos-$system-$release" \
+					--flake "git+file://$FLAKE_ROOT#nixos-$machine-$release" \
 					--option eval-cache false \
 					--show-trace || die 1 "System '$system' in distribution '$distro' of release '$release' failed evaluation!"
 			done
@@ -89,7 +116,7 @@ nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | se
 		*) echo "System '$system' reports undeclared status state: $status"
 	esac
 
-	exit 0 # Success
+	success
 }
 
 # Process Arguments

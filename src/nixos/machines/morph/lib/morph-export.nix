@@ -8,7 +8,7 @@ in mkMerge [
 	{
 		# SSHD on Onions
 		age.secrets.morph-openssh-onion = {
-			file = ../secrets/morph-openssh-onion.age;
+			file = ../secrets/morph-onion.age;
 
 			owner = "tor";
 			group = "tor";
