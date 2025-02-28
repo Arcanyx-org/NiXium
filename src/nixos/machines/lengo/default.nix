@@ -24,7 +24,9 @@
 			./config/disks.nix
 			./config/firmware.nix
 			./config/hardware-acceleration.nix
+			./config/hardware.nix
 			./config/initrd.nix
+			./config/jovian.nix
 			./config/kernel.nix
 			./config/networking.nix
 			./config/plymouth.nix
@@ -33,6 +35,7 @@
 			./config/setup.nix
 			./config/sound.nix
 			./config/suspend-then-hibernate.nix
+			./config/unl0kr.nix
 			./config/vm-build.nix
 		];
 	};

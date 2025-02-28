@@ -29,6 +29,6 @@ in mkIf config.boot.plymouth.enable {
 	];
 
 	# More "Silent Boot" stuff
-	boot.consoleLogLevel = 0;
-	boot.initrd.verbose = false;
+		boot.consoleLogLevel = 0;
+		boot.initrd.verbose = false;
 }

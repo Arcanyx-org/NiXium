@@ -5,7 +5,7 @@
 let
 	inherit (lib) mkForce;
 in {
-	# FIXME(Krey): Move on harneded kernel, tbd how to manage
+	# FIXME(Krey): Move on harneded kernel, tbd how to manage -> To be done infrastructure-wide
 	# FIXME(Krey): Add this patch https://lkml.org/lkml/2024/12/17/1611
 	# NOTE(Krey): Causes GDM to fail to load
 		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_12;
