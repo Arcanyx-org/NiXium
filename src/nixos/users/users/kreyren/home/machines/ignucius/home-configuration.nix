@@ -138,7 +138,8 @@ in {
 		# Set power management for a scenario where user is logged-in
 		"org/gnome/settings-daemon/plugins/power" = {
 			power-button-action = "hibernate";
-			sleep-inactive-ac-timeout = 600; # 60*10=600 Seconds -> 10 Minutes
+			# NOTE(Krey): It's a very loud system that keeps annoying people when I leave it on AC and running so after 2 H make it suspend
+			sleep-inactive-ac-timeout = 7200; # 2 Hours
 			sleep-inactive-ac-type = "suspend";
 		};
 
