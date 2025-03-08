@@ -78,7 +78,7 @@ in {
 		# polymc.polymc
 
 		# 3D Printing Slicers
-		pkgs.prusa-slicer
+		unstable.prusa-slicer
 		pkgs.super-slicer-beta # Prusa-slicer fork by community. Includes additional features, but lags behind in releases
 		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
