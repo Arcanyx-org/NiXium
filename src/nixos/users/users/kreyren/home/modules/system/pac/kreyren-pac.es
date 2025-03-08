@@ -1,6 +1,6 @@
 /**
  * @file kreyren-pac.es
- * @description Kreyren's personal Proxy Automatic Configuration File
+ * @description Kreyren's Personal Proxy Automatic Configuration File
  *
  * Documentation:
  * - MDN Docs: [Proxy servers and tunneling](https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file)
@@ -45,7 +45,11 @@ function FindProxyForURL(url, host) {
 	// Block Tor
 	if (false
 		|| (dnsDomainIs(host, "nxp.com") || shExpMatch(host, "(*.nxp.com|nxp.com)"))
-		|| (dnsDomainIs(host, "zi-scripts.com") || shExpMatch(host, "(*.zi-scripts.com|zi-scripts.com)")) // Cloudflare thing used by NXP for JS
+		|| (dnsDomainIs(host, "zi-scripts.com") || shExpMatch(host, "(*.zi-scripts.com|zi-scripts.com)"))
+		|| (dnsDomainIs(host, "meta.com") || shExpMatch(host, "(*.meta.com|meta.com)"))
+		|| (dnsDomainIs(host, "facebook.com") || shExpMatch(host, "(*.facebook.com|facebook.com)"))
+		|| (dnsDomainIs(host, "oculus.com") || shExpMatch(host, "(*.oculus.com|oculus.com)"))
+		|| (dnsDomainIs(host, "ocul.us") || shExpMatch(host, "(*.ocul.us|ocul.us)"))
 	) return "SOCKS5 127.0.0.1:25344"; // Personal ProtonVPN;
 
 	// Allow direct connections for LAN traffic
