@@ -12,6 +12,7 @@ in {
 		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_11;
 		# boot.kernelPackages = mkForce pkgs.linuxPackages_xanmod_stable;
 	boot.kernelPackages = mkForce pkgs.linuxPackages;
+	# boot.kernelPackages = mkForce pkgs.linuxPackages_latest;
 
 	boot.kernelParams = [
 		# SECURITY(Krey): Used to manage CPU Vulnerabilities

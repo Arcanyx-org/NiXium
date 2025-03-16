@@ -26,7 +26,7 @@
 			./config/hardware-acceleration.nix
 			./config/hardware.nix
 			./config/initrd.nix
-			./config/jovian.nix
+			# ./config/jovian.nix
 			./config/kernel.nix
 			./config/networking.nix
 			./config/plymouth.nix

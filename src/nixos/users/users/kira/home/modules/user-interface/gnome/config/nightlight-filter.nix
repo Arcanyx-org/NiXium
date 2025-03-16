@@ -12,7 +12,7 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 				"org/gnome/settings-daemon/plugins/color" = {
 						night-light-enabled = true;
 						night-light-schedule-automatic = true; # From Sunset to Sunrise
-						night-light-temperature = mkUint32 1700; # 4700~1700
+						night-light-temperature = mkUint32 2954; # 4700~1700
 					};
 			};
 		}

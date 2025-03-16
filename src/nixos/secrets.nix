@@ -75,6 +75,10 @@ in {
 		kreyren lengo-system
 	];
 
+	"./machines/lengo/secrets/lengo-unlock-key.age".publicKeys = [
+		kreyren lengo-system
+	];
+
 	"./machines/lengo/secrets/lengo-onion-openssh-private.age".publicKeys = [
 		kreyren lengo-system
 	];

@@ -97,7 +97,8 @@ in {
 	dconf.settings = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
 		# Set power management for a scenario where user is logged-in
 		"org/gnome/settings-daemon/plugins/power" = {
-			power-button-action = "hibernate";
+			# NOTE(Krey): Power Management is handled in the system where this setting overwrites it as long as the user is logged in so do "nothing" to make gnome user not touch it
+			power-button-action = "nothing";
 			sleep-inactive-ac-timeout = 600; # 60*10=600 Seconds -> 10 Minutes
 			sleep-inactive-ac-type = "suspend";
 		};

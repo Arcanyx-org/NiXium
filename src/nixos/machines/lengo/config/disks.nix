@@ -16,9 +16,12 @@ let
 	inherit (lib) mkMerge;
 
 	diskoDevice = "/dev/disk/by-id/nvme-WD_PC_SN740_SDDPMQD-512G-1101_2335R1406872";
+	swapSize = "60G";
 in mkMerge [
 	{
 		age.secrets.lengo-disks-password.file = ../secrets/lengo-disks-password.age; # Supply password for disk encryption
+
+		age.secrets.lengo-unlock-key.file = ../secrets/lengo-unlock-key.age; # KeyFile for unlocking the filesystems
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
@@ -27,6 +30,9 @@ in mkMerge [
 		age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
 
 		fileSystems."/nix/persist/system".neededForBoot = true;
+
+		boot.initrd.luks.devices.store.keyFileSize = 4096;
+		boot.initrd.luks.devices.swap.keyFileSize = 4096;
 
 		# FIXME(Krey): Figure out how to do labels
 		disko.devices = {
@@ -73,6 +79,8 @@ in mkMerge [
 
 									passwordFile = config.age.secrets.lengo-disks-password.path;
 
+									keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
 									extraFormatArgs = [
@@ -110,9 +118,10 @@ in mkMerge [
 								};
 							};
 
+							# FIXME(Krey): This partition should be last to make it easier to make on-fly adjustments to it
 							swap = {
 								priority = 2;
-								size = "30G";
+								size = swapSize;
 								content = {
 									name = "swap";
 									type = "luks";
@@ -120,6 +129,8 @@ in mkMerge [
 									settings.allowDiscards = true;
 
 									passwordFile = config.age.secrets.lengo-disks-password.path;
+
+									keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -131,21 +142,34 @@ in mkMerge [
 									extraOpenArgs = [
 										"--timeout 10"
 									];
-
-									content = {
-										# FIXME-QA(Krey): Add label 'SWAP'
-										type = "swap";
-										resumeDevice = true; # resume from hiberation from this device
-
-										extraArgs = [
-											"--label SWAP"
-										];
-									};
 								};
 							};
 						};
 					};
 				};
+
+				# Partition with a key used to decrypt the filesystems
+				# unlock = {
+				# 	device = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0"; # SD Card
+				# 	type = "disk";
+				# 	content = {
+				# 		type = "gpt";
+				# 		partitions = {
+				# 			cryptkey = {
+				# 				size = "100%";
+				# 				content = {
+				# 					type = "btrfs";
+				# 					extraArgs = [ "-f" ]; # Override existing partition
+				# 					mountpoint = "/boot/unlock";
+				# 					mountOptions = [
+				# 						"compress=zstd"
+				# 						"noatime"
+				# 					];
+				# 				};
+				# 			};
+				# 		};
+				# 	};
+				# };
 			};
 		};
 	} else {

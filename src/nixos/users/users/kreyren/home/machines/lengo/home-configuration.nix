@@ -62,9 +62,9 @@ in {
 		pkgs.libreoffice
 
 		# 3D Printing Slicers
-			pkgs.prusa-slicer
-			pkgs.super-slicer-beta # Prusa-slicer fork by community. Includes additional features, but lags behind in releases
-			pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+			# pkgs.prusa-slicer
+			# pkgs.super-slicer-beta # Prusa-slicer fork by community. Includes additional features, but lags behind in releases
+			# pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
 			aagl.anime-game-launcher # An Anime Game <3
@@ -137,8 +137,9 @@ in {
 			# The Light Sensor has an RGB emitter right next to it that makes it unusable
 				ambient-enabled = false;
 			power-button-action = "hibernate";
-			sleep-inactive-ac-timeout = 600; # 60*10=600 Seconds -> 10 Minutes
+			sleep-inactive-ac-timeout = 7200; # 2 Hours
 			sleep-inactive-ac-type = "suspend";
+			sleep-inactive-battery-type = "nothing"; # Let system handle power-management on battery
 		};
 
 		# OSKGJS
