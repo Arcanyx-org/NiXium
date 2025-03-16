@@ -142,6 +142,15 @@ in mkMerge [
 									extraOpenArgs = [
 										"--timeout 10"
 									];
+
+									content = {
+										type = "swap";
+										resumeDevice = true; # resume from hiberation from this device
+
+										extraArgs = [
+											"--label SWAP"
+										];
+									};
 								};
 							};
 						};

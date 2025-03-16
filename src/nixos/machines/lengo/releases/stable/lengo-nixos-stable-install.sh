@@ -104,14 +104,13 @@ disko \
 #! To prevent issues with lack of memory on systems with less than 16 GB of RAM
 # FIXME-QA(Krey): Do not run swapon if the swap is already activated
 # FIXME-QA(Kret): Use the device declaratively for activating swap
-# status "Activating swap"
-# swapon "$(realpath "$systemSwapDevice" || true)"
-# swapon "/dev/mapper/swap" || true
+status "Activating swap"
+swapon "$(realpath "$systemSwapDevice" || true)"
 
 # These have to be implemented for the installer to not fail with out of memory err
 # FIXME-QA(Krey): Do not run these if the size is already adjusted
-# mount -o remount,size=20G,noatime /nix/.rw-store
-# mount -o remount,size=5G,noatime /mnt
+mount -o remount,size=20G,noatime /nix/.rw-store
+mount -o remount,size=5G,noatime /mnt
 
 #! Pre-build the system configuration
 status "Pre-building the system configuration"
