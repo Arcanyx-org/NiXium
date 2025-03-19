@@ -100,21 +100,23 @@ disko \
 	--debug \
 	--flake "$FLAKE_ROOT#$derivation"
 
-#! # Activate SWAP
-#! To prevent issues with lack of memory on systems with less than 16 GB of RAM
-# FIXME-QA(Krey): Do not run swapon if the swap is already activated
-# FIXME-QA(Kret): Use the device declaratively for activating swap
-status "Activating swap"
-swapon "$(realpath "$systemSwapDevice" || true)"
-
 # These have to be implemented for the installer to not fail with out of memory err
 # FIXME-QA(Krey): Do not run these if the size is already adjusted
-mount -o remount,size=20G,noatime /nix/.rw-store
+mount -o remount,size=30G,noatime /nix/.rw-store
 mount -o remount,size=5G,noatime /mnt
 
-#! Pre-build the system configuration
-status "Pre-building the system configuration"
-nixos-rebuild build --flake "$FLAKE_ROOT#$derivation" # pre-build the configuration
+#! # Insert the secret
+#! This is used to manage the chicken-and-an-egg problem with assigning system cryptographical keys
+status "Injecting cryptographical identification"
+mkdir --verbose --parents /mnt/nix/persist/system/etc/ssh # Create the Directory
+age \
+	--identity "$ragenixIdentity" \
+	--decrypt \
+	--output "/mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key" \
+	"/run/agenix/$machineName-ssh-ed25519-private"
+chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Ensure correct permission
+
+# TODO(Krey): Manage Secure Boot Keys
 
 #! Perform the installation
 status "Performing the system installation"
@@ -122,15 +124,6 @@ nixos-install \
 	--verbose \
 	--root "/mnt" \
 	--flake "$FLAKE_ROOT#$derivation"
-
-#! # Insert the secret
-#! This is used to manage the chicken-and-an-egg problem with assigning system cryptographical keys
-status "Injecting cryptographical identification"
-age \
-	--identity "$ragenixIdentity" \
-	--decrypt \
-	--output "/mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key" \
-	"/run/agenix/$machineName-ssh-ed25519-private"
 
 #! Flash the Embedded Controller
 # FIXME(Krey)

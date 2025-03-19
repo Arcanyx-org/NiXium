@@ -52,6 +52,7 @@ in {
 				nixosModules.system-wifi
 
 				nixosModules.machine-ignucius
+				nixosModules.machine-lengo
 				nixosModules.machine-morph
 				nixosModules.machine-mracek
 				nixosModules.machine-sinnenfreude

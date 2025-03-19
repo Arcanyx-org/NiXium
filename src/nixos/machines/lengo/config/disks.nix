@@ -22,6 +22,9 @@ in mkMerge [
 		age.secrets.lengo-disks-password.file = ../secrets/lengo-disks-password.age; # Supply password for disk encryption
 
 		age.secrets.lengo-unlock-key.file = ../secrets/lengo-unlock-key.age; # KeyFile for unlocking the filesystems
+
+		# Needed to find the SD Card device during initrd stage
+		boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
@@ -31,8 +34,24 @@ in mkMerge [
 
 		fileSystems."/nix/persist/system".neededForBoot = true;
 
-		boot.initrd.luks.devices.store.keyFileSize = 4096;
-		boot.initrd.luks.devices.swap.keyFileSize = 4096;
+		boot.initrd.luks.devices = {
+			swap = {
+				device = "/dev/disk/by-partlabel/disk-system-swap";
+				preLVM = true;
+				allowDiscards = true;
+				keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+				keyFileSize = 4096;
+				# fallbackToPassword = true;
+			};
+			store = {
+				device = "/dev/disk/by-partlabel/disk-system-store";
+				preLVM = true;
+				allowDiscards = true;
+				keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+				keyFileSize = 4096;
+				# fallbackToPassword = true;
+			};
+		};
 
 		# FIXME(Krey): Figure out how to do labels
 		disko.devices = {

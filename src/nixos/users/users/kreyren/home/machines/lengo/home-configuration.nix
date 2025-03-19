@@ -72,7 +72,7 @@ in {
 			pkgs.etlegacy # Wolfenstein: Enemy Territory
 			pkgs.airshipper # Veloren
 			pkgs.mindustry
-			polymc.polymc
+			# polymc.polymc
 
 		# Web Browsers
 			pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
@@ -87,7 +87,6 @@ in {
 			pkgs.blender
 			pkgs.freecad
 			pkgs.gimp
-			pkgs.kicad-small
 
 		# Utility
 			pkgs.keepassxc

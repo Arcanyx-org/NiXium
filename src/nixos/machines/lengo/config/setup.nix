@@ -11,10 +11,13 @@ in {
 
 	boot.impermanence.enable = true; # Use impermanence
 
+	boot.plymouth.enable = true;
+
 	nix.distributedBuilds = false; # Perform distributed builds
 
-	programs.noisetorch.enable = true;
 	programs.adb.enable = true;
+	# programs.envision.enable = true;
+	programs.noisetorch.enable = true;
 	programs.nix-ld.enable = true;
 	programs.appimage = {
 		enable = true;
@@ -97,7 +100,7 @@ in {
 			services.handheld-daemon.user = "kira";
 
 	# To input decrypting password in initrd
-		boot.initrd.unl0kr.enable = true;
+		boot.initrd.unl0kr.enable = false;
 
 	# Jovian
 	# jovian.devices.legiongo.enable = true;
