@@ -10,10 +10,11 @@ in  mkIf config.nix.distributedBuilds {
 	# Authorized Keys
 		users.extraUsers.builder.openssh.authorizedKeys.keys = [
 			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDhD5Fel4xaocToIQay3IkytHGaK93cDN52ww2Bw5Nj+" # IGNUCIUS (Builder)
+			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIID1jLD7ozVGyhMNDsTVrnGcxGmXy7xNiifCQ4osXUbN" # LENGO (Builder)
 		];
 
 		# Set Known Hosts
-		programs.ssh.knownHosts."ignucius.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
+		programs.ssh.knownHosts."lengo.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
 
 	# Import the SSH Keys for the builder account
 	age.secrets.morph-builder-ssh-ed25519-private = {

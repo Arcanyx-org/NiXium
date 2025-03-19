@@ -32,5 +32,6 @@ ssh root@localhost git config --system safe.directory "$FLAKE_ROOT" # Add the cu
 
 ssh root@localhost \
 		nixos-rebuild switch \
+			--verbose \
 			--flake "git+file://$FLAKE_ROOT#$distro-$machine-$release" \
 			--option eval-cache false || die 1 "Derivation '$distro-$machine-$release' failed to deploy on current system"

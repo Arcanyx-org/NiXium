@@ -1,0 +1,83 @@
+cat .config/scc/devices/evdev-Lenovo\ Legion\ Controller\ for\ Windows.json
+{
+    "axes": {
+        "0": {
+            "axis": "stick_x",
+            "deadzone": 3.0,
+            "max": 32767,
+            "min": -32768
+        },
+        "1": {
+            "axis": "stick_y",
+            "deadzone": 1537.0,
+            "max": -32768,
+            "min": 32767
+        },
+        "2": {
+            "axis": "ltrig",
+            "max": 255,
+            "min": 0
+        },
+        "3": {
+            "axis": "rpad_x",
+            "deadzone": 3.0,
+            "max": 32767,
+            "min": -32768
+        },
+        "4": {
+            "axis": "rpad_y",
+            "deadzone": 3.0,
+            "max": -32768,
+            "min": 32767
+        },
+        "5": {
+            "axis": "rtrig",
+            "max": 255,
+            "min": 0
+        },
+        "16": {
+            "axis": "lpad_x",
+            "deadzone": 0,
+            "max": 1,
+            "min": -1
+        },
+        "17": {
+            "axis": "lpad_y",
+            "deadzone": 0,
+            "max": -1,
+            "min": 1
+        }
+    },
+    "buttons": {
+        "304": "A",
+        "305": "B",
+        "307": "X",
+        "308": "Y",
+        "310": "LB",
+        "311": "RB",
+        "314": "START",
+        "315": "BACK",
+        "316": "RB",
+        "317": "STICKPRESS",
+        "318": "RPAD"
+    },
+    "dpads": {},
+    "gui": {
+        "background": "x360",
+        "buttons": [
+            "A",
+            "B",
+            "X",
+            "Y",
+            "BACK",
+            "C",
+            "START",
+            "LB",
+            "RB",
+            "LT",
+            "RT",
+            "LG",
+            "RG"
+        ]
+    }
+}

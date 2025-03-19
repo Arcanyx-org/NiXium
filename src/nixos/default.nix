@@ -1,4 +1,4 @@
-{ config, moduleWithSystem, ... }:
+{ self, config, moduleWithSystem, ... }:
 
 # Management of NixOS systems
 
@@ -22,6 +22,8 @@ in {
 		{
 			# Keep this sorted
 			imports = [
+				# self.inputs.jovian.nixosModules.default
+
 				nixosModules.programs-git
 				nixosModules.programs-wakeonlan
 
@@ -50,10 +52,10 @@ in {
 				nixosModules.system-wifi
 
 				nixosModules.machine-ignucius
+				nixosModules.machine-lengo
 				nixosModules.machine-morph
 				nixosModules.machine-mracek
 				nixosModules.machine-sinnenfreude
-				nixosModules.machine-tupac
 
 				# {
 				# 	sops.defaultSopsFile = ./.sops.yaml;
