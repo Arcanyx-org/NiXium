@@ -5,11 +5,14 @@
 let
 	inherit (lib) mkForce mkIf;
 in {
-	# Rotate screen
-		boot.kernelParams = [
-			"fbcon=rotate:3" # Rotate screen on landscape
-			"amdgpu.ppfeaturemask=0xffffffff" # Enable overclocking
-		];
+	# Set Kernel Parameters
+	boot.kernelParams = [
+		# FIXME-QA(Krey): This should be in hardware module
+		"fbcon=rotate:3" # Rotate screen on landscape from the natural portrait (uses tablet screen that is meant to be rotated)
+
+		# FIXME-QA(Krey): This should be in separate relevant file
+		"amdgpu.ppfeaturemask=0xffffffff" # Enable overclocking
+	];
 
 	# Make sure that the controllers have the correct permissions
 		#? [  +0.018043] input: Lenovo Legion Controller for Windows as /devices/pci0000:00/0000:00:08.1/0000:c2:00.3/usb1/1-3/1-3:1.0/input>

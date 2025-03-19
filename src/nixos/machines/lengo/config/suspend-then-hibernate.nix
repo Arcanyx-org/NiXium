@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ ... }:
 
 # Module that implements suspend-then-hibernate for LENGO
 
@@ -12,4 +12,6 @@ in {
 	};
 
 	systemd.sleep.extraConfig = "HibernateDelaySec=${hibernateSeconds}";
+
+	services.xserver.displayManager.gdm.autoSuspend = false; # Disable autosuspend in gdm as it interfieres with this configuration
 }

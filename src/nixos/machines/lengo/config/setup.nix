@@ -5,18 +5,18 @@
 # Boot: See what it is taking most time: `systemd-analyze critical-chain`
 
 let
-	inherit (lib) mkForce mkIf;
+	inherit (lib) mkIf;
 in {
 	networking.hostName = "lengo";
 
 	boot.impermanence.enable = true; # Use impermanence
 
-	boot.plymouth.enable = true;
+	boot.plymouth.enable = true; # Enable Eyecandy on boot
 
+	# TODO(Krey): Adapt to use the compute server once ready
 	nix.distributedBuilds = false; # Perform distributed builds
 
 	programs.adb.enable = true;
-	# programs.envision.enable = true;
 	programs.noisetorch.enable = true;
 	programs.nix-ld.enable = true;
 	programs.appimage = {
@@ -45,10 +45,11 @@ in {
 	users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
 		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
 	];
-	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
+
+	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg"; # Set the public key of the device
 
 	# Desktop Environment
-	services.xserver.enable = false;
+	services.xserver.enable = false; # Do not use X11 as it has issues on this device
 	services.xserver.desktopManager.kodi.enable = true;
 	services.xserver.displayManager.gdm.enable = true;
 		services.xserver.displayManager.gdm.wayland = true; # Do not use wayland as it has issues rn
@@ -64,12 +65,12 @@ in {
 			# };
 	services.xserver.desktopManager.gnome.enable = true;
 		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
-		services.xserver.displayManager.gdm.autoSuspend = false;
 	# To get rid of black borders around windows on GNOME using AMDVLK (https://gitlab.gnome.org/GNOME/gtk/-/issues/6890)
-	environment.variables.GSK_RENDERER = "ngl";
+		# FIXME-QA(Krey): Remove this once it's fixed upstream
+		environment.variables.GSK_RENDERER = "ngl";
 	services.displayManager.defaultSession = "gnome";
 
-	programs.coolercontrol.enable = true;
+	programs.coolercontrol.enable = true; # Enable solution to control the fans
 
 	# Steam
 		# FIXME(Krey): Try to use the unstable release of NixOS to get later releases of Steam and proton-ge-bin to maybe make it less of a shitware?.. or probably far worse than it is already
@@ -78,7 +79,7 @@ in {
 			extest.enable = true;
 			remotePlay.openFirewall = true;
 			extraCompatPackages = [
-				pkgs.proton-ge-bin
+				pkgs.proton-ge-bin # Glorious Eggroll Proton
 			];
 		};
 
@@ -95,8 +96,9 @@ in {
 		hardware.sensor.iio.enable = true;
 
 	# HandHeld Daemon ("HHD")
+		# NOTE(Krey): The HHD emulates the controllers as Steam Controller which is unwanted for Lengo
 		services.handheld-daemon.enable = false;
-		services.handheld-daemon.ui.enable = false;
+		services.handheld-daemon.ui.enable = true;
 			services.handheld-daemon.user = "kira";
 
 	# To input decrypting password in initrd

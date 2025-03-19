@@ -6,14 +6,7 @@ let
 	inherit (lib) mkForce;
 in {
 	# FIXME(Krey): Move on harneded kernel, tbd how to manage -> To be done infrastructure-wide
-	# FIXME(Krey): Add this patch https://lkml.org/lkml/2024/12/17/1611
-	# NOTE(Krey): Causes GDM to fail to load
-		boot.kernelPackages = mkForce pkgs.linuxPackages_6_13;
-		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_12;
-		# boot.kernelPackages = mkForce pkgs.linuxPackages_6_11;
-		# boot.kernelPackages = mkForce pkgs.linuxPackages_xanmod_stable;
-	# boot.kernelPackages = mkForce pkgs.linuxPackages;
-	# boot.kernelPackages = mkForce pkgs.linuxPackages_latest;
+		boot.kernelPackages = mkForce pkgs.linuxPackages_6_13; # Move on 6.13 as it has important patches to make the device to work
 
 	boot.kernelParams = [
 		# SECURITY(Krey): Used to manage CPU Vulnerabilities

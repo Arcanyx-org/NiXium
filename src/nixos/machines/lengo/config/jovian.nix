@@ -2,6 +2,8 @@
 
 # Jovian management of LENGO
 
+# NOTE(Krey): This file is not sourced as it serves as a reference for further development
+
 let
 	inherit (lib) mkIf;
 in mkIf config.jovian.devices.legiongo.enable {

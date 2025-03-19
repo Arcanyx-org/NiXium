@@ -1,9 +1,9 @@
-{ lib, config, pkgs, ... }:
+{ lib, ... }:
 
 # Security management of LENGO
 
 let
-	inherit (lib) mkMerge mkForce mkDefault mkIf;
+	inherit (lib) mkMerge mkForce;
 in {
 	config = mkMerge [
 		{

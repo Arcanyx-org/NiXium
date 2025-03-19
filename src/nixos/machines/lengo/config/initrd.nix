@@ -17,6 +17,5 @@
 
 	boot.initrd.includeDefaultModules = true; # Has to be set to true to be able to input decrypting password
 
-	# Use Systemd initrd
-	boot.initrd.systemd.enable = true;
+	boot.initrd.systemd.enable = true; # Use systemd-initrd over the default
 }

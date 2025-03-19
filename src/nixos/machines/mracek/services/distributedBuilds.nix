@@ -15,6 +15,7 @@ in mkIf config.nix.distributedBuilds {
 
 		# Set Known Hosts
 		programs.ssh.knownHosts."ignucius.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
+		programs.ssh.knownHosts."lengo.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
 
 	# Import the SSH Keys for the builder account
 	age.secrets.mracek-builder-ssh-ed25519-private = {

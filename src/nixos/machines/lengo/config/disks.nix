@@ -201,6 +201,8 @@ in mkMerge [
 			};
 		};
 	} else {
+		# WARNING(Krey): Outdated code, not tested, pending refactor!
+
 		age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
 
 		disk = {

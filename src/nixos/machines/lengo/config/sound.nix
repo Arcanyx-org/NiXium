@@ -1,6 +1,6 @@
 { config, lib, ... }:
 
-# Sound management of LENGO
+# Sound Management of LENGO
 
 {
 	"24.05" = {
