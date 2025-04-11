@@ -78,9 +78,9 @@ in {
 		# polymc.polymc
 
 		# 3D Printing Slicers
-		pkgs.prusa-slicer
-		pkgs.super-slicer-beta # Prusa-slicer fork by community. Includes additional features, but lags behind in releases
-		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+		# pkgs.prusa-slicer
+		# pkgs.super-slicer-beta # Prusa-slicer fork by community. Includes additional features, but lags behind in releases
+		# pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
 		aagl.anime-game-launcher # An Anime Game <3
@@ -91,18 +91,18 @@ in {
 
 		# Web Browsers
 		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
-		(pkgs.brave.overrideAttrs (super: {
-			postInstall = ''
-				wrapProgram $out/bin/brave \
-					--append-flags "--no-proxy-server"
-			'';
-		})) # Standard Insecure Web Browser
+		# (pkgs.brave.overrideAttrs (super: {
+		# 	postInstall = ''
+		# 		wrapProgram $out/bin/brave \
+		# 			--append-flags "--no-proxy-server"
+		# 	'';
+		# })) # Standard Insecure Web Browser
 
 		# Engineering
 		pkgs.blender
 		pkgs.freecad
 		pkgs.gimp
-		pkgs.kicad-small
+		# pkgs.kicad-small
 
 		# Utility
 		pkgs.keepassxc
