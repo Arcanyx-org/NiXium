@@ -53,6 +53,7 @@ in {
 				nixosModules.system-time
 				nixosModules.system-wifi
 
+				nixosModules.machine-flexy
 				nixosModules.machine-ignucius
 				nixosModules.machine-lengo
 				nixosModules.machine-morph
