@@ -1,21 +1,15 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
-# Nix-based Disk Management of SINNENFREUDe with disko and impermenance on tmpfs
+# Nix-based Disk Management of SINNENFREUDE with disko and impermenance on tmpfs
 
-# Formatting strategy (Impermanence):
+# Formatting strategy:
 #    Table: GPT
-#    4096 - 1052671 (1048576) [512M] -- EFI BOOT with FAT32
-#    1052672-767057919 (766005248) -- -100G Nix Store with BTRFS
-#    767057920-976771071 (209713152) -- Encrypted SWAP
-
-# Formatting strategy (WITHOUT impermanence):
-#    Table: GPT
-#    4096 - 1052671 (1048576) -- 512M EFI System
-#    1052672 - 909664255 (908611584) -- 433.3G Linux filesystem
-#    909664256 - 976773119 (67108864) -- 32G Linux filesystem
+#    2048 - 1050623 (1048576) -- 512M EFI System
+#    1050624 - 913858559 (912807936) -- -30G nix store BTRFS
+#    913858560 - 976773119 (62914560) -- 100% Encrypted swap
 
 # Deployment:
-#     # nix run 'github:nix-community/disko#disko-install' -- --flake 'github:kreyren/nixos-config#sinnenfreude' --disk system /dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF
+#     # nix run 'github:nix-community/disko#disko-install' -- --flake 'github:kreyren/nixos-config#sinnenfreude' --disk system /dev/disk/by-id/ata-WDC_WDS500G2B0A-00SM50_21101J456803
 
 # FIXME(Krey): Refer to https://github.com/nix-community/disko/issues/490
 
@@ -23,22 +17,20 @@
 
 # Reference: https://github.com/lilyinstarlight/foosteros/blob/ccaca3910a61ee790f9cfd000cf77074524676b8/hosts/minimal/disks.nix#L4
 
-# FIXME(Krey): This works surprisingly well, but it:
-# * Doesn't manage secrets
-
 let
 	inherit (lib) mkMerge;
+
+	diskoDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF";
 in mkMerge [
 	{
-		age.secrets.sinnenfreude-disks-password.file = ../secrets/sinnenfreude-disks-password.age;
-
-		age.identityPaths = (if config.boot.impermanence.enable
-			then [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]
-			else [ "/etc/ssh/ssh_host_ed25519_key" ]);
+		age.secrets.sinnenfreude-disks-password.file = ../secrets/sinnenfreude-disks-password.age; # Supply password for disk encryption
 	}
 
-	# FIXME-QA(Krey): Produces an infinite recursion -- (config.boot.impermanence.enable == true)
+	# FIXME(Krey): Causes infinite recursion, no idea why
+	# (if (config.boot.impermenance.enable == true) then {
 	(if (true) then {
+		age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
+
 		fileSystems."/nix/persist/system".neededForBoot = true;
 
 		# FIXME(Krey): Figure out how to do labels
@@ -46,39 +38,41 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=9G"
+					"size=5G" # >=5GB Needed to avoid no space left errors during rebuilds
 					"defaults"
-					# set mode to 755, otherwise systemd will set it to 777, which cause problems.
-					# relatime: Update inode access times relative to modify or change time.
 					"mode=755"
 				];
 			};
 
 			disk = {
 				system = {
-					device = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF"; # SATA SSD
+					device = diskoDevice;
 					type = "disk";
+					imageSize = "50G"; # Size of the generated image
 					content = {
 						type = "gpt";
 						partitions = {
 
 							boot = {
-								type = "EF00"; # EFI System Partition/
-								start = "4096";
-								end = "1052671"; # +512M
 								priority = 1; # Needs to be first partition
+								type = "EF00"; # EFI System Partition/
+								size = "512M";
 								content = {
 									type = "filesystem";
 									format = "vfat"; # FAT32
+									# SECURITY(Krey): Required since systemd 254, to not make the random-seed file writtable by default
+									# * https://github.com/nix-community/disko/issues/527#issuecomment-1924076948
+									# * https://discourse.nixos.org/t/nixos-install-with-custom-flake-results-in-boot-being-world-accessible/34555/14
+									mountOptions = [ "umask=0077" ];
 									mountpoint = "/boot";
 								};
 							};
 
-							nix-store = {
-								start = "1052672";
-								end = "885274623";
+							store = {
+								priority = 3;
+								size = "100%";
 								content = {
-									name = "nix-store";
+									name = "store";
 									type = "luks";
 									settings.allowDiscards = true;
 
@@ -103,18 +97,27 @@ in mkMerge [
 												mountpoint = "/nix";
 												mountOptions = [ "compress=lzo" "noatime" ];
 											};
-											"@persist" = {
+											"@system-persist" = {
 												mountpoint = "/nix/persist/system";
 												mountOptions = [ "compress=lzo" "noatime" ];
 											};
+											"@user-persist" = {
+												mountpoint = "/nix/persist/users";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											# FIXME(Krey): Causes emergency shell
+											# "@nixium-persist" = {
+											#  	mountpoint = "/nix/persist/NiXium";
+											# 	mountOptions = [ "compress=lzo" "noatime" ];
+											# };
 										};
 									};
 								};
 							};
 
 							swap = {
-								start = "885274624";
-								end = "937701375";
+								priority = 2;
+								size = "30G";
 								content = {
 									name = "swap";
 									type = "luks";
@@ -151,19 +154,21 @@ in mkMerge [
 			};
 		};
 	} else {
+		age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
+
 		disk = {
 			system = {
-				device = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF"; # SATA SSD
+				device = diskoDevice;
 				type = "disk";
+				imageSize = "50G"; # Size of the generated image
 				content = {
 					type = "gpt";
 					partitions = {
 
 						boot = {
-							type = "EF00"; # EFI System Partition/
-							start = "4096";
-							end = "1052671"; # +512M
 							priority = 1; # Needs to be first partition
+							type = "EF00"; # EFI System Partition/
+							size = "512M";
 							content = {
 								type = "filesystem";
 								format = "vfat"; # FAT32
@@ -171,11 +176,11 @@ in mkMerge [
 							};
 						};
 
-						root_nixos = {
-							start = "1052672";
-							end = "909664255";
+						store = {
+							priority = 3;
+							size = "100%";
 							content = {
-								name = "root";
+								name = "store";
 								type = "luks";
 								settings.allowDiscards = true;
 
@@ -185,7 +190,7 @@ in mkMerge [
 
 								extraFormatArgs = [
 									"--use-random" # use true random data from /dev/random, will block until enough entropy is available
-									"--label=CRYPT_NIXOS"
+									"--label=CRYPT_NIX"
 								];
 
 								extraOpenArgs = [
@@ -194,20 +199,28 @@ in mkMerge [
 
 								content = {
 									type = "btrfs";
-									extraArgs = [ "--label ROOT_NIXOS" ];
+									extraArgs = [ "--label NIX_STORE" ];
 									subvolumes = {
-										"@" = {
-											mountpoint = "/";
-											mountOptions = [ "compress=lzo" "noatime" ];
+											"@nix" = {
+												mountpoint = "/nix";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											"@system-persist" = {
+												mountpoint = "/nix/persist/system";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											"@user-persist" = {
+												mountpoint = "/nix/persist/users";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
 										};
-									};
 								};
 							};
 						};
 
 						swap = {
-							start = "909664256";
-							end = "976773119";
+							priority = 2;
+							size = "30G";
 							content = {
 								name = "swap";
 								type = "luks";

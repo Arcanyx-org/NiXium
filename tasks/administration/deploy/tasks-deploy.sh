@@ -72,6 +72,7 @@ case "$distro" in
 							--target-host "root@$system.systems.nx" || die 1 "System '$system' in distribution '$distro' and release '$release' failed deployment!"
 					;;
 					"WIP") echo "Configuration for system '$system' in distribution '$distro' is marked a Work-in-Progress, skipping build.." ;;
+					"KIA") echo "System '$system' is reported as Killed In Action, skipping.." ;;
 					*) echo "System '$system' reports undeclared status state: $status"
 				esac
 			done
