@@ -78,8 +78,8 @@ in {
 
 		# Slicers
 		pkgs.prusa-slicer
-		pkgs.super-slicer-beta # Prusa-slicer fork by community. Includes additional features, but lags behind in releases
-		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+		# FIXME-QA(Krey): Broken on current stable, move back when fixed
+			unstable.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
 		aagl.anime-game-launcher # An Anime Game
@@ -101,7 +101,7 @@ in {
 		pkgs.blender
 		pkgs.freecad
 		pkgs.gimp
-		pkgs.kicad-small
+		pkgs.kicad
 
 		# Utility
 		pkgs.keepassxc
