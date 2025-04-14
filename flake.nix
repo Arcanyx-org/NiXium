@@ -21,8 +21,8 @@
 			nixos-hardware.url = "github:NixOS/nixos-hardware";
 			nixos-flake.url = "github:srid/nixos-flake";
 			# nur.url = "github:nix-community/NUR/master";
-			#impermanence.url = "github:nix-community/impermanence";
-			impermanence.url = "github:kreyren/impermanence"; # Use a fork to manage https://github.com/nix-community/impermanence/issues/167
+			# impermanence.url = "github:nix-community/impermanence";
+				impermanence.url = "github:kreyren/impermanence"; # Use a fork to manage https://github.com/nix-community/impermanence/issues/167
 			flake-parts.url = "github:hercules-ci/flake-parts";
 			mission-control.url = "github:Platonic-Systems/mission-control";
 
@@ -218,6 +218,8 @@
 
 						inputs.nixpkgs.legacyPackages.${system}.ncurses
 						inputs.nixpkgs.legacyPackages.${system}.pkg-config
+
+						inputs.nixpkgs.legacyPackages.${system}.ungoogled-chromium # Web browser used in the integrated developer environment for interacting with the outside resources
 					];
 					inputsFrom = [
 						config.mission-control.devShell

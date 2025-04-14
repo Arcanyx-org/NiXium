@@ -112,6 +112,21 @@
 			}
 		},
 		"todo-tree.regex.regex": "($TAGS)((\\-.*|)\\(.*\\)):", // ($TAGS)((\\-.*|)\\(.*\\)):
+		"todo-tree.filtering.excludeGlobs": [
+			"**/node_modules",
+			"**/README.md"
+		],
+		"todo-tree.tree.groupedByTag": false,
+		"todo-tree.tree.groupedBySubTag": false,
+		"todo-tree.tree.flat": true,
+
+		"dateTime.showSeconds": true,
+
+		// GitLens
+		"gitlens.plusFeatures.enabled": false, // Disable the annoying pop-ups
+		"gitlens.launchpad.indicator.enabled": false, // Disable launchpad indicator as we are not using that functionality
+		"gitlens.statusBar.enabled": false, // Do not bloat the status bar
+		"gitlens.statusBar.pullRequests.enabled": false,
 	},
 
 	"extensions": {
@@ -127,7 +142,10 @@
 			"pkief.material-icon-theme",
 			"markwylde.vscode-filesize",
 			"plorefice.devicetree",
-			"timonwong.shellcheck"
+			"timonwong.shellcheck",
+			"eamodio.gitlens",
+			"anwar.resourcemonitor",
+			"gruntfuggly.todo-tree"
 		]
 	}
 }
