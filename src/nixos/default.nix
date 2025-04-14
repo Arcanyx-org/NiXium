@@ -26,6 +26,7 @@ in {
 
 				nixosModules.programs-git
 				nixosModules.programs-htop
+				nixosModules.programs-vim
 				nixosModules.programs-wakeonlan
 
 				nixosModules.security
