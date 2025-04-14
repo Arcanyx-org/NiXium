@@ -27,6 +27,12 @@ in mkIf config.programs.vscode.enable {
 			# Set Theme
 			# FIXME(Krey): Needs to be packaged
 			#"workbench.colorTheme" = "Shades of Purple (Super Dark)";
+			"workbench.colorTheme" = "Abyss";
+
+			"window.newWindowDimensions" = "fullscreen";
+
+			# To make the built-in web browser in vscodium to work
+			"browse-lite.chromeExecutable" = "${pkgs.ungoogled-chromium}/bin/chromium";
 		};
 	};
 }

@@ -218,6 +218,8 @@
 
 						inputs.nixpkgs.legacyPackages.${system}.ncurses
 						inputs.nixpkgs.legacyPackages.${system}.pkg-config
+
+						inputs.nixpkgs.legacyPackages.${system}.ungoogled-chromium # Web browser used in the integrated developer environment for interacting with the outside resources
 					];
 					inputsFrom = [
 						config.mission-control.devShell
