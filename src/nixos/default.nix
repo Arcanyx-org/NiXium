@@ -25,6 +25,7 @@ in {
 				# self.inputs.jovian.nixosModules.default
 
 				nixosModules.programs-git
+				nixosModules.programs-htop
 				nixosModules.programs-wakeonlan
 
 				nixosModules.security

@@ -1,6 +1,7 @@
 {
 	imports = [
 		./git
+		./htop
 		./wakeonlan
 	];
 }
