@@ -11,24 +11,24 @@ in {
 
 		# Set channels
 		nixPath = mkDefault [
-			"nixpkgs=${self.inputs.nixpkgs}" # Stable
-			"unstable=${self.inputs.nixpkgs-unstable}" # Unstable
 			"master=${self.inputs.nixpkgs-master}" # Master
-			"staging=${self.inputs.nixpkgs-staging}" # Staging
 			"staging-next=${self.inputs.nixpkgs-staging-next}" # Staging-Next
+			"unstable=${self.inputs.nixpkgs-unstable}" # Unstable
+			"nixpkgs=${self.inputs.nixpkgs}" # Stable
+			"nixpkgs-23_11=${self.inputs.nixpkgs-23_11}" # Stable
 		];
 
 		channel.enable = mkDefault false; # Do not use legacy nix-commands
 
 		# Set Flake Registries
 		registry = {
+			master = { flake = self.inputs.nixpkgs-master; };
+			staging-next = { flake = self.inputs.nixpkgs-staging-next; };
+			unstable = { flake = self.inputs.nixpkgs-unstable; };
 			# FIXME(Krey): This needs to be applied depending on the used release
 				nixpkgs = mkForce { flake = self.inputs.nixpkgs-unstable; };
 			stable = { flake = self.inputs.nixpkgs; };
-			unstable = { flake = self.inputs.nixpkgs-unstable; };
-			master = { flake = self.inputs.nixpkgs-master; };
-			staging = { flake = self.inputs.nixpkgs-staging; };
-			staging-next = { flake = self.inputs.nixpkgs-staging-next; };
+			nixpkgs-23_11 = { flake = self.inputs.nixpkgs-23_11; };
 			# world = { flake = self.inputs.self; };
 		};
 		settings = {

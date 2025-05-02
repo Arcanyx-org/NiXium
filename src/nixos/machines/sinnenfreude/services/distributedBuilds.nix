@@ -7,6 +7,8 @@
 let
 	inherit (lib) mkIf;
 in mkIf config.nix.distributedBuilds {
+	# nix.settings.max-jobs = 0; # Do not build on sinnenfreude as it has issues with thermal management and lacks effective system resources for processing
+
 	# Builders Authorizations
 		users.extraUsers.builder.openssh.authorizedKeys.keys = [
 			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILRmGX/iKHM0fwwDjq4fQGt+B8Nj0fJlw7Lq5YA0v3NP" # MORPH (Builder)
@@ -44,7 +46,8 @@ in mkIf config.nix.distributedBuilds {
 		buildMachines = [
 			{
 				# MORPH
-				hostName = "morph.systems.nx";
+				# hostName = "morph.systems.nx";
+					hostName = "192.168.0.114";
 				systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
 				protocol = "ssh-ng";
 

@@ -54,6 +54,14 @@
 			"DNC", // Do Not Contribute
 			"DNR" // Do Not Release
 		],
+		"todo-tree.regex.regex": "($TAGS)((\\-.*|)\\(.*\\)):", // ($TAGS)((\\-.*|)\\(.*\\)):
+		"todo-tree.filtering.excludeGlobs": [
+			"**/node_modules",
+			"**/README.md"
+		],
+		"todo-tree.tree.groupedByTag": false,
+		"todo-tree.tree.groupedBySubTag": false,
+		"todo-tree.tree.flat": true,
 		// NOTE: Icons has to be valid octicon (https://primer.style/foundations/icons/)
 		"todo-tree.highlights.customHighlight": {
 			// FIXME(Krey): Test
@@ -111,14 +119,54 @@
 				"fontWeight": "bold"
 			}
 		},
-		"todo-tree.regex.regex": "($TAGS)((\\-.*|)\\(.*\\)):", // ($TAGS)((\\-.*|)\\(.*\\)):
-		"todo-tree.filtering.excludeGlobs": [
-			"**/node_modules",
-			"**/README.md"
+
+		"better-comments.tags": [
+			{
+			"tag": "!",
+			"color": "#FF0000",
+			"strikethrough": false,
+			"underline": false,
+			"backgroundColor": "transparent",
+			"bold": false,
+			"italic": false
+			},
+			{
+				"tag": ":",
+				"color": "#FFAE00",
+				"strikethrough": false,
+				"underline": false,
+				"backgroundColor": "transparent",
+				"bold": false,
+				"italic": false
+			},
+			{
+			"tag": "?",
+			"color": "#3498DB",
+			"strikethrough": false,
+			"underline": false,
+			"backgroundColor": "transparent",
+			"bold": false,
+			"italic": false
+			},
+			{
+			"tag": "//",
+			"color": "#474747",
+			"strikethrough": true,
+			"underline": false,
+			"backgroundColor": "transparent",
+			"bold": false,
+			"italic": false
+			},
+			{
+			"tag": "*",
+			"color": "#98C379",
+			"strikethrough": false,
+			"underline": false,
+			"backgroundColor": "transparent",
+			"bold": false,
+			"italic": false
+			},
 		],
-		"todo-tree.tree.groupedByTag": false,
-		"todo-tree.tree.groupedBySubTag": false,
-		"todo-tree.tree.flat": true,
 
 		"dateTime.showSeconds": true,
 

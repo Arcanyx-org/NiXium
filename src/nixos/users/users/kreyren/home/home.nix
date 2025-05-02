@@ -55,6 +55,7 @@ in {
 		pkgs.tree
 		pkgs.open-dyslexic
 		pkgs.htop
+		pkgs.unzip
 
 		pkgs.cryptsetup
 

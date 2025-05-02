@@ -22,7 +22,7 @@ in mkIf config.programs.vscode.enable {
 			# Highlight invisible characters
 			"editor.renderWhitespace" = "all";
 
-			"window.zoomLevel" = 2;
+			"window.zoomLevel" = -1;
 
 			# Set Theme
 			# FIXME(Krey): Needs to be packaged

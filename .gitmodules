@@ -11,3 +11,6 @@
 	path = vendor/gjs-osk
 	url = git@github.com:Kreyren/gjs-osk.git
 	branch = central
+[submodule "vendor/nixpkgs-stable"]
+	path = vendor/nixpkgs-stable
+	url = git@github.com:NiXium-org/nixpkgs-stable.git

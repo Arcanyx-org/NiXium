@@ -11,7 +11,6 @@ in {
 
 	programs.alacritty.enable = true; # Rust-based Video-accelarated terminal
 	# FIXME(Krey): Doesn't work with scaling below 100% on GNOME
-	programs.kitty.enable = false; # Alternative Rust-based Hardware-accelarated terminal for testing, potentially superrior to alacritty
 	programs.bash.enable = true;
 	programs.starship.enable = true;
 	programs.direnv.enable = true; # To manage git repositories
@@ -26,8 +25,6 @@ in {
 	services.gpg-agent.enable = true;
 
 	nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-		"checkra1n"
-
 		# FIXME(Krey): Using vscodium, no idea why this needs 'vscode' set
 		"vscode"
 
@@ -39,38 +36,6 @@ in {
 	];
 
 	home.packages = [
-		# Instant-Chats
-			# FIXME-QA(Krey): Use this on GTK-based desktop environments
-				pkgs.fractal # GTK4+ Matrix Client Written in Rust
-			# FIXME-QA(Krey): Enable this on QT-based desktop environments
-				# pkgs.nheko # QT-based Matrix Client
-
-			pkgs.discord
-
-			# Temporary management of Post-Quantum Safety until matrix manages it, see https://github.com/matrix-org/matrix-spec/issues/975 for details
-			unstable.simplex-chat-desktop
-
-			# Session uses system proxy by default which breaks functionality
-			# (pkgs.session-desktop.overrideAttrs (super: {
-			# 	postInstall = ''
-			# 		wrapProgram $out/bin/session-desktop \
-			# 			--append-flags "--no-proxy-server"
-			# 	'';
-			# }))
-			# Temporary managment of IRC until it's implemented in our matrix server
-			pkgs.hexchat # Unmaintained package, no better known for the protocol
-
-			# Discord client for flexibility
-			pkgs.dissent
-
-		pkgs.libreoffice
-
-		polymc.polymc
-
-		# Slicers
-		pkgs.prusa-slicer
-		# FIXME-QA(Krey): Broken on current stable, move back when fixed
-			unstable.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
 		aagl.anime-game-launcher # An Anime Game
@@ -78,54 +43,20 @@ in {
 		pkgs.etlegacy # Wolfenstein: Enemy Territory
 		pkgs.airshipper # Veloren
 		pkgs.mindustry
+		polymc.polymc
 
 		# Web Browsers
 		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
-		(pkgs.brave.overrideAttrs (super: {
-			postInstall = ''
-				wrapProgram $out/bin/brave \
-					--append-flags "--no-proxy-server"
-			'';
-		})) # Standard Insecure Web Browser
 
 		# Engineering
 		pkgs.blender
-		pkgs.freecad
-		pkgs.gimp
 		pkgs.kicad
 
-		# iOS Stuff
-		pkgs.libimobiledevice
-    pkgs.ifuse
-    pkgs.checkra1n
-    pkgs.libusbmuxd
-
 		# Utility
-		pkgs.keepassxc
-		pkgs.yt-dlp
-		pkgs.android-tools
-		pkgs.picocom # Interface for Serial Console devices
 		pkgs.bottles # Wine Management Tool
-		pkgs.mtr # Packet Loss Tester
-		pkgs.sc-controller # Steam Controller Software
-		pkgs.monero-gui
-		pkgs.dialect # Language Translator
-		pkgs.endeavour # To-Do Notes
-		# FIXME-QA(Krey): As of 24th Jun 2024 this doesn't build
-			# pkgs.gaphor # Mind Maps
-		pkgs.kooha # Screen Recorder
 		pkgs.qbittorrent # Torrents
 		pkgs.tealdeer # TLDR Pages Implementation
 		pkgs.nextcloud-client
-		# FIXME(Krey): To be managed..
-		#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
-		pkgs.moonlight-qt
-
-		# Video
-		pkgs.stremio # Media Server Client
-		pkgs.freetube # YouTube Client
-		pkgs.mpv
-		pkgs.vlc
 
 		# Gnome extensions
 		pkgs.gnomeExtensions.removable-drive-menu

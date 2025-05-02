@@ -7,11 +7,13 @@ in {
 		homeManagerModules.scripts-mpv-kreyren
 		homeManagerModules.scripts-ssh-kreyren
 		homeManagerModules.scripts-wake-kreyren
+		homeManagerModules.scripts-unrar-kreyren
 	];
 
 	imports = [
 		./mpv
 		./ssh
+		./unrar
 		./wake
 	];
 }

@@ -10,7 +10,7 @@ in {
 
 		pkgs = import inputs.nixpkgs {
 			system = "x86_64-linux";
-			config.allowUnfree = mkForce false; # Forbid proprietary code
+			config.allowUnfree = mkForce true; # Allow unfree as the GPU won't init without it.. Thanks AMD.. Getting intel GPU as soon as I can
 			config.nvidia.acceptLicense = mkForce false; # Nvidia, Fuck You!
 		};
 

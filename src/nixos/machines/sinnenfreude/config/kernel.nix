@@ -5,7 +5,8 @@
 let
 	inherit (lib) mkIf;
 in {
-	boot.kernelPackages = pkgs.linuxPackages_hardened; # Use hardened kernel
+	# boot.kernelPackages = pkgs.linuxPackages_hardened; # Use hardened kernel
+	boot.kernelPackages = pkgs.linuxPackages;
 
 	# SECURITY(Krey): NiXium-important packages require this atm
 	# * vscodium - Pending management on MORPH

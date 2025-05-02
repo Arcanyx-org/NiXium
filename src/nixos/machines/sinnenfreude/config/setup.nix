@@ -36,6 +36,10 @@ in {
 	services.smartd.enable = true;
 	services.clamav.daemon.enable = true;
 	services.printing.enable = true;
+	# services.rustdesk-server.enable = true;
+	# 	services.rustdesk-server.openFirewall = tru
+	services.usbmuxd.enable = true;
+
 	powerManagement.powertop.enable = true;
 
 	networking.wireguard.enable = false;
@@ -59,6 +63,7 @@ in {
 	services.xserver.desktopManager.gnome.enable = true;
 		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
 		services.xserver.displayManager.gdm.autoSuspend = false;
+		services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has CONSTANT issues
 
 	# hardware.steam-hardware.enable = true;
 
@@ -73,4 +78,12 @@ in {
 	hardware.cpu.intel.updateMicrocode = true;
 
 	nixpkgs.hostPlatform = "x86_64-linux";
+
+	# NOTE(Krey): Experimenting..
+	time.timeZone = "Europe/Vienna"; # Set Timezone
+
+	networking.firewall.allowedTCPPorts = [
+		21118 # Rust Desk
+		1716 # KDE Connect
+	];
 }
