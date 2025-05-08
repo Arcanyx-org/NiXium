@@ -21,10 +21,10 @@ in {
 				];
 
 			# SECURITY(Krey): Currently a necessary malware to keep the CPU functional.. Such is the curse of i686/amd64 systems
-			hardware.cpu.intel.updateMicrocode = mkForce true;
+			hardware.cpu.amd.updateMicrocode = mkForce true;
 
 			# NOTE(Krey): System designed to not need this
-			hardware.enableRedistributableFirmware = mkForce false;
+			hardware.enableRedistributableFirmware = mkForce true;
 		}
 	];
 }
