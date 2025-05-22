@@ -42,6 +42,7 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 							"custom-accent-colors@demiskp"
 							"desktop-cube@schneegans.github.com"
 							"caffeine@patapon.info"
+							"space-bar@luchrioh"
 						];
 
 						disabled-extensions = [];

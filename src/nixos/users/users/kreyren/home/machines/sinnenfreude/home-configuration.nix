@@ -167,7 +167,7 @@ in {
 			include-static-info = false;
 			menu-centered = false;
 			network-speed-format = 1;
-			position-in-panel = 0;
+			position-in-panel = 2;
 			show-battery = true;
 			show-gpu = false; # Nvidia only, system without dGPU
 			update-time = 3;
