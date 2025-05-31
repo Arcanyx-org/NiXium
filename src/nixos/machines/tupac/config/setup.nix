@@ -57,7 +57,7 @@ in {
 		users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
 		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
 	];
-	# programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji";
+	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEpbUbuXYWfIdh4w3FI++1/1Zwhg/ow/FVr8r2kC1bhL";
 
 	# Desktop Environment
 	services.xserver.enable = true;

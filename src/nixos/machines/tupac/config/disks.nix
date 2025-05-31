@@ -54,7 +54,7 @@ in {
 								boot = {
 									type = "EF00"; # EFI System Partition/
 									start = "2048";
-									size = "512M";
+									size = "1024M"; # 1G
 									priority = 1; # Needs to be first partition
 									content = {
 										type = "filesystem";
