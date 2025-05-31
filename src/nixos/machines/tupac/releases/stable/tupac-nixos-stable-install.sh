@@ -35,7 +35,7 @@ echo "FLAKE_ROOT: $FLAKE_ROOT"
 [ "$(id -u || true)" = 0 ] || die 126 "This script must be executed as the root user" # Ensure that we are root
 
 # Check if the declared installation device is available on the target system
-# [ -b "$systemDevice" ] || die 1 "Expected device was not found, refusing to install for safety"
+[ -b "$systemDevice" ] || die 1 "Expected device was not found, refusing to install for safety"
 
 ###! This script performs declarative installation of NiXium-Managed NixOS STABLE for the TUPAC system
 ###!
@@ -66,8 +66,8 @@ else # We assume that ragenix is not deployed on the target system
 	ln --verbose --symbolic /run/agenix.d/1 /run/agenix # Perform the symlink
 
 	# Ensure that the RSD has the expected permissions
-	chown --verbose "root:root" "/run/agenix.d/1" # Ensure expected ownership
-	chmod --verbose 700 "/run/agenix.d/1" # Ensure expected permission
+	[ "$(stat --format="%U:%G" /run/agenix.d/1 || true)" = "root:root" ] || chown --verbose "root:root" "/run/agenix.d/1" # Ensure expected ownership
+	[ "$(stat --format="%a" /run/agenix.d/1 || true)" = 700 ] || chmod --verbose 700 "/run/agenix.d/1" # Ensure expected permission
 
 	status "Ragenix Secret Directory has been set up"
 fi
@@ -103,6 +103,7 @@ nixos-rebuild build --flake "$FLAKE_ROOT#nixos-tupac-stable" # pre-build the con
 
 #! Perform the Payload
 status "Performing the system installation on $systemDevice"
+# FIXME(Krey): Command `disko-install` overwhelms the system resources even on a workstation system to perform the installation as it's not mounting the /mnt to use the target storage for store and instead decides to perform the operations on TEMPFS.. smh -> Figure out how to fix that
 # FIXME(Krey): The disk might show differently if it's in a dock -> Implement a CLI Argument
 # disko-install \
 # 	--flake "$FLAKE_ROOT#nixos-tupac-stable" \
@@ -129,6 +130,11 @@ nixos-install \
   --flake "$FLAKE_ROOT#nixos-tupac-stable" \
 	--verbose \
 	--root /mnt
+
+# Handle Decryption
+[ -f "/mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ] || cp --verbose "/run/agenix/tupac-ssh-ed25519-private" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Move the private key to the system
+[ "$(stat --format="%a" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key || true)" = 400 ] || chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Set the correct permissions for the key
+[ "$(stat --format="%U:%G" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key || true)" = "root:root" ] || chown --verbose root:root 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Set the correct ownership for the key
 
 #! Reboot in the new Operating System
 [ "$nixiumDoNotReboot" = 0  ] || {
