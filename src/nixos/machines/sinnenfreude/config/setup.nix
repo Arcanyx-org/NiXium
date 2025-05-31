@@ -81,9 +81,4 @@ in {
 
 	# NOTE(Krey): Experimenting..
 	time.timeZone = "Europe/Vienna"; # Set Timezone
-
-	networking.firewall.allowedTCPPorts = [
-		21118 # Rust Desk
-		1716 # KDE Connect
-	];
 }

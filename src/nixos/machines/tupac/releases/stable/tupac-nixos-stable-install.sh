@@ -19,17 +19,23 @@ status() { printf "STATUS: %s\n" "$1" ;} # Status Helper
 # FIXME-QA(Krey): This should be a runtimeInput
 warn() { printf "WARNING: %s\n" "$1" ;} # Warning Helper
 
+# FIXME(Krey): It's not possible to overwrite this during runtime which we expect to do
 # FIXME(Krey): This should be managed for all used scripts e.g. runtimeEnv
 # Refer to https://github.com/srid/flake-root/discussions/5 for details tldr flake-root doesn't currently allow parsing the specific commit
-#[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits" | jq -r '.[0].sha')"
-[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits?sha=central" | jq -r '.[0].sha')"
+#[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/Arcanyx-org/NiXium/commits" | jq -r '.[0].sha')"
+# [ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:Arcanyx-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/Arcanyx-org/NiXium/commits?sha=central" | jq -r '.[0].sha')"
+
+FLAKE_ROOT="/nix/persist/NiXium"
+
+echo "FLAKE_ROOT: $FLAKE_ROOT"
+
 
 ### [END] Export this outside [END] ###
 
 [ "$(id -u || true)" = 0 ] || die 126 "This script must be executed as the root user" # Ensure that we are root
 
 # Check if the declared installation device is available on the target system
-[ -b "$systemDevice" ] || die 1 "Expected device was not found, refusing to install for safety"
+# [ -b "$systemDevice" ] || die 1 "Expected device was not found, refusing to install for safety"
 
 ###! This script performs declarative installation of NiXium-Managed NixOS STABLE for the TUPAC system
 ###!
@@ -69,7 +75,8 @@ fi
 #! Set up the identity file
 status "Verifying the Identity File"
 
-[ -n "$ragenixIdentity" ] || ragenixIdentity="$HOME/.ssh/id_ed25519" # Try to use the default path
+# FIXME(Krey): When using sudo this tries to look for /root/.ssh/id_ed25519 instead of the user
+[ -n "$ragenixIdentity" ] || ragenixIdentity="/home/kreyren/.ssh/id_ed25519" # Try to use the default path
 
 # If the identity file is provided then use it to decrypt the secrets otherwise use hard-coded secrets
 if [ -s "$ragenixIdentity" ]; then
@@ -95,13 +102,33 @@ status "Pre-building the system configuration"
 nixos-rebuild build --flake "$FLAKE_ROOT#nixos-tupac-stable" # pre-build the configuration
 
 #! Perform the Payload
-status "Performing the system installation"
-disko-install \
+status "Performing the system installation on $systemDevice"
+# FIXME(Krey): The disk might show differently if it's in a dock -> Implement a CLI Argument
+# disko-install \
+# 	--flake "$FLAKE_ROOT#nixos-tupac-stable" \
+# 	--mode format \
+# 	--debug \
+# 	--disk system "$(realpath "$systemDevice" || true)" \
+# 	--extra-files "/run/agenix/tupac-ssh-ed25519-private" /nix/persist/system/etc/ssh/ssh_host_ed25519_key
+
+# disko-install \
+# 	--flake "$FLAKE_ROOT#nixos-tupac-stable" \
+# 	--mode format \
+# 	--debug \
+# 	--disk system "/dev/sdc" \
+# 	--extra-files "/run/agenix/tupac-ssh-ed25519-private" /nix/persist/system/etc/ssh/ssh_host_ed25519_key
+
+# Make the filesystem and mount it
+disko \
 	--flake "$FLAKE_ROOT#nixos-tupac-stable" \
-	--mode format \
+	--mode format,mount \
 	--debug \
-	--disk system "$(realpath "$systemDevice" || true)" \
-	--extra-files "/run/agenix/tupac-ssh-ed25519-private" /nix/persist/system/etc/ssh/ssh_host_ed25519_key
+	--root-mountpoint /mnt
+
+nixos-install \
+  --flake "$FLAKE_ROOT#nixos-tupac-stable" \
+	--verbose \
+	--root /mnt
 
 #! Reboot in the new Operating System
 [ "$nixiumDoNotReboot" = 0  ] || {

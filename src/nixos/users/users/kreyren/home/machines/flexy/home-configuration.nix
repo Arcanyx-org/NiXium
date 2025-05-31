@@ -133,7 +133,7 @@ in {
 		pkgs.vlc
 
 		# Keyboard
-			# pkgs.gnomeExtensions.gjs-osk
+			#unstable.gnomeExtensions.gjs-osk
 			# FIXME(Krey): Remove this once it arrives in nixpkgs - https://github.com/Vishram1123/gjs-osk/issues/85
 			(pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
 				src = pkgs.fetchzip {

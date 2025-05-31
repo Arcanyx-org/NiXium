@@ -50,6 +50,8 @@ in {
 			# Temporary management of Post-Quantum Safety until matrix manages it, see https://github.com/matrix-org/matrix-spec/issues/975 for details
 			unstable.simplex-chat-desktop
 
+			unstable.signal-desktop
+
 			# Session uses system proxy by default which breaks functionality
 			# (pkgs.session-desktop.overrideAttrs (super: {
 			# 	postInstall = ''

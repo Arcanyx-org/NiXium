@@ -27,6 +27,10 @@ in {
 			# FIXME-QA(Krey): This should be applied only when simplex is installed
 			".local/share/simplex"
 
+			# FIXME-QA(Krey): This should be applied only when signal is installed
+			# FIXME(Krey): Do not persist the whole signal directory only inject the secrets to perform login
+			".config/Signal"
+
 			# FIXME-QA(Krey): Should only be applied if `monero-gui` package is installed
 			"Monero"
 

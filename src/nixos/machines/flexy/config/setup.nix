@@ -16,6 +16,8 @@ in {
 
 	services.openssh.enable = true;
 	services.tor.enable = true;
+	services.rustdesk-server.enable = true;
+		services.rustdesk-server.openFirewall = true;
 
 	virtualisation.waydroid.enable = true;
 

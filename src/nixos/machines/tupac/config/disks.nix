@@ -16,18 +16,18 @@
 
 let
 	inherit (lib) mkMerge;
+
+	diskoDevice = "/dev/disk/by-id/nvme-SOLIDIGM_SSDPFKNU010TZ_BTEH24220RNQ1P0B"; # NVME SSD
 in {
 	config = mkMerge [
 		{
 			age.secrets.tupac-disks-password.file = ../secrets/tupac-disks-password.age;
-
-			age.identityPaths = (if config.boot.impermanence.enable
-				then [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]
-				else [ "/etc/ssh/ssh_host_ed25519_key" ]);
 		}
 
 		# FIXME-QA(Krey): Produces an infinite recursion -- (config.boot.impermanence.enable == true)
 		(if (true) then {
+			age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
+
 			fileSystems."/nix/persist/system".neededForBoot = true;
 
 			# FIXME(Krey): Figure out how to do labels
@@ -35,7 +35,7 @@ in {
 				nodev."/" = {
 					fsType = "tmpfs";
 					mountOptions = [
-						"size=4G"
+						"size=5G" # >=5GB Needed to avoid no space left errors during rebuilds
 						"defaults"
 						# set mode to 755, otherwise systemd will set it to 777, which cause problems.
 						# relatime: Update inode access times relative to modify or change time.
@@ -45,7 +45,7 @@ in {
 
 				disk = {
 					system = {
-						device = "/dev/disk/by-id/nvme-SOLIDIGM_SSDPFKNU010TZ_BTEH24220RNQ1P0B"; # NVME SSD
+						device = diskoDevice;
 						type = "disk";
 						content = {
 							type = "gpt";
@@ -59,6 +59,10 @@ in {
 									content = {
 										type = "filesystem";
 										format = "vfat"; # FAT32
+										# SECURITY(Krey): Required since systemd 254, to not make the random-seed file writtable by default
+										# * https://github.com/nix-community/disko/issues/527#issuecomment-1924076948
+										# * https://discourse.nixos.org/t/nixos-install-with-custom-flake-results-in-boot-being-world-accessible/34555/14
+										mountOptions = [ "umask=0077" ];
 										mountpoint = "/boot";
 									};
 								};
@@ -92,10 +96,19 @@ in {
 													mountpoint = "/nix";
 													mountOptions = [ "compress=lzo" "noatime" ];
 												};
-												"@persist" = {
-													mountpoint = "/nix/persist/system";
+												"@system-persist" = {
+												mountpoint = "/nix/persist/system";
+												mountOptions = [ "compress=lzo" "noatime" ];
+												};
+												"@user-persist" = {
+													mountpoint = "/nix/persist/users";
 													mountOptions = [ "compress=lzo" "noatime" ];
 												};
+												# FIXME(Krey): Causes emergency shell
+												# "@nixium-persist" = {
+												#  	mountpoint = "/nix/persist/NiXium";
+												# 	mountOptions = [ "compress=lzo" "noatime" ];
+												# };
 											};
 										};
 									};
@@ -140,9 +153,11 @@ in {
 				};
 			};
 		} else {
+			age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
+
 			disk = {
 				system = {
-					device = "/dev/disk/by-id/nvme-SOLIDIGM_SSDPFKNU010TZ_BTEH24220RNQ1P0B"; # NVME SSD
+					device = diskoDevice;
 					type = "disk";
 					content = {
 						type = "gpt";
