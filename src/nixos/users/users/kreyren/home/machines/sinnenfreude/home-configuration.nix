@@ -182,7 +182,6 @@ in {
 				"__network-tx_max__"
 				"__network-rx_max__"
 				"_battery_rate_"
-				"_fan_thinkpad_fan1_"
 			];
 		};
 

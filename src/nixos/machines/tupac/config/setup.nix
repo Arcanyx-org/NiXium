@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, unstable, ... }:
 
 # The Setup of TUPAC system
 
@@ -14,6 +14,24 @@ in {
 	nix.distributedBuilds = true; # Perform distributed builds
 
 	programs.adb.enable = true;
+	programs.gamemode.enable = true;
+		programs.gamemode.enableRenice = true;
+		programs.gamemode.settings = {
+			general = {
+				renice = 10;
+			};
+
+			# Warning: GPU optimisations have the potential to damage hardware
+			gpu = {
+				apply_gpu_optimisations = "accept-responsibility";
+				gpu_device = 1;
+			};
+
+			custom = {
+				start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
+				end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
+			};
+		};
 	programs.steam.enable = false;
 	programs.noisetorch.enable = true; # Microphone filtering
 	programs.nix-ld.enable = true;
@@ -29,6 +47,8 @@ in {
 		};
 	};
 
+	xdg.portal.xdgOpenUsePortal = true;
+
 	services.flatpak.enable = true;
 	services.openssh.enable = true;
 	services.tor.enable = true;
@@ -38,11 +58,26 @@ in {
 	services.smartd.enable = true;
 	services.clamav.daemon.enable = true;
 	services.printing.enable = true;
+	programs.localsend.enable = true;
+		programs.localsend.openFirewall = true;
 	# services.rustdesk-server.enable = true;
 	# 	services.rustdesk-server.openFirewall = tru
 	services.usbmuxd.enable = true;
+	# services.undervolt = {
+	# 	enable = true;
+	# 	tempAc = 97;
+	# 	tempBat = 75;
+	# 	# coreOffset = -100;
+	# 	# gpuOffset = -30;
+	# 	#uncoreOffset = -50;
+	# 	#analogioOffset = -50;
+	# };
 
+	# Power Management
+	powerManagement.enable = true;
 	powerManagement.powertop.enable = true;
+	services.tlp.enable = true;
+		services.power-profiles-daemon.enable = false;
 
 	networking.wireguard.enable = false;
 

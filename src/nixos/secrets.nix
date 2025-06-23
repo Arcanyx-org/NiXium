@@ -135,6 +135,10 @@ in {
 		kreyren morph-system
 	];
 
+	"./machines/morph/secrets/morph-onion.age".publicKeys = [
+		kreyren
+	] ++ all-systems;
+
 	# MRACEK (system)
 	"./machines/mracek/secrets/mracek-disks-password.age".publicKeys = [
 		kreyren mracek-system
@@ -245,6 +249,11 @@ in {
 	"./machines/tupac/secrets/tupac-builder-ssh-ed25519-private.age".publicKeys = [
 		kreyren kira tupac-system
 	];
+
+	"./machines/lengo/secrets/tupac-unlock-key.age".publicKeys = [
+		kreyren tupac-system
+	];
+
 
 	# WiFi
 	"./modules/system/wifi/homeBaseKreyren-WiFi-PSK.age".publicKeys = [

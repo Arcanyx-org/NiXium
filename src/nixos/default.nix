@@ -59,6 +59,7 @@ in {
 				nixosModules.machine-morph
 				nixosModules.machine-mracek
 				nixosModules.machine-sinnenfreude
+				nixosModules.machine-tupac
 
 				# {
 				# 	sops.defaultSopsFile = ./.sops.yaml;

@@ -62,6 +62,26 @@ in {
 			# SC-Controller
 				# FIXME(Krey): These should have sc-controller nixosConfiguration module defined and set it there
 				".config/scc"
+
+			# WINEHQ
+				# FIXME(Krey): Apply this only when wine is installed
+				".wine"
+
+			# Hydra Launcher
+				# FIXME(Krey): Apply this only when hydralauncher is installed
+				".config/hydralauncher"
+
+			# Bottles
+				# FIXME(Krey): Only apple this when bottles are installed
+				".local/share/bottles"
+
+			# Nexus Mods
+				# FIXME(Krey): Install this only when nexusmods-app is installed
+				".local/share/NexusMods.App"
+
+			# PrusaSliceer
+				# FIXME(Krey): Only include this when prusa slicer is installed
+				".config/PrusaSlicer"
 		];
 		files = [
 			# FIXME-PURITY(Krey): This should be managed declaratively

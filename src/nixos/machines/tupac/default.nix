@@ -22,11 +22,13 @@
 			./config/kernel.nix
 			./config/networking.nix
 			./config/nvidia.nix
-			./config/suspend-then-hibernate.nix
+			./config/plymouth.nix
+			./config/power-management.nix
 			./config/printing.nix
 			./config/security.nix
 			./config/setup.nix
 			./config/sound.nix
+			./config/suspend-then-hibernate.nix
 			./config/vm-build.nix
 
 			./services/binfmt.nix
