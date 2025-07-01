@@ -20,6 +20,7 @@ in {
 			".local/state/nix/profiles"
 			".ssh"
 			".cache"
+			"Games"
 
 			# FIXME-QA(Krey): This should be applied only when hexchat is installed
 			".config/hexchat"
