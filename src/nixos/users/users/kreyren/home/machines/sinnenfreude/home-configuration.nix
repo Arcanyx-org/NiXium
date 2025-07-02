@@ -26,6 +26,8 @@ in {
 	services.gpg-agent.enable = true;
 
 	nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+		"checkra1n"
+
 		# FIXME(Krey): Using vscodium, no idea why this needs 'vscode' set
 		"vscode"
 
@@ -43,29 +45,20 @@ in {
 			# FIXME-QA(Krey): Enable this on QT-based desktop environments
 				# pkgs.nheko # QT-based Matrix Client
 
-			# PRIVACY(Krey): Temporary management with adjusted threat model used only as a fallback in case webcord fails in production
-			(pkgs.discord.overrideAttrs (super: {
-				postInstall = ''
-					wrapProgram $out/bin/discord \
-						--append-flags "--no-proxy-server"
-
-					wrapProgram $out/bin/Discord \
-						--append-flags "--no-proxy-server"
-				'';
-			}))
-
-			pkgs.nss
+			pkgs.discord
 
 			# Temporary management of Post-Quantum Safety until matrix manages it, see https://github.com/matrix-org/matrix-spec/issues/975 for details
 			unstable.simplex-chat-desktop
 
+			unstable.signal-desktop
+
 			# Session uses system proxy by default which breaks functionality
-			(pkgs.session-desktop.overrideAttrs (super: {
-				postInstall = ''
-					wrapProgram $out/bin/session-desktop \
-						--append-flags "--no-proxy-server"
-				'';
-			}))
+			# (pkgs.session-desktop.overrideAttrs (super: {
+			# 	postInstall = ''
+			# 		wrapProgram $out/bin/session-desktop \
+			# 			--append-flags "--no-proxy-server"
+			# 	'';
+			# }))
 			# Temporary managment of IRC until it's implemented in our matrix server
 			pkgs.hexchat # Unmaintained package, no better known for the protocol
 
@@ -103,6 +96,12 @@ in {
 		pkgs.gimp
 		pkgs.kicad
 
+		# iOS Stuff
+		pkgs.libimobiledevice
+    pkgs.ifuse
+    pkgs.checkra1n
+    pkgs.libusbmuxd
+
 		# Utility
 		pkgs.keepassxc
 		pkgs.yt-dlp
@@ -122,6 +121,7 @@ in {
 		pkgs.nextcloud-client
 		# FIXME(Krey): To be managed..
 		#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
+		pkgs.moonlight-qt
 
 		# Video
 		pkgs.stremio # Media Server Client
@@ -146,8 +146,43 @@ in {
 		# Set power management for a scenario where user is logged-in
 		"org/gnome/settings-daemon/plugins/power" = {
 			power-button-action = "hibernate";
-			sleep-inactive-ac-timeout = 600; # 60*10=600 Seconds -> 10 Minutes
+			sleep-inactive-ac-timeout = 2*60*60; # 7200 Seconds -> 2 Hours
 			sleep-inactive-ac-type = "suspend";
+		};
+
+		# System Monitor
+		"org/gnome/gnome-system-monitor" = {
+			show-dependencies = false;
+			show-whose-processes= "user";
+		};
+
+		"org/gnome/gnome-system-monitor/disktreenew" = {
+			col-6-visible = true;
+			col-6-width = 0;
+		};
+
+		"org/gnome/shell/extensions/vitals" = {
+			fixed-widths = true;
+			hide-icons = true;
+			hide-zeros = false;
+			icon-style = 1;
+			include-static-info = false;
+			menu-centered = false;
+			network-speed-format = 1;
+			position-in-panel = 2;
+			show-battery = true;
+			show-gpu = false; # Nvidia only, system without dGPU
+			update-time = 3;
+			use-higher-precision = true;
+
+			hot-sensors = [
+				"__temperature_max__"
+				"_system_load_1m_"
+				"_memory_usage_"
+				"__network-tx_max__"
+				"__network-rx_max__"
+				"_battery_rate_"
+			];
 		};
 
 		"org/gnome/shell" = {

@@ -19,10 +19,16 @@ status() { printf "STATUS: %s\n" "$1" ;} # Status Helper
 # FIXME-QA(Krey): This should be a runtimeInput
 warn() { printf "WARNING: %s\n" "$1" ;} # Warning Helper
 
+# FIXME(Krey): It's not possible to overwrite this during runtime which we expect to do
 # FIXME(Krey): This should be managed for all used scripts e.g. runtimeEnv
 # Refer to https://github.com/srid/flake-root/discussions/5 for details tldr flake-root doesn't currently allow parsing the specific commit
-#[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits" | jq -r '.[0].sha')"
-[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits?sha=central" | jq -r '.[0].sha')"
+#[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/Arcanyx-org/NiXium/commits" | jq -r '.[0].sha')"
+# [ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:Arcanyx-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/Arcanyx-org/NiXium/commits?sha=central" | jq -r '.[0].sha')"
+
+FLAKE_ROOT="/nix/persist/NiXium"
+
+echo "FLAKE_ROOT: $FLAKE_ROOT"
+
 
 ### [END] Export this outside [END] ###
 
@@ -60,8 +66,8 @@ else # We assume that ragenix is not deployed on the target system
 	ln --verbose --symbolic /run/agenix.d/1 /run/agenix # Perform the symlink
 
 	# Ensure that the RSD has the expected permissions
-	chown --verbose "root:root" "/run/agenix.d/1" # Ensure expected ownership
-	chmod --verbose 700 "/run/agenix.d/1" # Ensure expected permission
+	[ "$(stat --format="%U:%G" /run/agenix.d/1 || true)" = "root:root" ] || chown --verbose "root:root" "/run/agenix.d/1" # Ensure expected ownership
+	[ "$(stat --format="%a" /run/agenix.d/1 || true)" = 700 ] || chmod --verbose 700 "/run/agenix.d/1" # Ensure expected permission
 
 	status "Ragenix Secret Directory has been set up"
 fi
@@ -69,7 +75,7 @@ fi
 #! Set up the identity file
 status "Verifying the Identity File"
 
-[ -n "$ragenixIdentity" ] || ragenixIdentity="$HOME/.ssh/id_ed25519" # Try to use the default path
+[ -n "$ragenixIdentity" ] || ragenixIdentity="/home/$SUDO_USER/.ssh/id_ed25519" # Try to use the default path
 
 # If the identity file is provided then use it to decrypt the secrets otherwise use hard-coded secrets
 if [ -s "$ragenixIdentity" ]; then
@@ -95,13 +101,39 @@ status "Pre-building the system configuration"
 nixos-rebuild build --flake "$FLAKE_ROOT#nixos-tupac-stable" # pre-build the configuration
 
 #! Perform the Payload
-status "Performing the system installation"
-disko-install \
+status "Performing the system installation on $systemDevice"
+# FIXME(Krey): Command `disko-install` overwhelms the system resources even on a workstation system to perform the installation as it's not mounting the /mnt to use the target storage for store and instead decides to perform the operations on TEMPFS.. smh -> Figure out how to fix that
+# FIXME(Krey): The disk might show differently if it's in a dock -> Implement a CLI Argument
+# disko-install \
+# 	--flake "$FLAKE_ROOT#nixos-tupac-stable" \
+# 	--mode format \
+# 	--debug \
+# 	--disk system "$(realpath "$systemDevice" || true)" \
+# 	--extra-files "/run/agenix/tupac-ssh-ed25519-private" /nix/persist/system/etc/ssh/ssh_host_ed25519_key
+
+# disko-install \
+# 	--flake "$FLAKE_ROOT#nixos-tupac-stable" \
+# 	--mode format \
+# 	--debug \
+# 	--disk system "/dev/sdc" \
+# 	--extra-files "/run/agenix/tupac-ssh-ed25519-private" /nix/persist/system/etc/ssh/ssh_host_ed25519_key
+
+# Make the filesystem and mount it
+disko \
 	--flake "$FLAKE_ROOT#nixos-tupac-stable" \
-	--mode format \
+	--mode format,mount \
 	--debug \
-	--disk system "$(realpath "$systemDevice" || true)" \
-	--extra-files "/run/agenix/tupac-ssh-ed25519-private" /nix/persist/system/etc/ssh/ssh_host_ed25519_key
+	--root-mountpoint /mnt
+
+nixos-install \
+  --flake "$FLAKE_ROOT#nixos-tupac-stable" \
+	--verbose \
+	--root /mnt
+
+# Handle Decryption
+[ -f "/mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ] || cp --verbose "/run/agenix/tupac-ssh-ed25519-private" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Move the private key to the system
+[ "$(stat --format="%a" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key || true)" = 400 ] || chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Set the correct permissions for the key
+[ "$(stat --format="%U:%G" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key || true)" = "root:root" ] || chown --verbose root:root 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Set the correct ownership for the key
 
 #! Reboot in the new Operating System
 [ "$nixiumDoNotReboot" = 0  ] || {

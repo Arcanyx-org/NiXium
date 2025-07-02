@@ -1,38 +1,65 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, nixpkgs, ... }:
 
 let
-	inherit (lib) mkIf;
-in mkIf config.programs.vscode.enable {
-	programs.vscode = {
-		package = pkgs.vscodium;
-		extensions = with pkgs.vscode-extensions; [
-			editorconfig.editorconfig
-			mkhl.direnv
-			jnoortheen.nix-ide
-			oderwat.indent-rainbow
-			# FIXME(Krey): Needs to be packages
-			#edwinhuish.better-comments-next
-			# FIXME(Krey): Needs to be packages
-			#ahmadawais.shades-of-purple
-		];
-		userSettings = {
-			# Zoom with mouse wheel
-			"editor.mouseWheelZoom" = true;
+	inherit (lib) mkIf mkMerge;
+in mkIf config.programs.vscode.enable (mkMerge [
+	{
+		"24.11" = {
+			programs.vscode = {
+				package = pkgs.vscodium;
+				extensions = with pkgs.vscode-extensions; [
+					editorconfig.editorconfig
+					mkhl.direnv
+					jnoortheen.nix-ide
+					oderwat.indent-rainbow
+				];
+				userSettings = {
+					# Zoom with mouse wheel
+					"editor.mouseWheelZoom" = true;
 
-			# Highlight invisible characters
-			"editor.renderWhitespace" = "all";
+					# Highlight invisible characters
+					"editor.renderWhitespace" = "all";
 
-			"window.zoomLevel" = 2;
+					"window.zoomLevel" = -1;
 
-			# Set Theme
-			# FIXME(Krey): Needs to be packaged
-			#"workbench.colorTheme" = "Shades of Purple (Super Dark)";
-			"workbench.colorTheme" = "Abyss";
+					"workbench.colorTheme" = "Abyss"; # Set Theme
 
-			"window.newWindowDimensions" = "fullscreen";
+					"window.newWindowDimensions" = "fullscreen";
 
-			# To make the built-in web browser in vscodium to work
-			"browse-lite.chromeExecutable" = "${pkgs.ungoogled-chromium}/bin/chromium";
+					# To make the built-in web browser in vscodium to work
+					"browse-lite.chromeExecutable" = "${pkgs.ungoogled-chromium}/bin/chromium";
+				};
+			};
 		};
-	};
-}
+		"25.05" = {
+			# `programs.vscode.extensions` (24.11) -> `programs.vscode.profiles.default.extensions` (25.05)
+			programs.vscode = {
+				package = pkgs.vscodium;
+				profiles.default = {
+					extensions = with pkgs.vscode-extensions; [
+						editorconfig.editorconfig
+						mkhl.direnv
+						jnoortheen.nix-ide
+						oderwat.indent-rainbow
+					];
+					userSettings = {
+						# Zoom with mouse wheel
+						"editor.mouseWheelZoom" = true;
+
+						# Highlight invisible characters
+						"editor.renderWhitespace" = "all";
+
+						"window.zoomLevel" = -1;
+
+						"workbench.colorTheme" = "Abyss"; # Set Theme
+
+						"window.newWindowDimensions" = "fullscreen";
+
+						# To make the built-in web browser in vscodium to work
+						"browse-lite.chromeExecutable" = "${pkgs.ungoogled-chromium}/bin/chromium";
+					};
+				};
+			};
+		};
+	}."${lib.trivial.release}" or (throw "FIXME: Kreyren's vscode management doesn't include this release: ${lib.trivial.release}")
+])

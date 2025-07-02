@@ -2,10 +2,6 @@
 
 # Flake management of TUPAC system
 
-# FIXME-SECURITY(Krey): To Be Managed..
-# ⚠️ Mount point '/boot' which backs the random seed file is world accessible, which is a security hole! ⚠️
-# ⚠️ Random seed file '/boot/loader/.#bootctlrandom-seed048bca5ff68f0657' is world accessible, which is a security hole! ⚠️
-
 {
 	flake.nixosModules."nixos-tupac" = {
 		imports = [
@@ -15,7 +11,7 @@
 			self.nixosModules.users-kreyren
 			self.homeManagerModules."kreyren@tupac"
 			self.nixosModules.users-kira
-			self.homeManagerModules."kira@tupac"
+			# self.homeManagerModules."kira@tupac"
 
 			# Files
 			./config/bootloader.nix
@@ -26,11 +22,13 @@
 			./config/kernel.nix
 			./config/networking.nix
 			./config/nvidia.nix
+			./config/plymouth.nix
 			./config/power-management.nix
 			./config/printing.nix
 			./config/security.nix
 			./config/setup.nix
 			./config/sound.nix
+			./config/suspend-then-hibernate.nix
 			./config/vm-build.nix
 
 			./services/binfmt.nix

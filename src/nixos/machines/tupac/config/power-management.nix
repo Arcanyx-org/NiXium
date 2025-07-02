@@ -1,60 +1,96 @@
-{ pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
-# Module that implements suspend-then-hibernate for SINNENFREUDE
-# * https://gist.githubusercontent.com/mattdenner/befcf099f5cfcc06ea04dcdd4969a221/raw/14d15f8c634dc4cf28b41e76c7924979f35463ea/suspend-and-hibernate.nix
-#
+#! # Power Management of TUPAC
+#!
+#! Test Script:
+#!     $ echo "$(($(cat /sys/class/power_supply/BAT0/voltage_now) / 1000000 * $(cat /sys/class/power_supply/BAT0/current_now) / 1000000))"
+#!
+#! Credit:
+#! * https://gist.github.com/polamjag/a76f34a4991b35f9434a
+
+# This doesn't seem to change anything?
+			# * https://forums.gentoo.org/viewtopic-t-1068292-start-0.html
+
+# NOTE(Krey): Disabling cores on BAT seems to not be productive and leads to higher power consumption
+
+# Try  using pcie_aspm=force in kernel cli
+
+# sudo modprobe -r intel_powerclamp -- This module might be causing bad power efficiency
+
+# cat /sys/class/nvme/nvme0/power/runtime_status reports unsupported, unsure how to enable
 
 let
-	hibernateEnvironment = {
-		HIBERNATE_SECONDS = "300"; # 5 Minutes
-		HIBERNATE_LOCK = "/var/run/autohibernate.lock";
-		HIBERNATE_LOG = "/var/log/autohibernate.log";
-	};
-in {
-	services.logind = {
-		powerKey = "suspend"; # Give the user the ability to enforce suspension without hibernation through the power key
-		powerKeyLongPress = "poweroff"; # Long press power key will enforce poweroff
+	inherit (lib) mkIf mkMerge;
+in mkIf config.powerManagement.enable (mkMerge [
+	# TLP Management
+	(mkIf (config.services.tlp.enable == true) {
+		services.tlp.settings = {
+			TLP_ENABLE = 1; # Use TLP
 
-		lidSwitch = "suspend-then-hibernate";
+			# Platform Profiles
+			PLATFORM_PROFILE_ON_AC = "performance";
+			PLATFORM_PROFILE_ON_BAT = "low-power";
 
-		# FIXME(Krey): Figure out how to wake it up from suspend while on external power
-		lidSwitchExternalPower = "ignore";
-	};
+			# Set Governors depending on power input
+			CPU_SCALING_GOVERNOR_ON_AC = "performance"; # AC power
+			CPU_SCALING_GOVERNOR_ON_BAT = "powersave"; # BATTERY power
 
-	systemd.services."awake-after-suspend-for-a-time" = {
-		description = "Sets up the suspend so that it'll wake for hibernation";
-		wantedBy = [ "suspend.target" ];
-		before = [ "systemd-suspend.service" ];
-		environment = hibernateEnvironment;
-		script = ''
-			# If suspended on battery power..
-			if [ "$(cat /sys/class/power_supply/BAT0/status)" != "Charging" ]; then
-				curtime=$(date +%s)
-				echo "$curtime $1" >> "$HIBERNATE_LOG"
-				echo "$curtime" > "$HIBERNATE_LOCK"
-				${pkgs.utillinux}/bin/rtcwake -m no -s "$HIBERNATE_SECONDS"
-			else
-				echo "$curtime: System is on AC power, skipping wake-up scheduling for hibernation." >> "$HIBERNATE_LOG"
-			fi
-		'';
-		serviceConfig.Type = "simple";
-	};
+			# Whether to use boost depending on power input
+			CPU_BOOST_ON_AC = 1;
+			CPU_BOOST_ON_BAT = 0;
 
-	systemd.services."hibernate-after-recovery" = {
-		description = "Hibernates after a suspend recovery due to timeout";
-		wantedBy = [ "suspend.target" ];
-		after = [ "systemd-suspend.service" ];
-		environment = hibernateEnvironment;
-		script = ''
-			curtime="$(date +%s)"
-			sustime="$(cat "$HIBERNATE_LOCK")"
-			rm "$HIBERNATE_LOCK"
-			if [ "$(($curtime - $sustime))" -ge "$HIBERNATE_SECONDS" ] ; then
-				systemctl hibernate
-			else
-				${pkgs.utillinux}/bin/rtcwake -m no -s 1
-			fi
-		'';
-		serviceConfig.Type = "simple";
-	};
-}
+			# Energy Profile Policy
+			CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+			CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+
+			CPU_DRIVER_OPMODE_ON_AC = "active";
+			CPU_DRIVER_OPMODE_ON_BAT = "passive";
+
+			# CPU Performance Scaling
+			CPU_MAX_PERF_ON_AC = 100;
+			CPU_MIN_PERF_ON_AC = 0;
+
+			CPU_MAX_PERF_ON_BAT = 10;
+			CPU_MIN_PERF_ON_BAT = 0;
+
+			# HWP
+			CPU_HWP_DYN_BOOST_ON_AC = 1;
+			CPU_HWP_DYN_BOOST_ON_BAT = 0;
+
+			# Intel GPU
+			INTEL_GPU_MIN_FREQ_ON_AC = 100; # MHz
+			INTEL_GPU_MIN_FREQ_ON_BAT = 100; # MHz
+			INTEL_GPU_MAX_FREQ_ON_AC = 1400; # MHz
+			INTEL_GPU_MAX_FREQ_ON_BAT = 1400; # MHZ
+			INTEL_GPU_BOOST_FREQ_ON_AC = 1400; # MHZ
+			INTEL_GPU_BOOST_FREQ_ON_BAT = 1400; # MHZ
+
+			# RAM
+			MEM_SLEEP_ON_AC = "s2idle";
+			MEM_SLEEP_ON_BAT = "deep";
+
+			# SATA aggressive link power management (ALPM):
+			# min_power/medium_power/max_performance
+			SATA_LINKPWR_ON_AC = "max_performance";
+			SATA_LINKPWR_ON_BAT	=	"min_power";
+
+			# PCI Express Active State Power Management (PCIe ASPM):
+			# default/performance/powersave
+			# Hint: needs kernel boot option pcie_aspm=force on some machines
+			PCIE_ASPM_ON_AC = "performance";
+			PCIE_ASPM_ON_BAT = "powersave";
+
+			# WiFi power saving mode: 1=disable/5=enable
+			WIFI_PWR_ON_AC = 1;
+			WIFI_PWR_ON_BAT = 5;
+
+			# Runtime Power Management for pci(e) bus devices
+			RUNTIME_PM_ON_AC = "on";
+			RUNTIME_PM_ON_BAT = "auto";
+
+			# Battery
+			START_CHARGE_THRESH_BAT0 = 0;
+			STOP_CHARGE_THRESH_BAT0 = 100;
+		};
+	})
+])

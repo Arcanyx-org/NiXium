@@ -139,7 +139,7 @@ in {
 		"org/gnome/settings-daemon/plugins/power" = {
 			power-button-action = "hibernate";
 			# NOTE(Krey): It's a very loud system that keeps annoying people when I leave it on AC and running so after 2 H make it suspend
-			sleep-inactive-ac-timeout = 7200; # 2 Hours
+			sleep-inactive-ac-timeout = 2*60*60; # 7200 Seconds -> 2 Hours
 			sleep-inactive-ac-type = "suspend";
 		};
 

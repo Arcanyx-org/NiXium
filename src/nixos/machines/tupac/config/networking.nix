@@ -5,8 +5,19 @@
 let
 	inherit (lib) mkForce;
 in {
-	networking.networkmanager.enable = mkForce true; # Always use NetworkManager over the default
-
-	# FIXME-QA(Krey): Use DHCP only on set adapters
+	# FIXME-QA(Krey): Enable DHCP only on specified adapters
+	# FIXME-QA(Krey): Set to false by `/nixos/modules/services/networking/networkmanager.nix`, better management needed
 	networking.useDHCP = mkForce true; # Use DHCP on all adapters
+	# networking.interfaces.eno1.useDHCP = lib.mkDefault true;
+
+	# Always use network manager for convinience
+	# FIXME-QA(Krey): Set to false by `/nixos/modules/services/networking/networkmanager.nix`, better management needed
+	networking.networkmanager.enable = mkForce true;
+
+	networking.firewall.allowedTCPPorts = [
+		# FIXME-QA(Krey): Make sure to apply these only if the relevant app is used
+		21118 # Rust Desk
+		1716 # KDE Connect
+		40000 # SimpleX (https://github.com/simplex-chat/simplex-chat/issues/3425#issuecomment-2336520556)
+	];
 }

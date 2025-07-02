@@ -53,11 +53,13 @@ in {
 				nixosModules.system-time
 				nixosModules.system-wifi
 
+				nixosModules.machine-flexy
 				nixosModules.machine-ignucius
 				nixosModules.machine-lengo
-				nixosModules.machine-morph
+				# nixosModules.machine-morph
 				nixosModules.machine-mracek
 				nixosModules.machine-sinnenfreude
+				nixosModules.machine-tupac
 
 				# {
 				# 	sops.defaultSopsFile = ./.sops.yaml;

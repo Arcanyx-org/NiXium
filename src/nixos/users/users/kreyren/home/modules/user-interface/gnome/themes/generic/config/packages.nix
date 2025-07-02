@@ -18,6 +18,7 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
 
 	{
+		# FIXME(Krey): Move this to the extension management
 		home.packages = [
 			# Include the expected extensions
 				pkgs.gnomeExtensions.removable-drive-menu
@@ -27,6 +28,7 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 				pkgs.gnomeExtensions.desktop-cube
 				pkgs.gnomeExtensions.burn-my-windows
 				pkgs.gnomeExtensions.caffeine
+				pkgs.gnomeExtensions.space-bar
 		];
 	}
 ])

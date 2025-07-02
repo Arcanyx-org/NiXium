@@ -1,8 +1,10 @@
-{ pkgs, ... }:
+{ config, pkgs, lib, unstable, ... }:
 
 # The Setup of TUPAC system
 
-{
+let
+	inherit (lib) mkIf;
+in {
 	networking.hostName = "tupac";
 
 	boot.impermanence.enable = true; # Whether To Use Impermanence
@@ -12,41 +14,103 @@
 	nix.distributedBuilds = true; # Perform distributed builds
 
 	programs.adb.enable = true;
-	programs.steam.enable = true;
-	programs.noisetorch.enable = true; # Microphone filtering
+	programs.gamemode.enable = true;
+		programs.gamemode.enableRenice = true;
+		programs.gamemode.settings = {
+			general = {
+				renice = 10;
+			};
 
+			# Warning: GPU optimisations have the potential to damage hardware
+			gpu = {
+				apply_gpu_optimisations = "accept-responsibility";
+				gpu_device = 1;
+			};
+
+			custom = {
+				start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
+				end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
+			};
+		};
+	programs.steam.enable = false;
+	programs.noisetorch.enable = true; # Microphone filtering
 	programs.nix-ld.enable = true;
+	programs.appimage = {
+		enable = true;
+		binfmt = true;
+		package = pkgs.appimage-run.override {
+			extraPkgs = pkgs: [
+				# FIXME(Krey): Once we figure out what packages are in general needed for appimages then move this into a global configuration
+				# Some packages need this dependency, added for utility - https://github.com/NixOS/nixpkgs/issues/350383#issuecomment-2433316461
+				pkgs.libepoxy
+			];
+		};
+	};
+
+	xdg.portal.xdgOpenUsePortal = true;
 
 	services.flatpak.enable = true;
 	services.openssh.enable = true;
 	services.tor.enable = true;
 	services.hardware.openrgb.enable = true;
+	# TODO(Krey): Pending Management
+		services.usbguard.dbus.enable = false;
+	services.smartd.enable = true;
+	services.clamav.daemon.enable = true;
+	services.printing.enable = true;
+	programs.localsend.enable = true;
+		programs.localsend.openFirewall = true;
+	# services.rustdesk-server.enable = true;
+	# 	services.rustdesk-server.openFirewall = tru
+	services.usbmuxd.enable = true;
+	# services.undervolt = {
+	# 	enable = true;
+	# 	tempAc = 97;
+	# 	tempBat = 75;
+	# 	# coreOffset = -100;
+	# 	# gpuOffset = -30;
+	# 	#uncoreOffset = -50;
+	# 	#analogioOffset = -50;
+	# };
+
+	# Power Management
+	powerManagement.enable = true;
+	powerManagement.powertop.enable = true;
+	services.tlp.enable = true;
+		services.power-profiles-daemon.enable = false;
+
+	networking.wireguard.enable = false;
+
+	security.sudo.enable = false;
+	security.sudo-rs.enable = true;
+
+	virtualisation.waydroid.enable = true;
+	virtualisation.docker.enable = true;
+
+	nix.channel.enable = true; # To be able to use nix repl :l <nixpkgs> as loading flake loads only 16 variables
+
+		users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
+		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
+	];
+	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEpbUbuXYWfIdh4w3FI++1/1Zwhg/ow/FVr8r2kC1bhL";
 
 	# Desktop Environment
 	services.xserver.enable = true;
 	services.xserver.displayManager.gdm.enable = true;
 	services.xserver.desktopManager.gnome.enable = true;
-	programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
+		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
+		services.xserver.displayManager.gdm.autoSuspend = false;
+		# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has CONSTANT issues
 
-	# Japanese Keyboard Input
-	# i18n.inputMethod.enabled = "fcitx5";
-	# i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
-
-	# Which locales to support
-	i18n.supportedLocales = [
-		"en_US.UTF-8/UTF-8"
-		"cs_CZ.UTF-8/UTF-8"
-	];
-
-	time.timeZone = "Europe/Prague";
+	time.timeZone = "Europe/Vienna";
 
 	age.secrets.tupac-ssh-ed25519-private.file = ../secrets/tupac-ssh-ed25519-private.age; # Declare private key
 
 	hardware.steam-hardware.enable = true; # Compatibility for Steam Controller
 
-	hardware.enableRedistributableFirmware = true; 	# There should be nothing on this system that needs proprietary firmware, but the user 'kira' likely uses proprietary peripherals
-
-	hardware.cpu.intel.updateMicrocode = true; # Use the proprietary CPU microcode as the CPU won't work without it
+		# Necessary Evil :(
+	hardware.enableRedistributableFirmware = true;
+	hardware.cpu.intel.updateMicrocode = true;
 
 	# FIXME(Krey): This should be managed elsewhere
 	nixpkgs.hostPlatform = "x86_64-linux";

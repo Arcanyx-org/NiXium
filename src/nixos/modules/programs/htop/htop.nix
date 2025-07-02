@@ -3,5 +3,5 @@
 # System htop configuration
 
 {
-	environment.systemPackages = [ pkgs.htop ]; # Install hop On All Systems
+	environment.systemPackages = [ pkgs.htop ]; # Install htop On All Systems
 }
