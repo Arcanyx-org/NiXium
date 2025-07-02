@@ -10,10 +10,11 @@
 			# Users
 			self.nixosModules.users-kreyren
 			self.homeManagerModules."kreyren@tupac"
-			self.nixosModules.users-kira
+			# self.nixosModules.users-kira
 			# self.homeManagerModules."kira@tupac"
 
 			# Files
+			./config/autoUpgrade.nix
 			./config/bootloader.nix
 			./config/disks.nix
 			./config/firmware.nix

@@ -32,4 +32,6 @@ in {
 	age.secrets.mracek-ssh-ed25519-private.file = ../secrets/mracek-ssh-ed25519-private.age; # Declare private key
 
 	nixpkgs.hostPlatform = "x86_64-linux";
+
+	system.autoUpgrade.enable = true;
 }

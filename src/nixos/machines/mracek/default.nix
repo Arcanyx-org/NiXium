@@ -19,6 +19,7 @@
 			./services/vaultwarden.nix
 			./services/vikunja.nix
 
+			./config/autoUpgrade.nix
 			./config/bootloader.nix
 			./config/disks.nix
 			./config/firmware.nix

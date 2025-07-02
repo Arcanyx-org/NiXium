@@ -114,4 +114,6 @@ in {
 
 	# FIXME(Krey): This should be managed elsewhere
 	nixpkgs.hostPlatform = "x86_64-linux";
+
+	system.autoUpgrade.enable = true;
 }
