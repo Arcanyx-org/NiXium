@@ -33,7 +33,7 @@ in mkMerge [
 		};
 
 		"25.05" = {
-			hardware.pulseaudio.enable = false;
+			services.pulseaudio.enable = false;
 
 			services.pipewire = {
 				enable = false;
