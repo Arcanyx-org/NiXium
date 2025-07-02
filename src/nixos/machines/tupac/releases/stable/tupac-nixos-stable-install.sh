@@ -75,8 +75,7 @@ fi
 #! Set up the identity file
 status "Verifying the Identity File"
 
-# FIXME(Krey): When using sudo this tries to look for /root/.ssh/id_ed25519 instead of the user
-[ -n "$ragenixIdentity" ] || ragenixIdentity="/home/kreyren/.ssh/id_ed25519" # Try to use the default path
+[ -n "$ragenixIdentity" ] || ragenixIdentity="/home/$SUDO_USER/.ssh/id_ed25519" # Try to use the default path
 
 # If the identity file is provided then use it to decrypt the secrets otherwise use hard-coded secrets
 if [ -s "$ragenixIdentity" ]; then
