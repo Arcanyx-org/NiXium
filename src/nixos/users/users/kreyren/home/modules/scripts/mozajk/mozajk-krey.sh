@@ -41,7 +41,7 @@ status "Got input: $input"
 
 # Loop through the string in chunks of 8 characters
 # FIXME(Krey): Implement word-aware chunking
-[ -z "$input" ] || {
+while [ -n "$input" ]; do
 		chunk="${input:0:8}" # Take first 8 characters
 		input="${input:8}" # Remove first 8 characters
 
@@ -50,4 +50,4 @@ status "Got input: $input"
 		curl "http://10.48.0.13:10001/?text=$chunk" # Send the chunk
 
 		[ -z "$input" ] || sleep 5 # Wait for next update
-}
+done
