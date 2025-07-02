@@ -19,6 +19,7 @@ in mkIf config.services.printing.enable {
 				description = "Base48 Printer";
 				location = "The Base48 Hackerspace";
 				# FIXME(Krey): This assumes connection to the local WiFI which i rarelly do -> Figure out ideally Tor or clearweb service
+				# FIXME(Krey): This works, but it's causing the service to fail after evaluation as ensurePrinters is trying to reach the system..
 				deviceUri = "ipp://10.48.0.134/ipp";
 				# deviceUri = "dnssd://HP%20LaserJet%20P4015%20%5B24B6F0%5D._printer._tcp.local/";
 				# deviceUri = "ipp://10.48.0.134/ipp";
