@@ -32,6 +32,7 @@ in {
 					unstable = self.inputs.nixpkgs-unstable.legacyPackages."${system}";
 					stable = self.inputs.nixpkgs.legacyPackages."${system}";
 					nixpkgs-24_05 = self.inputs.nixpkgs-24_05.legacyPackages."${system}";
+					nixpkgs-24_11 = self.inputs.nixpkgs-24_11.legacyPackages."${system}";
 
 					aagl = self.inputs.aagl.packages."${system}";
 					polymc = self.inputs.polymc.packages."${system}";

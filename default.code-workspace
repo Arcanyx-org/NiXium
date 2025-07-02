@@ -26,14 +26,17 @@
 				}
 			}
 		},
-		"bracket-pair-colorizer-2.excludedLanguages": [
-			"nix" // Does weird and confusing coloring, seems not compatible
-		],
 		"editor.wordWrap": "on", // Enforce word-wrapped coding style
 		"terminal.integrated.defaultProfile.linux": "bash", // Use bash by default
 		"terminal.integrated.env.linux": {
 			"EDITOR": "nano", // To open git things in codium
 		},
+
+		// Pair colorization
+		"editor.bracketPairColorization.enabled": true,
+		"editor.guides.bracketPairs": "active",
+		"editor.guides.bracketPairsHorizontal": "active",
+		"editor.guides.highlightActiveIndentation": false,
 
 		// Gtt
 		"git.autofetch": true,
@@ -185,7 +188,6 @@
 			"medo64.render-crlf",
 			"aaron-bond.better-comments",
 			"mkhl.direnv",
-			"coenraads.bracket-pair-colorizer-2",
 			"editorconfig.editorconfig",
 			"pkief.material-icon-theme",
 			"markwylde.vscode-filesize",

@@ -102,16 +102,6 @@ in {
 		services.xserver.displayManager.gdm.autoSuspend = false;
 		# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has CONSTANT issues
 
-	# Japanese Keyboard Input
-	i18n.inputMethod.enabled = "fcitx5";
-	i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
-
-	# Which locales to support
-	i18n.supportedLocales = [
-		"en_US.UTF-8/UTF-8"
-		"cs_CZ.UTF-8/UTF-8"
-	];
-
 	time.timeZone = "Europe/Vienna";
 
 	age.secrets.tupac-ssh-ed25519-private.file = ../secrets/tupac-ssh-ed25519-private.age; # Declare private key

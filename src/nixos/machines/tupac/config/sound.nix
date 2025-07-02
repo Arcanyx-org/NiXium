@@ -33,7 +33,8 @@
 		security.rtkit.enable = true; # Allow real-time scheduling priority to user
 	};
 	"25.05" = {
-		hardware.pulseaudio.enable = false; # Whether to use pulseaudio, requires to be turned off if pipewire is used
+		# `hardware.pulseaudio` (24.11) -> `services.pulseaudio` (25.05)
+		services.pulseaudio.enable = false; # Whether to use pulseaudio, requires to be turned off if pipewire is used
 		services.pipewire.enable = true; # Whether to use pipewire
 
 		# Pipewire
