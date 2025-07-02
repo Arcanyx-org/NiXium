@@ -105,8 +105,8 @@
 				inputs.nixpkgs.follows = "nixpkgs-24_05";
 			};
 			aagl-24_11 = {
-				url = "github:ezKEa/aagl-gtk-on-nix/release-24.05";
-				inputs.nixpkgs.follows = "nixpkgs-24_05";
+				url = "github:ezKEa/aagl-gtk-on-nix/release-24.11";
+				inputs.nixpkgs.follows = "nixpkgs-24_11";
 			};
 			aagl-24_05 = {
 				url = "github:ezKEa/aagl-gtk-on-nix/release-24.05";
