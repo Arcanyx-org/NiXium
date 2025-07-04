@@ -28,21 +28,19 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 						#picture-uri = "${pkgs.gnome.gnome-backgrounds}/share/backgrounds/gnome/blobs-l.svg";
 					};
 
-					# Setup Extensions
+				# Setup Extensions
 					"org/gnome/shell" = {
 						disable-user-extensions = false;
 
 						# The extension names can be found through `$ gnome-extensions list`
 						enabled-extensions = [
-							"Vitals@CoreCoding.com"
-							"drive-menu@gnome-shell-extensions.gcampax.github.com"
-							"blur-my-shell@aunetx"
-							"user-theme@gnome-shell-extensions.gcampax.github.com"
-							"gsconnect@andyholmes.github.io"
-							"custom-accent-colors@demiskp"
-							"desktop-cube@schneegans.github.com"
-							"caffeine@patapon.info"
-							"space-bar@luchrioh"
+							pkgs.gnomeExtensions.removable-drive-menu.extensionUuid
+							pkgs.gnomeExtensions.vitals.extensionUuid
+							pkgs.gnomeExtensions.blur-my-shell.extensionUuid
+							pkgs.gnomeExtensions.gsconnect.extensionUuid
+							pkgs.gnomeExtensions.desktop-cube.extensionUuid
+							pkgs.gnomeExtensions.caffeine.extensionUuid
+							pkgs.gnomeExtensions.space-bar.extensionUuid
 						];
 
 						disabled-extensions = [];
@@ -51,12 +49,15 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 		}
 
 		{
+			"24.05" = {
+				# This extension has been implemented in GNOME starting Nixpkgs >=24.11
+				dconf.settings."org/gnome/shell".enabled-extensions = [ "custom-accent-colors@demiskp" ]; # Enable custom accent color
+			};
 			"24.11" = {
 				dconf.settings."org/gnome/desktop/interface".accent-color = "purple"; # Set Accent Color
 			};
-			# FIXME-QA(Krey): Duplicate Code
 			"25.05" = {
 				dconf.settings."org/gnome/desktop/interface".accent-color = "purple"; # Set Accent Color
-			};
+			}; # No Changes Needed
 		}.${lib.trivial.release} or (throw "Release '${lib.trivial.release}' is not implemented")
 ])

@@ -39,7 +39,8 @@
 
 			open = false; # Whether to use the open-source driver
 
-			nvidiaSettings = true; # Enable Nvidia settings menu
+			# NOTE(Krey): Useless app that doesn't let us change anything meaningful
+			nvidiaSettings = false; # Whether to include Nvidia settings menu
 
 			prime = {
 				sync.enable = false; # Sync Mode (always uses the dGPU at the cost of battery efficiency, usually designed for non-portable configuration)

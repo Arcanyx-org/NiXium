@@ -1,6 +1,6 @@
-{ config, lib, ... }:
+{ lib, ... }:
 
-# Hardware-acceleration management of TUPAC
+# Hardware acceleration for TUPAC system
 
 {
 	"24.05" = {

@@ -27,9 +27,9 @@ let
 in {
 	config = mkMerge [
 		{
-			age.secrets.tupac-disks-password.file = ../secrets/tupac-disks-password.age;
+			# age.secrets.tupac-disks-password.file = ../secrets/tupac-disks-password.age;
 
-			age.secrets.tupac-unlock-key.file = ../secrets/tupac-unlock-key.age; # KeyFile for unlocking the filesystems
+			# age.secrets.tupac-unlock-key.file = ../secrets/tupac-unlock-key.age; # KeyFile for unlocking the filesystems
 
 			# Needed to find the SD Card device during initrd stage
 			boot.initrd.kernelModules = [

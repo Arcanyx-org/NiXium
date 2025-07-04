@@ -2,6 +2,8 @@
 
 # The Setup of TUPAC system
 
+# FIXME(Krey): Move this into releases as this changes with new release
+
 let
 	inherit (lib) mkIf;
 in {
@@ -57,7 +59,7 @@ in {
 		services.usbguard.dbus.enable = false;
 	services.smartd.enable = true;
 	services.clamav.daemon.enable = true;
-	services.printing.enable = true;
+	# services.printing.enable = true;
 	programs.localsend.enable = true;
 		programs.localsend.openFirewall = true;
 	# services.rustdesk-server.enable = true;
@@ -72,6 +74,7 @@ in {
 	# 	#uncoreOffset = -50;
 	# 	#analogioOffset = -50;
 	# };
+	services.wivrn.enable = true;
 
 	# Power Management
 	powerManagement.enable = true;

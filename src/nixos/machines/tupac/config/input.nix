@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 
-# Inputmanagement of TUPAC
+# Input Management of TUPAC
 
 {
 	"24.05" = {
