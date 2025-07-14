@@ -4,7 +4,7 @@
 
 let
 	inherit (lib) mkForce;
-	targetFlake = "github:kreyren/nixos-config/add-lengo#nixos-lengo-stable-install";
+	targetFlake = "github:kreyren/nixos-config/tinker#nixos-lengo-stable-install";
 in {
 	flake.nixosConfigurations."nixos-lengo-stable" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
@@ -109,6 +109,8 @@ in {
 					derivation = "nixos-lengo-stable";
 
 					machineName = "lengo";
+
+					inherit targetFlake;
 				};
 				text = builtins.readFile ./lengo-nixos-stable-install.sh;
 			};
@@ -131,6 +133,11 @@ in {
 
 					boot.kernelParams = [
 						"copytoram" # Run the installer from the Random Access Memory
+					];
+
+					boot.blacklistedKernelModules = [
+						# The driver causes conflicts with ACPI, so it's disabled (https://forums.gentoo.org/viewtopic-t-1068292-start-0.html)
+						"lpc_ich"
 					];
 
 					environment.systemPackages = [
@@ -173,6 +180,10 @@ in {
 					# Connect to FreeNet if the system doesn't have access to the internet by itself
 					networking.wireless.enable = true;
 					networking.wireless.networks."FreeNet" = { };
+
+					# SECURITY(Krey): This introduces blobs that can't be reviewed beyond a reasonable doubt to not include malicious code, but the APU will not work without them :( - Pending https://github.com/openSIL/openSIL/issues/24 to improve that
+					hardware.enableRedistributableFirmware = true;
+					hardware.cpu.amd.updateMicrocode = true;
 				}
 
 				{

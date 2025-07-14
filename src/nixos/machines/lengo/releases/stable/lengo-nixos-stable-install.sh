@@ -8,6 +8,7 @@
 	: "$secretSSHHostKeyPath" # Path to the private SSH key of the system
 	: "$nixiumDoNotReboot" # Internal variable to prevent reboot after installation for special use-cases
 	: "$derivation" # Derivation to be deployed
+	: "$targetFlake" # Expected flake to be deployed
 }
 
 ### [START] Export this outside [START] ###
@@ -24,7 +25,7 @@ warn() { printf "WARNING: %s\n" "$1" ;} # Warning Helper
 # FIXME(Krey): This should be managed for all used scripts e.g. runtimeEnv
 # Refer to https://github.com/srid/flake-root/discussions/5 for details tldr flake-root doesn't currently allow parsing the specific commit
 #[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits" | jq -r '.[0].sha')"
-[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:Arcanyx-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/Arcanyx-org/NiXium/commits?sha=add-lengo" | jq -r '.[0].sha')"
+[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="$targetFlake"
 
 ### [END] Export this outside [END] ###
 
