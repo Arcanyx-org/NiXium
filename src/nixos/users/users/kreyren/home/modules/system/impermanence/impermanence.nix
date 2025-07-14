@@ -83,11 +83,16 @@ in {
 			# PrusaSliceer
 				# FIXME(Krey): Only include this when prusa slicer is installed
 				".config/PrusaSlicer"
+
+			# Doeion
+				# FIXME(Krey): Only include this when dorion is installed
+				".config/dorion"
 		];
 		files = [
 			# FIXME-PURITY(Krey): This should be managed declaratively
 			".config/monitors.xml"
 			(mkIf config.programs.nix-index.enable ".cache/nix-index/files")
+			(mkIf nixosConfig.services.xserver.desktopManager.gnome.enable ".local/share/gnome-shell/application_state") # GNOME Well-Being Usage Data
 		];
 
 		allowOther = true; # FIXME-DOCS(Krey): What is this used for?

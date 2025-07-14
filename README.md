@@ -116,6 +116,12 @@ This repository claims the "NX" as it's Custom Top Level Domain ("cTLD") and kin
 
 ## Contributions
 
+### Key words for use to Indicate Requirement Levels
+
+This repository uses [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) keywords for indication of the requirement revels.
+
+Please familiarize yourself with this short standard prior to contributing to the repository: https://soundcloud.com/ericwbailey/rfc-2119
+
 ### Generic Changes
 
 All changes need to be discussed in a form of an issue to be approved for merge with the exception of "Tagged Code" which is always up for grabs.

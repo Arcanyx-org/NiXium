@@ -36,7 +36,7 @@ in {
 
 	home.packages = [
 		pkgs.fractal
-		pkgs.discord
+		unstable.dorion
 		pkgs.dissent
 		unstable.simplex-chat-desktop
 		unstable.signal-desktop
@@ -81,7 +81,7 @@ in {
 		pkgs.yt-dlp
 		pkgs.android-tools
 		pkgs.picocom # Interface for Serial Console devices
-		pkgs.bottles # Wine Management Tool
+		(pkgs.bottles.override { removeWarningPopup = true; }) # Wine Management Tool
 		pkgs.mtr # Packet Loss Tester
 		pkgs.sc-controller # Steam Controller Software
 		pkgs.monero-gui
@@ -101,6 +101,30 @@ in {
 		unstable.hydralauncher
 		unstable.nexusmods-app
 		pkgs.flashrom
+		(pkgs.geary.overrideAttrs (super: {
+			# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
+			postInstall = (super.postInstall or "") + ''
+				mv "$out/bin/geary" "$out/bin/.geary-wrapped" # Rename the old binary
+
+				# Wrap in short script that prefixes the command with `torsocks`
+				cat > "$out/bin/geary" <<-SCRIPT
+					#!${pkgs.busybox}/bin/sh
+					script_dir=\$(dirname "\$(readlink -f "\$0")")
+					exec torsocks "\$script_dir/.geary-wrapped" "\$@"
+				SCRIPT
+
+				# Ensure that it's executable
+				chmod +x "$out/bin/geary"
+			'';
+		}))
+
+		# (pkgs.writeShellScriptBin "geary" ''
+		# 	exec ${pkgs.torsocks}/bin/torsocks ${pkgs.geary}/bin/geary "$@"
+		# '')
+
+
+		pkgs.nmap
 
 		# Emulators
 		# pkgs.mame # Arcade Games
@@ -179,22 +203,28 @@ in {
 			include-static-info = false;
 			menu-centered = false;
 			network-speed-format = 1;
-			position-in-panel = 2;
+			position-in-panel = 1;
 			show-battery = true;
 			show-gpu = true;
 			update-time = 3;
 			use-higher-precision = true;
 
 			hot-sensors = [
-				"_memory_usage_"
 				"_system_load_1m_"
-				"__temperature_avg__"
-				"_temperature_gpu_"
-				"_voltage_bat0_in0_"
+				"_memory_usage_"
+				"_temperature_acpi_thermal zone_" # Hot Spot Temperature
+				"_gpu#1_temperature_"
 				"__network-rx_max__"
 				"__network-tx_max__"
-				"_storage_free_"
+				"_storage_free_" # To show remaining in impermanence
+				"_voltage_bat0_in0_" # Show the rate of (dis)charging
+				"_battery_time_left_"
 			];
+		};
+
+		"org/gnome/desktop/screen-time-limits" = {
+			# FIXME(Krey): It's broken and constantly sets my display into grayscale even when it's new day
+			daily-limit-enabled = false;
 		};
 
 		"org/gnome/shell" = {
@@ -207,7 +237,8 @@ in {
 				"blur-my-shell@aunetx"
 				"user-theme@gnome-shell-extensions.gcampax.github.com"
 				"gsconnect@andyholmes.github.io"
-				"custom-accent-colors@demiskp"
+				# FIXME(Krey): Not valid for 25.05, needs to be release-managed
+				# "custom-accent-colors@demiskp"
 				"desktop-cube@schneegans.github.com"
 				"caffeine@patapon.info"
 			];

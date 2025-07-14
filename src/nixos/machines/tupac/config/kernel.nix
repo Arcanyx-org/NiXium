@@ -5,7 +5,8 @@
 let
 	inherit (lib) mkForce mkIf;
 in {
-	boot.kernelPackages = pkgs.linuxPackages_xanmod;
+	# boot.kernelPackages = pkgs.linuxPackages_xanmod;
+	boot.kernelPackages = pkgs.linuxPackages;
 
 	# boot.kernelParams = [
 	# 	# SECURITY(Krey): Used to manage CPU Vulnerabilities
@@ -15,7 +16,7 @@ in {
 	# ];
 
 	# SECURITY(Krey): Has vulnerable CPU so this has to be managed
-	security.allowSimultaneousMultithreading = mkForce false; # Disable Simultaneous Multi-Threading as on this system it exposes unwanted attack vectors and CPU vulnerabilities
+	security.allowSimultaneousMultithreading = mkForce true; # Disable Simultaneous Multi-Threading as on this system it exposes unwanted attack vectors and CPU vulnerabilities
 
 	# SECURITY(Krey): NiXium-important packages require this atm
 	# * vscodium - Pending management on MORPH (remote codium server)

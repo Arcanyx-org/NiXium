@@ -24,9 +24,11 @@ warn() { printf "WARNING: %s\n" "$1" ;} # Warning Helper
 # FIXME(Krey): This should be managed for all used scripts e.g. runtimeEnv
 # Refer to https://github.com/srid/flake-root/discussions/5 for details tldr flake-root doesn't currently allow parsing the specific commit
 #[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:NiXium-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/NiXium-org/NiXium/commits" | jq -r '.[0].sha')"
-[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:kreyren/nixos-config/$(curl -s -X GET "https://api.github.com/repos/kreyren/nixos-config/commits?sha=add-lengo" | jq -r '.[0].sha')"
+[ -n "$FLAKE_ROOT" ] || FLAKE_ROOT="github:Arcanyx-org/NiXium/$(curl -s -X GET "https://api.github.com/repos/Arcanyx-org/NiXium/commits?sha=add-lengo" | jq -r '.[0].sha')"
 
 ### [END] Export this outside [END] ###
+
+status "Welcome to the NiXium Installer"
 
 [ "$(id -u || true)" = 0 ] || die 126 "This script must be executed as the root user" # Ensure that we are root
 
@@ -69,9 +71,19 @@ else # We assume that ragenix is not deployed on the target system
 fi
 
 #! Set up the identity file
+#! * The path to the private ed25519 key might be provided by Nix via 'secretSSHHostKeyPath' variable
+
 status "Verifying the Identity File"
 
-[ -n "$ragenixIdentity" ] || ragenixIdentity="$HOME/.ssh/id_ed25519" # Try to use the default path
+[ -n "$ragenixIdentity" ] || {
+	if [ -f "$secretSSHHostKeyPath" ]; then
+		ragenixIdentity="$secretSSHHostKeyPath" # Use the private key if it's provided
+		status "Using supplied private key"
+	else
+		ragenixIdentity="$HOME/.ssh/id_ed25519" # Try to use the default path
+		warn "Supplied private key not found, defaulting to '$HOME/.ssh/id_ed25519', this EXPECTS this key provided manually!"
+	fi
+}
 
 # If the identity file is provided then use it to decrypt the secrets otherwise use hard-coded secrets
 if [ -f "$ragenixIdentity" ]; then
@@ -82,6 +94,8 @@ if [ -f "$ragenixIdentity" ]; then
 	[ -s "/run/agenix/$machineName-ssh-ed25519-private" ] || age --identity "$ragenixIdentity" --decrypt --output "/run/agenix/$machineName-ssh-ed25519-private" "$secretSSHHostKeyPath"
 
 	status "Decrypting of required secrets was successful"
+
+	warn "The user private keys are not included as these have dangerous access to the infrastructure and we are not confident in post-quantum management until Q-Day, the user private keys have to be supplied manually for home-manager to not fail deployment of user's home"
 else
 	status "Required Identity File was not found, managing by using hard-coded secrets"
 
@@ -89,7 +103,12 @@ else
 
 	[ -s "/run/agenix/$machineName-disks-password" ] || echo "000000" > "/run/agenix/$machineName-disks-password"
 
+	warn "Disk encryption password set to INSECURE DEFAULT '000000'"
+
 	[ -s "/run/agenix/$machineName-ssh-ed25519-private" ] || ssh-keygen -f "/run/agenix/$machineName-ssh-ed25519-private" -N ""
+
+	warn "Generated NEW PRIVATE KEY as none was supplied this needs to be adjusted in ragenix otherwise the system's deployment will fail"
+	warn "The public key: $(ssh-keygen -f "/run/agenix/$machineName-ssh-ed25519-private" -y || true)"
 fi
 
 #! Format the disks
@@ -105,8 +124,8 @@ disko \
 mount -o remount,size=30G,noatime /nix/.rw-store
 mount -o remount,size=5G,noatime /mnt
 
-#! # Insert the secret
-#! This is used to manage the chicken-and-an-egg problem with assigning system cryptographical keys
+#! Insert the secret
+#! * This is used to manage the chicken-and-an-egg problem with assigning system cryptographical keys
 status "Injecting cryptographical identification"
 mkdir --verbose --parents /mnt/nix/persist/system/etc/ssh # Create the Directory
 age \
@@ -126,10 +145,10 @@ nixos-install \
 	--flake "$FLAKE_ROOT#$derivation"
 
 #! Flash the Embedded Controller
-# FIXME(Krey)
+# FIXME(Krey): No idea how to manage without OpenSil
 
 #! Flash Coreboot
-# FIXME(Krey): Management at https://github.com/NiXium-org/coreboot/issues/2
+# FIXME(Krey): Management at https://github.com/NiXium-org/coreboot/issues/2, pending AMD releasing OpenSil
 
 #! Reboot in the new Operating System
 [ "$nixiumDoNotReboot" = 0  ] || {

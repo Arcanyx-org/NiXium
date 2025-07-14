@@ -20,7 +20,7 @@ in mkIf config.services.wivrn.enable {
 	services.wivrn.openFirewall = true; # Open ports for Wivrn
 
 	# Only run when wivrn app is openned
-	services.wivrn.autoStart = false;
+	services.wivrn.autoStart = true;
 
 	services.wivrn.monadoEnvironment = {
 		# STEAMVR_LH_ENABLE = "1";

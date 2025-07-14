@@ -5,7 +5,7 @@
 # FIXME(Krey): Move this into releases as this changes with new release
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) mkIf mkForce;
 in {
 	networking.hostName = "tupac";
 
@@ -29,10 +29,10 @@ in {
 				gpu_device = 1;
 			};
 
-			custom = {
-				start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
-				end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
-			};
+			# custom = {
+			# 	start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
+			# 	end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
+			# };
 		};
 	programs.steam.enable = false;
 	programs.noisetorch.enable = true; # Microphone filtering
@@ -45,6 +45,16 @@ in {
 				# FIXME(Krey): Once we figure out what packages are in general needed for appimages then move this into a global configuration
 				# Some packages need this dependency, added for utility - https://github.com/NixOS/nixpkgs/issues/350383#issuecomment-2433316461
 				pkgs.libepoxy
+
+				# Required by Melon Launcher's AppImage (https://github.com/LykosAI/StabilityMatrix/issues/554)
+					# * Process terminated. Couldn't find a valid ICU package installed on the system. Please install libicu (or icu-libs) using your package manager and try again. Alternatively you can set the configuration flag System.Globalization.Invariant to true if you want to run with no globalization support. Please see https://aka.ms/dotnet-missing-libicu for more information.
+					# * May be by bypasseded with:
+					# ** DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+					# ** DOTNET_SYSTEM_GLOBALIZATION_PREDEFINED_CULTURES_ONLY=false
+					pkgs.icu77
+					pkgs.libxcrypt-legacy # https://github.com/LykosAI/StabilityMatrix/issues/554#issuecomment-2798941427
+					pkgs.python312
+					pkgs.python312Packages.torch
 			];
 		};
 	};
@@ -55,11 +65,12 @@ in {
 	services.openssh.enable = true;
 	services.tor.enable = true;
 	services.hardware.openrgb.enable = true;
+	services.gvfs.enable = true;
 	# TODO(Krey): Pending Management
 		services.usbguard.dbus.enable = false;
 	services.smartd.enable = true;
 	services.clamav.daemon.enable = true;
-	# services.printing.enable = true;
+	services.printing.enable = true;
 	programs.localsend.enable = true;
 		programs.localsend.openFirewall = true;
 	# services.rustdesk-server.enable = true;
@@ -92,9 +103,10 @@ in {
 
 	nix.channel.enable = true; # To be able to use nix repl :l <nixpkgs> as loading flake loads only 16 variables
 
-		users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
+	users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
 		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
 	];
+
 	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEpbUbuXYWfIdh4w3FI++1/1Zwhg/ow/FVr8r2kC1bhL";
 
 	# Desktop Environment
@@ -111,7 +123,7 @@ in {
 
 	hardware.steam-hardware.enable = true; # Compatibility for Steam Controller
 
-		# Necessary Evil :(
+	# Necessary Evil :(
 	hardware.enableRedistributableFirmware = true;
 	hardware.cpu.intel.updateMicrocode = true;
 
@@ -119,4 +131,11 @@ in {
 	nixpkgs.hostPlatform = "x86_64-linux";
 
 	system.autoUpgrade.enable = true;
+
+	# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead
+	# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
+	# nix.settings = {
+	# 	substituters = mkForce [];
+	# 	trusted-public-keys = mkForce [];
+	# };
 }

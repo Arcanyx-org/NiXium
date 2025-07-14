@@ -54,7 +54,7 @@
 				nvidiaBusId = "PCI:0:2:0"; # Nvidia GPU bus
 			};
 
-			package = config.boot.kernelPackages.nvidiaPackages.production; # Which nvidia package to use
+			package = config.boot.kernelPackages.nvidiaPackages.latest; # Which nvidia package to use
 		};
 
 		services.xserver.videoDrivers = [ "nvidia" ]; # Make the xserver to use nvidia

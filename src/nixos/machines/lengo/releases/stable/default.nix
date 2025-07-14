@@ -4,6 +4,7 @@
 
 let
 	inherit (lib) mkForce;
+	targetFlake = "github:kreyren/nixos-config/add-lengo#nixos-lengo-stable-install";
 in {
 	flake.nixosConfigurations."nixos-lengo-stable" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
@@ -136,7 +137,7 @@ in {
 						pkgs.git
 					];
 
-					nix.settings.experimental-features = "nix-command flakes";
+					nix.settings.experimental-features = "nix-command flakes"; # Allow the needed flakes
 
 					services.getty.loginProgram = "${pkgs.util-linux}/bin/nologin"; # Do not permit login on ttys
 
@@ -159,7 +160,7 @@ in {
 						];
 
 						serviceConfig = {
-							ExecStart = "${pkgs.nix}/bin/nix run github:kreyren/nixos-config/add-lengo#nixos-lengo-stable-install";
+							ExecStart = "${pkgs.nix}/bin/nix run ${targetFlake}";
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
