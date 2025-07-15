@@ -4,7 +4,7 @@
 
 let
 	inherit (lib) mkForce;
-	targetFlake = "github:kreyren/nixos-config/tinker#nixos-lengo-stable-install";
+	targetFlake = "github:kreyren/nixos-config/tinker#nixos-lengo-stable";
 in {
 	flake.nixosConfigurations."nixos-lengo-stable" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
@@ -194,7 +194,7 @@ in {
 						];
 
 						serviceConfig = {
-							ExecStart = "${pkgs.nix}/bin/nix run ${targetFlake}";
+							ExecStart = "${pkgs.nix}/bin/nix run ${targetFlake}-install";
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
