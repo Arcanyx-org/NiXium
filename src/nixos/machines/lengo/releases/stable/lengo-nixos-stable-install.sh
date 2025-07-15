@@ -136,7 +136,7 @@ age \
 	--identity "$ragenixIdentity" \
 	--decrypt \
 	--output "/mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key" \
-	"/run/agenix/$machineName-ssh-ed25519-private"
+	"$secretSSHHostKeyPath"
 chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Ensure correct permission
 
 # TODO(Krey): Manage Secure Boot Keys
