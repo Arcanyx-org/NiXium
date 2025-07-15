@@ -120,7 +120,7 @@ disko \
 	--mode "disko" \
 	--root-mountpoint "/mnt" \
 	--debug \
-	--flake "$FLAKE_ROOT#$derivation"
+	--flake "$targetFlake"
 
 # These have to be implemented for the installer to not fail with out of memory err
 # FIXME-QA(Krey): Do not run these if the size is already adjusted
@@ -145,7 +145,7 @@ status "Performing the system installation"
 nixos-install \
 	--verbose \
 	--root "/mnt" \
-	--flake "$FLAKE_ROOT#$derivation"
+	--flake "$targetFlake"
 
 #! Flash the Embedded Controller
 # FIXME(Krey): No idea how to manage without OpenSil
