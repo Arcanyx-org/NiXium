@@ -113,7 +113,7 @@ in {
 			#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
 
 		# Video
-			pkgs.stremio # Media Server Client
+			# pkgs.stremio # Media Server Client
 			pkgs.freetube # YouTube Client
 			pkgs.mpv
 			pkgs.vlc
