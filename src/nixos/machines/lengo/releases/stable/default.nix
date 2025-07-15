@@ -156,7 +156,7 @@ in {
 
 					services.getty.greetingLine = ''<<< Welcome To The NiXium Installer >>>'';
 
-					services.getty.helpLine = ''TEST'';
+					services.getty.helpLine = ''Local IP: $(ip -4 -o addr show up scope global | awk '$2 !~ /^(lo|docker0|br-|veth)/ {print $4}' | cut -d/ -f1 | head -n1)'';
 
 					users.users.root.initialHashedPassword = "";
 
@@ -164,7 +164,7 @@ in {
 
 					services.journald.console = "/dev/tty1";
 
-					networking.networkmanager.enable = true;
+					# networking.networkmanager.enable = true;
 
 					security.sudo.wheelNeedsPassword = false;
 					users.users.service = {
@@ -180,7 +180,7 @@ in {
 					systemd.services."inception" = {
 						description = "NiXium Installation";
 						wantedBy = [ "multi-user.target" ];
-						after = [ "network.target" "polkit.service" ];
+						after = [ "network.target" ];
 						path = [
 							inputs'.disko.packages.disko-install # disko-install
 							pkgs.age # age
@@ -208,8 +208,9 @@ in {
 					};
 
 					# Connect to FreeNet if the system doesn't have access to the internet by itself
-					# networking.wireless.enable = true;
-					# networking.wireless.networks."FreeNet" = { };
+					networking.wireless.enable = true;
+					networking.wireless.networks."Base48-5" = { };
+					networking.wireless.networks."Base48-5".psk = "robotour09";
 
 					# SECURITY(Krey): This introduces blobs that can't be reviewed beyond a reasonable doubt to not include malicious code, but the APU will not work without them :( - Pending https://github.com/openSIL/openSIL/issues/24 to improve that
 					hardware.enableRedistributableFirmware = true;

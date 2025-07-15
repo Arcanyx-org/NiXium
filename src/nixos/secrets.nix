@@ -8,7 +8,7 @@ let
 	# Systems
 	flexy-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFSY5vNrQFfnDqBOqse2AHSWY1hIIpZWiBYTdQEIYnV9";
 	ignucius-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
-	lengo-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOWBw3MYmx7bTJPBKd51kFxXXSJDJEenLKR2R55VkwDU";
+	lengo-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGMy8eELMVOHriBhBvnCdrbGen5WoiLdZAvbR/5YgupA";
 	morph-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFJh5Bd1p4GGCAvNkfoWoflrRIFnoj43b2aMs0GxmULs";
 	mracek-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8d9Nz64gE+x/+Dar4zknmXMAZXUAxhF1IgrA9DO4Ma";
 	sinnenfreude-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji";
