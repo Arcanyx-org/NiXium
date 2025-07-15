@@ -34,7 +34,8 @@ status "Welcome to the NiXium Installer"
 [ "$(id -u || true)" = 0 ] || die 126 "This script must be executed as the root user" # Ensure that we are root
 
 # Check if the declared installation device is available on the target system
-[ -b "$systemDevice" ] || die 1 "Expected device was not found, refusing to install for safety"
+# FIXME(Krey): Doesn't work as this script works in a pure environment
+# [ -b "$systemDevice" ] || die 1 "Expected device was not found, refusing to install for safety"
 
 ###! This script performs declarative installation of NiXium-Managed NixOS STABLE for the current system
 ###!
