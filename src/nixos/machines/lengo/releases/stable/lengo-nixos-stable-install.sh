@@ -33,6 +33,8 @@ status "Welcome to the NiXium Installer"
 
 [ "$(id -u || true)" = 0 ] || die 126 "This script must be executed as the root user" # Ensure that we are root
 
+# FIXME(Krey): Make sure that Secure Boot is set in setup mode if not output warning and change the lanzaboote module to disabled
+
 # Check if the declared installation device is available on the target system
 # FIXME(Krey): Doesn't work as this script works in a pure environment
 # [ -b "$systemDevice" ] || die 1 "Expected device was not found, refusing to install for safety"
@@ -127,6 +129,10 @@ disko \
 # FIXME-QA(Krey): Do not run these if the size is already adjusted
 mount -o remount,size=30G,noatime /nix/.rw-store
 mount -o remount,size=5G,noatime /mnt
+
+#! Secure Boot
+# * sbctl create-keys > /mnt/nix/persist/system/var/lib/sbctl
+# * sbctl enroll-keys --microsoft > /mnt/nix/persist/system/var/lib/sbctl
 
 #! Insert the secret
 #! * This is used to manage the chicken-and-an-egg problem with assigning system cryptographical keys
