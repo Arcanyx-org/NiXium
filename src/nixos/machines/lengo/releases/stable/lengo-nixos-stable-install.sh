@@ -76,15 +76,17 @@ fi
 
 status "Verifying the Identity File"
 
-[ -n "$ragenixIdentity" ] || {
-	if [ -f "$secretSSHHostKeyPath" ]; then
-		ragenixIdentity="$secretSSHHostKeyPath" # Use the private key if it's provided
-		status "Using supplied private key in $secretSSHHostKeyPath"
-	else
-		ragenixIdentity="$HOME/.ssh/id_ed25519" # Try to use the default path
-		warn "Supplied private key not found, defaulting to '$HOME/.ssh/id_ed25519', this EXPECTS this key provided manually!"
-	fi
-}
+# [ -n "$ragenixIdentity" ] || {
+# 	if [ -f "$secretSSHHostKeyPath" ]; then
+# 		ragenixIdentity="$secretSSHHostKeyPath" # Use the private key if it's provided
+# 		status "Using supplied private key in $secretSSHHostKeyPath"
+# 	else
+# 		ragenixIdentity="$HOME/.ssh/id_ed25519" # Try to use the default path
+# 		warn "Supplied private key not found, defaulting to '$HOME/.ssh/id_ed25519', this EXPECTS this key provided manually!"
+# 	fi
+# }
+
+ragenixIdentity="/etc/ssh/ssh_host_ed25519_key"
 
 # If the identity file is provided then use it to decrypt the secrets otherwise use hard-coded secrets
 if [ -f "$ragenixIdentity" ]; then
