@@ -131,8 +131,14 @@ in {
 				{
 					boot.loader.timeout = mkForce 0;
 
+					# boot.initrd.systemd.enable = true;
+					# boot.loader.systemd-boot.enable = true;
+
+					# isoImage.squashfsCompression = "zstd -Xcompression-level 15"; # xz takes forever
+
 					boot.kernelParams = [
 						"copytoram" # Run the installer from the Random Access Memory
+						"systemd.unit=getty.target"
 					];
 
 					boot.blacklistedKernelModules = [
@@ -146,14 +152,35 @@ in {
 
 					nix.settings.experimental-features = "nix-command flakes"; # Allow the needed flakes
 
-					services.getty.loginProgram = "${pkgs.util-linux}/bin/nologin"; # Do not permit login on ttys
+					# services.getty.loginProgram = "${pkgs.util-linux}/bin/nologin"; # Do not permit login on ttys
 
 					services.getty.greetingLine = ''<<< Welcome To The NiXium Installer >>>'';
 
-					systemd.services.inception = {
+					services.getty.helpLine = ''TEST'';
+
+					users.users.root.initialHashedPassword = "";
+
+					services.openssh.enable = true;
+
+					services.journald.console = "/dev/tty1";
+
+					networking.networkmanager.enable = true;
+
+					security.sudo.wheelNeedsPassword = false;
+					users.users.service = {
+						isNormalUser = true;
+						extraGroups = [
+							"wheel"
+							"networkmanager"
+							"kvm"
+						];
+						initialPassword = "000000";
+					};
+
+					systemd.services."inception" = {
 						description = "NiXium Installation";
-						after = [ "multi-user.target" ];
-						wantedBy = [ "network-online.target" ];
+						wantedBy = [ "multi-user.target" ];
+						after = [ "network.target" "polkit.service" ];
 						path = [
 							inputs'.disko.packages.disko-install # disko-install
 							pkgs.age # age
@@ -171,6 +198,9 @@ in {
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
+							TTYReset = true;
+							TTYVHangup = true;
+							TTYVTDisallocate = true;
 							TTYPath = "/dev/tty1";        # Specify TTY1 for the interaction
 							Restart = "always";
 							RestartSec = 30; # Wait 30 second before trying again to avoid hitting timeouts on GitHub
@@ -178,8 +208,8 @@ in {
 					};
 
 					# Connect to FreeNet if the system doesn't have access to the internet by itself
-					networking.wireless.enable = true;
-					networking.wireless.networks."FreeNet" = { };
+					# networking.wireless.enable = true;
+					# networking.wireless.networks."FreeNet" = { };
 
 					# SECURITY(Krey): This introduces blobs that can't be reviewed beyond a reasonable doubt to not include malicious code, but the APU will not work without them :( - Pending https://github.com/openSIL/openSIL/issues/24 to improve that
 					hardware.enableRedistributableFirmware = true;
