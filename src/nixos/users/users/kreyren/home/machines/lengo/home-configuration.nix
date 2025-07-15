@@ -45,6 +45,8 @@ in {
 		# FIXME(Krey): It's ET: Legacy, what's proprietary there?
 		"etlegacy"
 		"etlegacy-assets"
+
+		"stremio-shell"
 	];
 
 	home.packages = [
