@@ -34,24 +34,24 @@ in mkMerge [
 
 		fileSystems."/nix/persist/system".neededForBoot = true;
 
-		boot.initrd.luks.devices = {
-			swap = {
-				device = "/dev/disk/by-partlabel/disk-system-swap";
-				preLVM = true;
-				allowDiscards = true;
-				keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
-				keyFileSize = 4096;
-				# fallbackToPassword = true;
-			};
-			store = {
-				device = "/dev/disk/by-partlabel/disk-system-store";
-				preLVM = true;
-				allowDiscards = true;
-				keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
-				keyFileSize = 4096;
-				# fallbackToPassword = true;
-			};
-		};
+		# boot.initrd.luks.devices = {
+		# 	swap = {
+		# 		device = "/dev/disk/by-partlabel/disk-system-swap";
+		# 		preLVM = true;
+		# 		allowDiscards = true;
+		# 		# keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+		# 		keyFileSize = 4096;
+		# 		# fallbackToPassword = true;
+		# 	};
+		# 	store = {
+		# 		device = "/dev/disk/by-partlabel/disk-system-store";
+		# 		preLVM = true;
+		# 		allowDiscards = true;
+		# 		# keyFile = "/dev/disk/by-id/mmc-SA0s2G_0x9cdde6c0";
+		# 		keyFileSize = 4096;
+		# 		# fallbackToPassword = true;
+		# 	};
+		# };
 
 		# FIXME(Krey): Figure out how to do labels
 		disko.devices = {
@@ -60,6 +60,8 @@ in mkMerge [
 				mountOptions = [
 					"size=5G" # >=5GB Needed to avoid no space left errors during rebuilds
 					"defaults"
+					# set mode to 755, otherwise systemd will set it to 777, which cause problems.
+					# relatime: Update inode access times relative to modify or change time.
 					"mode=755"
 				];
 			};
@@ -98,7 +100,7 @@ in mkMerge [
 
 									passwordFile = config.age.secrets.lengo-disks-password.path;
 
-									keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+									# keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -149,7 +151,7 @@ in mkMerge [
 
 									passwordFile = config.age.secrets.lengo-disks-password.path;
 
-									keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+									# keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
