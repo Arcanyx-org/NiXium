@@ -11,7 +11,7 @@ in {
 
 	boot.impermanence.enable = true; # Use impermanence
 
-	boot.plymouth.enable = true; # Enable Eyecandy on boot
+	boot.plymouth.enable = false; # Enable Eyecandy on boot
 
 	# TODO(Krey): Adapt to use the compute server once ready
 	nix.distributedBuilds = false; # Perform distributed builds

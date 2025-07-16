@@ -33,14 +33,13 @@ ssh "root@$targetIP" mkdir -v -p /mnt/var/lib/sbctl
 
 ssh "root@$targetIP" cp -v -r /var/lib/sbctl/* /mnt/var/lib/sbctl
 
-ssh "root@$targetIP" nix run nixpkgs#sbctl -- enroll-keys --microsoft
-
 ssh "root@$targetIP" mkdir -v -p /mnt/nix/persist/system/etc/ssh
 
 ssh "root@$targetIP" cp -v /etc/ssh/ssh_host_ed25519_key /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key
 
 ssh "root@$targetIP" chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Ensure correct permission
 
+# Continue Here
 ssh "root@$targetIP" nix shell nixpkgs#nixos-install-tools --command nixos-install --verbose --root /mnt --flake github:kreyren/nixos-config/tinker#nixos-lengo-stable
 
 ssh "root@$targetIP" mkdir -v -p /mnt/nix/persist/users/kreyren/.ssh
@@ -50,3 +49,16 @@ ssh "root@$targetIP" 'cat > /mnt/nix/persist/users/kreyren/.ssh/id_ed25519' < <(
 ssh "root@$targetIP" chmod -v 400 /mnt/nix/persist/users/kreyren/.ssh/id_ed25519
 
 ssh "root@$targetIP" chown -v -R 1000:users /mnt/nix/persist/users/kreyren
+
+ssh "root@$targetIP" reboot
+
+while [ "$(ssh "root@$targetIP" echo "booted" || true)" != "booted" ]; do
+	sleep 5
+done
+
+# Has to be done after the system boots for the first time on a boot derivation that is signed
+ssh "root@$targetIP" nix run nixpkgs#sbctl -- enroll-keys --microsoft
+
+ssh "root@$targetIP" reboot
+
+echo "NiXium Experimental Installer Finished!"
