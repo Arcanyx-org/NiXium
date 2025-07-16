@@ -131,8 +131,12 @@ mount -o remount,size=30G,noatime /nix/.rw-store
 mount -o remount,size=5G,noatime /mnt
 
 #! Secure Boot
-# * sbctl create-keys > /mnt/nix/persist/system/var/lib/sbctl
-# * sbctl enroll-keys --microsoft > /mnt/nix/persist/system/var/lib/sbctl
+[ -f /var/lib/sbctl/keys/db/db.key ] || sbctl create-keys
+[ -f /mnt/nix/persist/var/lib/sbctl/keys/db/db.key ] || {
+	cp -r /var/lib/sbctl /mnt/nix/persist/var/lib/sbctl
+	cp -r /var/lib/sbctl/* /mnt/var/lib/sbctl/
+}
+sbctl enroll-keys --microsoft
 
 #! Insert the secret
 #! * This is used to manage the chicken-and-an-egg problem with assigning system cryptographical keys
@@ -144,8 +148,6 @@ age \
 	--output "/mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key" \
 	"$secretSSHHostKeyPath"
 chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Ensure correct permission
-
-# TODO(Krey): Manage Secure Boot Keys
 
 #! Perform the installation
 status "Performing the system installation"

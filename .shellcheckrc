@@ -3,6 +3,7 @@ shell=sh # Enforce POSIX sh
 # Disabled this check as we are using busybox sh which can do these
 disable=SC3060 # In POSIX sh, string replacement is undefined.
 disable=SC3057 # In POSIX sh, string indexing is undefined.
+disable=SC3001 # In POSIX sh, process substitution is undefined.
 
 # name:    avoid-nullary-conditions
 # desc:    Suggest explicitly using -n in `[ $var ]`

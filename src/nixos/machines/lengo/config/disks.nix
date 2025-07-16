@@ -18,14 +18,14 @@ let
 	diskoDevice = "/dev/disk/by-id/nvme-WD_PC_SN740_SDDPMQD-512G-1101_2335R1406872";
 	swapSize = "60G";
 in mkMerge [
-	{
-		age.secrets.lengo-disks-password.file = ../secrets/lengo-disks-password.age; # Supply password for disk encryption
+	# {
+	# 	age.secrets.lengo-disks-password.file = ../secrets/lengo-disks-password.age; # Supply password for disk encryption
 
-		age.secrets.lengo-unlock-key.file = ../secrets/lengo-unlock-key.age; # KeyFile for unlocking the filesystems
+	# 	age.secrets.lengo-unlock-key.file = ../secrets/lengo-unlock-key.age; # KeyFile for unlocking the filesystems
 
-		# Needed to find the SD Card device during initrd stage
-		boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
-	}
+	# 	# Needed to find the SD Card device during initrd stage
+	# 	boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
+	# }
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
 	# (if (config.boot.impermenance.enable == true) then {
