@@ -75,6 +75,7 @@ in {
 			pkgs.airshipper # Veloren
 			pkgs.mindustry
 			# polymc.polymc
+			pkgs.hydralauncher # Steam Replacement
 
 		# Web Browsers
 			pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
@@ -121,13 +122,14 @@ in {
 		# Keyboard
 			# pkgs.gnomeExtensions.gjs-osk
 			# FIXME(Krey): Remove this once it arrives in nixpkgs - https://github.com/Vishram1123/gjs-osk/issues/85
-			(pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
-				src = pkgs.fetchzip {
-					url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
-					hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
-					stripRoot = false;
-				};
-			}))
+			# (pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
+			# 	src = pkgs.fetchzip {
+			# 		url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
+			# 		hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
+			# 		stripRoot = false;
+			# 	};
+			# }))
+			pkgs.gnomeExtensions.gjs-osk
 	];
 
 	# Per-system adjustments to the GNOME Extensions

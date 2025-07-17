@@ -11,7 +11,7 @@ in {
 
 		pkgs = import inputs.nixpkgs {
 			system = "x86_64-linux";
-			config.allowUnfree = mkForce false; # Forbid proprietary code
+			config.allowUnfree = mkForce true; # Forbid proprietary code
 			config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
 				"steam-unwrapped"
 				"steamdeck-hw-theme"

@@ -18,6 +18,10 @@ ssh "root@$targetIP" 'echo 000000 > /run/agenix/lengo-disks-password'
 
 ssh "root@$targetIP" 'cat > /etc/ssh/ssh_host_ed25519_key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/lengo/secrets/lengo-ssh-ed25519-private.age || true)
 
+ssh "root@$targetIP" 'cat > /key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/lengo/secrets/lengo-unlock-key.age || true)
+
+ssh "root@$targetIP" 'dd if=/key of=/dev/disk/by-id/mmc-NCard_0x23904944 conv=sync status=progress'
+
 ssh "root@$targetIP" nix run github:nix-community/disko#disko -- --mode disko --root-mountpoint /mnt --debug --flake github:kreyren/nixos-config/tinker#nixos-lengo-stable
 
 ssh "root@$targetIP" mount -v -o remount,size=30G,noatime /nix/.rw-store
@@ -39,10 +43,12 @@ ssh "root@$targetIP" cp -v /etc/ssh/ssh_host_ed25519_key /mnt/nix/persist/system
 
 ssh "root@$targetIP" chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Ensure correct permission
 
-# Continue Here
-ssh "root@$targetIP" nix shell nixpkgs#nixos-install-tools --command nixos-install --verbose --root /mnt --flake github:kreyren/nixos-config/tinker#nixos-lengo-stable
+nix copy --to ssh://root@$targetIP "$(nix build 'git+file:///nix/persist/NiXium#nixosConfigurations."nixos-lengo-stable".config.system.build.toplevel' --print-out-paths || true)"
 
-ssh "root@$targetIP" mkdir -v -p /mnt/nix/persist/users/kreyren/.ssh
+# FIXME(Krey): This takes the longest ~20 min as the build has to re-build itself on the remote
+ssh "root@$targetIP" 'nix shell nixpkgs#nixos-install-tools --command nixos-install --verbose --root /mnt --flake github:kreyren/nixos-config/tinker#nixos-lengo-stable'
+
+ssh "root@$targetIP" 'mkdir -v -p /mnt/nix/persist/users/kreyren/.ssh'
 
 ssh "root@$targetIP" 'cat > /mnt/nix/persist/users/kreyren/.ssh/id_ed25519' < <(cat /home/kreyren/.ssh/id_ed25519 || true)
 
@@ -55,6 +61,8 @@ ssh "root@$targetIP" reboot
 while [ "$(ssh "root@$targetIP" echo "booted" || true)" != "booted" ]; do
 	sleep 5
 done
+
+# FIXME(Krey): Change known hosts
 
 # Has to be done after the system boots for the first time on a boot derivation that is signed
 ssh "root@$targetIP" nix run nixpkgs#sbctl -- enroll-keys --microsoft

@@ -16,15 +16,40 @@ let
 	inherit (lib) mkMerge;
 
 	diskoDevice = "/dev/disk/by-id/nvme-WD_PC_SN740_SDDPMQD-512G-1101_2335R1406872";
+	keyDevice = "/dev/disk/by-id/mmc-NCard_0x23904944";
 	swapSize = "60G";
+	impermanentSize = "5G"; # Size of the impermanent filesystem during impermanence
 in mkMerge [
 	{
 		age.secrets.lengo-disks-password.file = ../secrets/lengo-disks-password.age; # Supply password for disk encryption
+	}
 
-		# age.secrets.lengo-unlock-key.file = ../secrets/lengo-unlock-key.age; # KeyFile for unlocking the filesystems
+	{
+		# Enable SD-Card Unattended-boot
 
 		# Needed to find the SD Card device during initrd stage
-		# boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
+		boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
+
+		age.secrets.lengo-unlock-key.file = ../secrets/lengo-unlock-key.age; # KeyFile for unlocking the filesystems
+
+		boot.initrd.luks.devices = {
+			swap = {
+				device = "/dev/disk/by-partlabel/disk-system-swap";
+				preLVM = true;
+				allowDiscards = true;
+				keyFile = keyDevice;
+				keyFileSize = 4096;
+				fallbackToPassword = true;
+			};
+			store = {
+				device = "/dev/disk/by-partlabel/disk-system-store";
+				preLVM = true;
+				allowDiscards = true;
+				keyFile = keyDevice;
+				keyFileSize = 4096;
+				fallbackToPassword = true;
+			};
+		};
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
@@ -34,31 +59,12 @@ in mkMerge [
 
 		fileSystems."/nix/persist/system".neededForBoot = true;
 
-		# boot.initrd.luks.devices = {
-		# 	swap = {
-		# 		device = "/dev/disk/by-partlabel/disk-system-swap";
-		# 		preLVM = true;
-		# 		allowDiscards = true;
-		# 		# keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
-		# 		keyFileSize = 4096;
-		# 		# fallbackToPassword = true;
-		# 	};
-		# 	store = {
-		# 		device = "/dev/disk/by-partlabel/disk-system-store";
-		# 		preLVM = true;
-		# 		allowDiscards = true;
-		# 		# keyFile = "/dev/disk/by-id/mmc-SA0s2G_0x9cdde6c0";
-		# 		keyFileSize = 4096;
-		# 		# fallbackToPassword = true;
-		# 	};
-		# };
 
-		# FIXME(Krey): Figure out how to do labels
 		disko.devices = {
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=5G" # >=5GB Needed to avoid no space left errors during rebuilds
+					"size=${impermanentSize}" # >=5GB Needed to avoid no space left errors during rebuilds
 					"defaults"
 					# set mode to 755, otherwise systemd will set it to 777, which cause problems.
 					# relatime: Update inode access times relative to modify or change time.
@@ -100,7 +106,7 @@ in mkMerge [
 
 									passwordFile = config.age.secrets.lengo-disks-password.path;
 
-									# keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+									keyFile = keyDevice;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -151,7 +157,7 @@ in mkMerge [
 
 									passwordFile = config.age.secrets.lengo-disks-password.path;
 
-									# keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+									keyFile = keyDevice;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -179,8 +185,8 @@ in mkMerge [
 				};
 
 				# Partition with a key used to decrypt the filesystems
-				# unlock = {
-				# 	device = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0"; # SD Card
+				# key = {
+				# 	device = keyDevice; # SD Card
 				# 	type = "disk";
 				# 	content = {
 				# 		type = "gpt";

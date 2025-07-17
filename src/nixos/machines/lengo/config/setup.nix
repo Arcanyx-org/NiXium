@@ -72,6 +72,8 @@ in {
 
 	programs.coolercontrol.enable = true; # Enable solution to control the fans
 
+	programs.corectrl.enable = true;
+
 	# Steam
 		# FIXME(Krey): Try to use the unstable release of NixOS to get later releases of Steam and proton-ge-bin to maybe make it less of a shitware?.. or probably far worse than it is already
 		programs.steam = {
@@ -97,12 +99,12 @@ in {
 
 	# HandHeld Daemon ("HHD")
 		# NOTE(Krey): The HHD emulates the controllers as Steam Controller which is unwanted for Lengo
-		services.handheld-daemon.enable = false;
+		services.handheld-daemon.enable = true;
 		services.handheld-daemon.ui.enable = true;
-			services.handheld-daemon.user = "kira";
+			services.handheld-daemon.user = "kreyren";
 
 	# To input decrypting password in initrd
-		boot.initrd.unl0kr.enable = false;
+		boot.initrd.unl0kr.enable = true;
 
 	# Jovian
 	# jovian.devices.legiongo.enable = true;
