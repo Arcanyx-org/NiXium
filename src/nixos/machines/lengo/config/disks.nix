@@ -39,7 +39,7 @@ in mkMerge [
 				allowDiscards = true;
 				keyFile = keyDevice;
 				keyFileSize = 4096;
-				fallbackToPassword = true;
+				# fallbackToPassword = true;
 			};
 			store = {
 				device = "/dev/disk/by-partlabel/disk-system-store";
@@ -47,7 +47,7 @@ in mkMerge [
 				allowDiscards = true;
 				keyFile = keyDevice;
 				keyFileSize = 4096;
-				fallbackToPassword = true;
+				# fallbackToPassword = true;
 			};
 		};
 	}
