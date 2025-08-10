@@ -14,6 +14,9 @@ in {
 	# FIXME-QA(Krey): Set to false by `/nixos/modules/services/networking/networkmanager.nix`, better management needed
 	networking.networkmanager.enable = mkForce true;
 
+	hardware.wirelessRegulatoryDatabase = true;
+		boot.extraModprobeConfig = ''options cfg80211 ieee80211_regdom="CZ"'';
+
 	networking.firewall.allowedTCPPorts = [
 		# FIXME-QA(Krey): Make sure to apply these only if the relevant app is used
 		21118 # Rust Desk

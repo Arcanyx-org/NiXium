@@ -6,7 +6,7 @@ let
 	inherit (lib) mkForce;
 in {
 	# FIXME(Krey): Move on harneded kernel, tbd how to manage -> To be done infrastructure-wide
-		boot.kernelPackages = mkForce pkgs.linuxPackages_latest; # Move on 6.13 as it has important patches to make the device to work
+		boot.kernelPackages = mkForce pkgs.linuxPackages; # Move on 6.13 as it has important patches to make the device to work
 
 	boot.kernelParams = [
 		# SECURITY(Krey): Used to manage CPU Vulnerabilities
@@ -26,6 +26,10 @@ in {
 		# Auto-Generated
 			"kvm-amd" # Use KVM
 			"usb-storage" # Use USB drives on hardened kernel
+			# USB Tethering
+				"rndis_host"
+				"cdc-ether"
+				"usbnet"
 
 		"zenpower"
 

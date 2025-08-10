@@ -21,6 +21,9 @@ in mkIf config.boot.impermanence.enable {
 			(mkIf config.virtualisation.waydroid.enable "/var/lib/waydroid")
 
 			(mkIf config.services.fprintd.enable "/var/lib/fprint")
+
+			# (mkIf config.services.ollama.enable config.services.ollama.home)
+			(mkIf config.services.ollama.enable "/var/lib/private/ollama")
 		];
 		files = [
 			"/etc/machine-id" # Unique ID of the system

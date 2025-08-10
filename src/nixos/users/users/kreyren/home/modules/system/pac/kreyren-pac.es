@@ -52,6 +52,9 @@ function FindProxyForURL(url, host) {
 		|| (dnsDomainIs(host, "ocul.us") || shExpMatch(host, "(*.ocul.us|ocul.us)"))
 		|| (dnsDomainIs(host, "huggingface.co") || shExpMatch(host, "(*.huggingface.co|huggingface.co)"))
 		|| (dnsDomainIs(host, "ti.com") || shExpMatch(host, "(*.ti.com|ti.com)"))
+		|| (dnsDomainIs(host, "meta.com") || shExpMatch(host, "(*.meta.com|meta.com)"))
+		|| (dnsDomainIs(host, "fbcdn.net") || shExpMatch(host, "(*.fbcdn.net|fbcdn.net)"))
+		|| (dnsDomainIs(host, "oculus.com") || shExpMatch(host, "(*.oculus.com|oculus.com)"))
 	) return "SOCKS5 127.0.0.1:25344"; // Personal ProtonVPN;
 
 	// Allow direct connections for LAN traffic

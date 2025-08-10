@@ -5,17 +5,6 @@
 let
 	inherit (config.flake) nixosModules;
 in {
-
-# {
-# 	flake.homeManagerModules.web-browsers-firefox-kreyren = moduleWithSystem (
-# 		perSystem@{ config }:
-# 		{
-# 			# services.foo.package = perSystem.config.packages.foo;
-# 			imports = [ ./firefox.nix ];
-# 		}
-# 	);
-# }
-
 	flake.nixosModules.default = moduleWithSystem (
 		perSystem@{ system }:
 		{ ... }:
@@ -71,6 +60,7 @@ in {
 	imports = [
 		./machines
 		./modules
+		./overlays
 		./users
 	];
 }

@@ -11,7 +11,7 @@ in {
 
 	boot.impermanence.enable = true; # Use impermanence
 
-	boot.plymouth.enable = false; # Enable Eyecandy on boot
+	boot.plymouth.enable = true; # Enable Eyecandy on boot
 
 	# TODO(Krey): Adapt to use the compute server once ready
 	nix.distributedBuilds = false; # Perform distributed builds
@@ -30,6 +30,7 @@ in {
 		services.usbguard.dbus.enable = false;
 	services.clamav.daemon.enable = true;
 	services.printing.enable = true;
+
 	powerManagement.powertop.enable = true;
 
 	networking.wireguard.enable = false;
@@ -63,6 +64,12 @@ in {
 			# 		"${pkgs.glib}/bin/gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true"
 			# 	];
 			# };
+		programs.dconf.profiles.gdm.databases = [{
+			settings."org/gnome/desktop/a11y/applications" = {
+				screen-keyboard-enabled = true;
+			};
+		}];
+
 	services.xserver.desktopManager.gnome.enable = true;
 		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
 	# To get rid of black borders around windows on GNOME using AMDVLK (https://gitlab.gnome.org/GNOME/gtk/-/issues/6890)
@@ -73,6 +80,8 @@ in {
 	programs.coolercontrol.enable = true; # Enable solution to control the fans
 
 	programs.corectrl.enable = true;
+
+	services.xserver.displayManager.gdm.banner = "Return to the Base48 Hackerspace for finder's reward";
 
 	# Steam
 		# FIXME(Krey): Try to use the unstable release of NixOS to get later releases of Steam and proton-ge-bin to maybe make it less of a shitware?.. or probably far worse than it is already
@@ -101,10 +110,10 @@ in {
 		# NOTE(Krey): The HHD emulates the controllers as Steam Controller which is unwanted for Lengo
 		services.handheld-daemon.enable = true;
 		services.handheld-daemon.ui.enable = true;
-			services.handheld-daemon.user = "kreyren";
+			services.handheld-daemon.user = "kira";
 
 	# To input decrypting password in initrd
-		boot.initrd.unl0kr.enable = true;
+		boot.initrd.unl0kr.enable = false;
 
 	# Jovian
 	# jovian.devices.legiongo.enable = true;

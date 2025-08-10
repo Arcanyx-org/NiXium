@@ -16,6 +16,9 @@ in {
 				# FIXME-QA(Krey): Why the fuck is this needed for a steam controller?
 				"steam"
 			];
+			overlays = [
+				# self.overlays.default # Include overlays
+			];
 		};
 
 		modules = [

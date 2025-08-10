@@ -114,6 +114,10 @@ in {
 		kreyren lengo-system
 	];
 
+	"./machines/lengo/secrets/lengo-bios-pw.age".publicKeys = [
+		kreyren kira
+	];
+
 	# MORPH (system)
 	"./machines/morph/secrets/morph-builder-ssh-ed25519-private.age".publicKeys = [
 		kreyren morph-system

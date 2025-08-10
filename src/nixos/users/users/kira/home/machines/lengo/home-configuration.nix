@@ -42,8 +42,11 @@ in {
 		"etlegacy"
 		"etlegacy-assets"
 
-		# Flexibility of communication with some projects that hate privacy or what the fuck
+		# Flexibility of communication with some projects
 		"discord"
+
+		"stremio-shell" # Frontend for streaming app
+		"stremio-server" # Backend for streaming app
 	];
 
 	home.packages = [
@@ -55,6 +58,8 @@ in {
 		# Games
 		pkgs.etlegacy # Wolfenstein: Enemy Territory
 		pkgs.mindustry
+		# NOTE(Krey): Required to play Elite Dangerous without annoyances
+			pkgs.min-ed-launcher
 
 		# Web Browsers
 		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
@@ -71,6 +76,8 @@ in {
 		pkgs.tealdeer # TLDR Pages Implementation
 		pkgs.nextcloud-client
 
+		pkgs.hydralauncher # Steam Replacement
+
 		# Video
 		pkgs.stremio # Media Server Client
 		pkgs.freetube # YouTube Client
@@ -80,11 +87,13 @@ in {
 		# Keyboard
 			# pkgs.gnomeExtensions.gjs-osk
 			# FIXME(Krey): Remove this once it arrives in nixpkgs - https://github.com/Vishram1123/gjs-osk/issues/85
-			(pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
+			(unstable.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
 				src = pkgs.fetchzip {
 					url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
-					hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
+					# url = "https://github.com/Kreyren/gjs-osk/archive/refs/heads/central.zip";
+					hash = "sha256-fKmJmCLMyEJt4UaoqNXOMnFZQzshwkCVJhehFj7prYs=";
 					stripRoot = false;
+					postFetch = ''echo ewogICAgImRlc2NyaXB0aW9uIjogIkEgbmV3IE9uc2NyZWVuIEtleWJvYXJkIGJ1aWx0IHVzaW5nIEdOT01FIEpTIiwKICAgICJnZXR0ZXh0LWRvbWFpbiI6ICJnanNvc2tAdmlzaHJhbTExMjMuY29tIiwKICAgICJuYW1lIjogIkdKUyBPU0siLAogICAgInNldHRpbmdzLXNjaGVtYSI6ICJvcmcuZ25vbWUuc2hlbGwuZXh0ZW5zaW9ucy5nanNvc2siLAogICAgInNlc3Npb24tbW9kZXMiIDogWwogICAgICAidXNlciIsCiAgICAgICJ1bmxvY2stZGlhbG9nIiwKICAgICAgImdkbSIKICAgIF0sCiAgICAic2hlbGwtdmVyc2lvbiI6IFsKICAgICAgICAiNDUiLAogICAgICAgICI0NiIsCiAgICAgICAgIjQ3IiwKICAgICAgICAiNDgiCiAgICBdLAogICAgInVybCI6ICJodHRwczovL2dpdGh1Yi5jb20vVmlzaHJhbTExMjMvZ2pzLW9zayIsCiAgICAidXVpZCI6ICJnanNvc2tAdmlzaHJhbTExMjMuY29tIiwKICAgICJ2ZXJzaW9uIjogMTAwMDAwCn0K | base64 --decode > $out/metadata.json'';
 				};
 			}))
 
@@ -96,12 +105,14 @@ in {
 	# TODO(Krey): This should be applied based on used UI
 	dconf.settings = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
 		# Set power management for a scenario where user is logged-in
-		"org/gnome/settings-daemon/plugins/power" = {
-			# NOTE(Krey): Power Management is handled in the system where this setting overwrites it as long as the user is logged in so do "nothing" to make gnome user not touch it
-			power-button-action = "nothing";
-			sleep-inactive-ac-timeout = 600; # 60*10=600 Seconds -> 10 Minutes
-			sleep-inactive-ac-type = "suspend";
-		};
+		# "org/gnome/settings-daemon/plugins/power" = {
+		# 	# The Light Sensor has an RGB emitter right next to it that makes it unusable
+		# 		ambient-enabled = false;
+		# 	power-button-action = "hibernate";
+		# 	sleep-inactive-ac-timeout = 7200; # 2 Hours
+		# 	sleep-inactive-ac-type = "suspend";
+		# 	sleep-inactive-battery-type = "nothing"; # Let system handle power-management on battery
+		# };
 
 		# OSKGJS
 		"org/gnome/shell/extensions/gjsosk" = {
@@ -142,7 +153,7 @@ in {
 			network-speed-format = 1;
 			position-in-panel = 0;
 			show-battery = true;
-			show-gpu = false; # Nvidia only, system without dGPU
+			show-gpu = true;
 			update-time = 3;
 			use-higher-precision = true;
 

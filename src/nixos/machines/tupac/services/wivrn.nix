@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, unstable, ... }:
 
 # WiVRn service management on TUPAC
 
@@ -29,7 +29,7 @@ in mkIf config.services.wivrn.enable {
 		WMR_HANDTRACKING = "1"; # Enable hand tracking
 	};
 
-	services.wivrn.package = pkgs.wivrn.override { config.cudaSupport = true; }; # Include Nvidia Support for NVENC
+	services.wivrn.package = unstable.wivrn.override { config.cudaSupport = true; }; # Include Nvidia Support for NVENC
 
 	# Config for WiVRn (https://github.com/WiVRn/WiVRn/blob/master/docs/configuration.md)
 	services.wivrn.config = {
@@ -38,7 +38,7 @@ in mkIf config.services.wivrn.enable {
 			application = pkgs.wlx-overlay-s;
 			scale = 0.5; # foveation scaling
 			# 50~100 Mb/s recommended for wireless, 200 Mb/s for wired, 200 Mb/s is hard coded max
-			bitrate = 1000000 * 100; # Mb/s
+			bitrate = 1000000 * 200; # Mb/s
 			# TODO(Krey): Try to use vaapi throug the iGPU instead of the dGPU to spare resources for the application and mitigate the risk of performance hit
 			encoders = [
 				{

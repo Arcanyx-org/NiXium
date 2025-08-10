@@ -32,6 +32,12 @@ in {
 		# FIXME(Krey): What the fuck? - https://www.reddit.com/r/Stremio/comments/1isd5xp/comment/mdlf66w/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 		"stremio-shell"
 		"stremio-server"
+
+		# alpaka
+		"cuda_cudart"
+		"libcublas"
+		"cuda_cccl"
+		"cuda_nvcc"
 	];
 
 	home.packages = [
@@ -44,8 +50,8 @@ in {
 
 		# Slicers
 		pkgs.prusa-slicer
-		# FIXME-QA(Krey): Broken on current stable, move back when fixed
-			unstable.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+		# FIXME-QA(Krey): Broken on current stable, move back when fixed .. and on unstable bcs libsoup2
+			# unstable.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
 		aagl.anime-game-launcher # An Anime Game
@@ -101,6 +107,7 @@ in {
 		unstable.hydralauncher
 		unstable.nexusmods-app
 		pkgs.flashrom
+		(pkgs.alpaca.override { ollama = pkgs.ollama-cuda; })
 		(pkgs.geary.overrideAttrs (super: {
 			# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
 			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];

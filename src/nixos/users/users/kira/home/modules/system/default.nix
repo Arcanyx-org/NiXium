@@ -5,9 +5,11 @@ let
 in {
 	flake.homeManagerModules.system-kira.imports = [
 		homeManagerModules.system-impermanence-kira
+		homeManagerModules.system-pac-kira
 	];
 
 	imports = [
 		./impermanence
+		./pac
 	];
 }

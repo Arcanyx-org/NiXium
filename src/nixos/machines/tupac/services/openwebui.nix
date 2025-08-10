@@ -1,0 +1,142 @@
+{ self, config, lib, unstable, ... }:
+
+# TUPAC-specific configuration of Open-WebUI
+
+let
+	inherit (lib) mkIf;
+in mkIf config.services.open-webui.enable {
+	# Refer to https://docs.openwebui.com/getting-started/advanced-topics/env-configuration/
+	services.open-webui.environment = {
+		ENV = "prod"; # Set Production Environment
+
+		CUSTOM_NAME = "NiXium AI";
+
+		# DNM(Krey): This needs to be moved in a secret file and refreshed
+		# OLLAMA_BASE_URL = "http://somewhereInTheDark.onion";
+
+		# Registrations
+		# ENABLE_SIGNUP = "False";
+
+		DEFAULT_USER_ROLE = "pending";
+
+		# Disable Spyware
+			ENABLE_OPENAI_API = "False";
+			ANONYMIZED_TELEMETRY = "False";
+			DO_NOT_TRACK = "True";
+			SCARF_NO_ANALYTICS = "True";
+	};
+
+	# services.open-webui.package = unstable.open-webui;
+
+	# Deploy The Onion Service
+		services.tor.relay.onionServices."open-webui".map = mkIf config.services.tor.enable [{
+			port = 80;
+			target = { port = config.services.open-webui.port; };
+		}]; # Set up Onionized WebUI
+
+	# Deploy TTS
+		systemd.services.openedai-speech = {
+			description = "OpenedAI Speech";
+			after = [ "network.target" ];
+			wantedBy = [ "multi-user.target" ];
+
+			# environment = {
+			# 	USE_ROCM = "1";
+			# };
+
+			serviceConfig = {
+				ExecStartPre = "-${self.inputs.nur-xddxdd.packages.x86_64-linux.openedai-speech}/bin/download_voices_tts-1.sh";
+				ExecStart = "${self.inputs.nur-xddxdd.packages.x86_64-linux.openedai-speech}/bin/openedai-speech";
+				Restart = "always";
+				RestartSec = "3";
+
+				StateDirectory = "openedai-speech";
+				WorkingDirectory = "/var/lib/openedai-speech";
+
+				User = "openedai-speech";
+				Group = "openedai-speech";
+			};
+		};
+
+		users.users.openedai-speech = {
+			group = "openedai-speech";
+			isSystemUser = true;
+		};
+		users.groups.openedai-speech = { };
+
+		# https://docs.openwebui.com/getting-started/env-configuration/
+		services.open-webui.environment = {
+			# Set the Voice in OWUI
+			AUDIO_TTS_ENGINE = "openai";
+			AUDIO_TTS_API_KEY = "unused";
+			AUDIO_TTS_OPENAI_API_BASE_URL = "http://127.0.0.1:8000/v1";
+			AUDIO_TTS_OPENAI_API_KEY = "unused";
+			AUDIO_TTS_MODEL = "tts-1";
+			AUDIO_TTS_VOICE = "alloy";
+			AUDIO_TTS_SPLIT_ON = "punctuation";
+
+			# Web Search
+			ENABLE_WEB_SEARCH = "True";
+			ENABLE_SEARCH_QUERY_GENERATION = "True"; # Enables or disables search query generation
+			WEB_SEARCH_TRUST_ENV = "False"; # Enables proxy set by http_proxy and https_proxy during web search content fetching.
+			WEB_SEARCH_RESULT_COUNT = "5"; # Maximum number of search results to crawl
+			WEB_SEARCH_CONCURRENT_REQUESTS = "10"; # Number of concurrent requests to crawl web pages returned from search results
+			WEB_SEARCH_ENGINE = "searxng";
+			BYPASS_WEB_SEARCH_EMBEDDING_AND_RETRIEVAL = "False"; # Bypasses the web search embedding and retrieval process
+			SEARXNG_QUERY_URL = "http://localhost:3002/search?q=<query>"; # The SearXNG search API URL supporting JSON output. <query> is replaced with the search query. Example: http://searxng.local/search?q=<query>
+		};
+
+		services.searx.enable = true;
+		services = {
+			searx = {
+				settings = {
+					use_default_settings = true;
+
+					general = {
+						privacypolicy_url = false;
+						enable_metrics = true;
+						debug = false;
+					};
+
+					default_doi_resolver = "sci-hub.se";
+
+					server = {
+						port = 3002;
+						bind_address = "127.0.0.1";
+						secret_key = "justLocalThings";
+						image_proxy = true;
+						base_url = "/searx";
+						limiter = false;
+						public_instance = false;
+					};
+
+					enabled_plugins = [
+						"Hash plugin"
+						"Search on category select"
+						"Tracker URL remover"
+						"Hostname replace"
+						"Unit converter plugin"
+						"Basic Calculator"
+						"Open Access DOI rewrite"
+					];
+
+					search = {
+						safe_search = 0; # 0 = None, 1 = Moderate, 2 = Strict
+						formats = [
+							"html"
+							"json"
+							"rss"
+						];
+						# autocomplete = "google"; # "dbpedia", "duckduckgo", "google", "startpage", "swisscows", "qwant", "wikipedia" - leave blank to turn it off by default
+						default_lang = "en";
+					};
+				};
+			};
+		};
+
+	# Impermanence
+	# environment.persistence."/nix/persist/system".directories = mkIf config.boot.impermanence.enable [
+	# 	# FIXME(Krey): This is a temporary solution as the models should be set declaratively
+	# 	{ directory = "/var/lib/ollama/models"; user = "ollama"; group = "ollama"; mode = "u=rwx,g=rwx,o="; } # Persist the models
+	# ];
+}

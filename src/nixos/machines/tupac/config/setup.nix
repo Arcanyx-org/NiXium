@@ -55,6 +55,9 @@ in {
 					pkgs.libxcrypt-legacy # https://github.com/LykosAI/StabilityMatrix/issues/554#issuecomment-2798941427
 					pkgs.python312
 					pkgs.python312Packages.torch
+
+					pkgs.webkitgtk_4_1 # libwebkit2gtk-4.1.so.0
+					pkgs.webkitgtk_4_0 # libwebkit2gtk-4.0.so.0
 			];
 		};
 	};
@@ -70,6 +73,9 @@ in {
 		services.usbguard.dbus.enable = false;
 	services.smartd.enable = true;
 	services.clamav.daemon.enable = true;
+	services.ollama.enable = true;
+	services.open-webui.enable = true;
+		services.ollama.acceleration = "cuda";
 	services.printing.enable = true;
 	programs.localsend.enable = true;
 		programs.localsend.openFirewall = true;
@@ -90,8 +96,8 @@ in {
 	# Power Management
 	powerManagement.enable = true;
 	powerManagement.powertop.enable = true;
-	services.tlp.enable = true;
-		services.power-profiles-daemon.enable = false;
+	services.tlp.enable = false;
+		services.power-profiles-daemon.enable = true;
 
 	networking.wireguard.enable = false;
 

@@ -84,9 +84,13 @@ in {
 				# FIXME(Krey): Only include this when prusa slicer is installed
 				".config/PrusaSlicer"
 
-			# Doeion
+			# Dorion
 				# FIXME(Krey): Only include this when dorion is installed
 				".config/dorion"
+
+			".android"
+
+			".local/share/com.jeffser.Alpaca"
 		];
 		files = [
 			# FIXME-PURITY(Krey): This should be managed declaratively

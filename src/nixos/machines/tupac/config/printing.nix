@@ -3,7 +3,7 @@
 # Printing Management For TUPAC
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) mkIf mkForce;
 in mkIf config.services.printing.enable {
 	# Discovery is done via the opened UDP port 5353
 	services.avahi = {
@@ -41,4 +41,17 @@ in mkIf config.services.printing.enable {
 	services.printing.drivers = [
 		pkgs.gutenprint # Generic open-source
 	];
+
+	# FIXME(Krey): It's throwing fail unless i am in the hackerspace
+		# × ensure-printers.service - Ensure NixOS-configured CUPS printers
+    # 	Loaded: loaded (/etc/systemd/system/ensure-printers.service; enabled; preset: ignored)
+    # 	Active: failed (Result: exit-code) since Fri 2025-08-01 07:29:00 CEST; 292ms ago
+		# Invocation: 17b530bb6cfc46f281554915bd2ac5b8
+		# 		Process: 399467 ExecStart=/nix/store/hyfqynk97fb351mlxsny5kvihxd4v1dv-unit-script-ensure-printers-start/bin/ensure-printers-start (code=exited, status=1/FAILURE)
+		# 	Main PID: 399467 (code=exited, status=1/FAILURE)
+		# 				IP: 0B in, 0B out
+		# 				IO: 416K read, 0B written
+		# 	Mem peak: 2.8M
+		# 				CPU: 12ms
+	# systemd.services.ensurePrinters.serviceConfig.SuccessExitStatus = mkForce "0 1";
 }
