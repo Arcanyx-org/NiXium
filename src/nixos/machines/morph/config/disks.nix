@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, self, ... }:
 
 # Nix-based Disk Management of MORPH with disko and impermenance on tmpfs
 
@@ -20,7 +20,7 @@ let
 	diskoDevice = "/dev/disk/by-id/ata-Micron_M600_MTFDDAK256MBF_14380F0D8268";
 in mkMerge [
 	{
-		age.secrets.morph-disks-password.file = ../secrets/morph-disks-password.age; # Supply password for disk encryption
+		age.secrets.morph-disks-password.file = "${self.outPath}src/nixos/machines/morph/secrets/morph-disks-password.age"; # Supply password for disk encryption
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why

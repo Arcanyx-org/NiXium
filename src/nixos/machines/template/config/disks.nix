@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, self, ... }:
 
 # Nix-based Disk Management of TEMPLATE with disko and impermenance on tmpfs
 
@@ -18,7 +18,7 @@ let
 	diskoDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF";
 in mkMerge [
 	{
-		age.secrets.template-disks-password.file = ../secrets/template-disks-password.age; # Supply password for disk encryption
+		age.secrets.template-disks-password.file = "${self.outPath}src/nixos/machines/template/secrets/template-disks-password.age"; # Supply password for disk encryption
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why

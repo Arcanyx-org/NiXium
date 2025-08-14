@@ -8,8 +8,8 @@
 			nixpkgs-staging.url = "github:nixos/nixpkgs/staging";
 			nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-			# nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-			nixpkgs.url = "git+file:///nix/persist/NiXium/vendor/nixpkgs-stable";
+			nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+			# nixpkgs.url = "git+file:///nix/persist/NiXium/vendor/nixpkgs-stable";
 
 			nixpkgs-23_05.url = "github:nixos/nixpkgs/nixos-23.05";
 			nixpkgs-23_11.url = "github:nixos/nixpkgs/nixos-23.11";
@@ -17,6 +17,7 @@
 			nixpkgs-24_11.url = "github:nixos/nixpkgs/nixos-24.11";
 
 			nixpkgs-kreyren.url = "github:kreyren/nixpkgs/central";
+			nixpkgs-alpaca.url = "github:Gliczy/nixpkgs/alpaca-7.0.0";
 
 			nur-xddxdd = {
 				url = "github:xddxdd/nur-packages";

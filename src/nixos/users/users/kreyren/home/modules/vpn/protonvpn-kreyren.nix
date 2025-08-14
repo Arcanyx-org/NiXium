@@ -1,8 +1,8 @@
-{ pkgs, config, ... }:
+{ config, pkgs, self, ... }:
 
 {
 	age.secrets.kreyren-wireproxy-protonvpn-config = {
-		file = ./kreyren-wireproxy-protonvpn-config.age;
+		file = "${self.outPath}/src/nixos/users/users/kreyren/home/secrets/kreyren-wireproxy-protonvpn-config.age";
 		symlink = false;
 	};
 

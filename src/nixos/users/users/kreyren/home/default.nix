@@ -37,6 +37,8 @@ in {
 					aagl = self.inputs.aagl.packages."${system}";
 					polymc = self.inputs.polymc.packages."${system}";
 					firefox-addons = self.inputs.firefox-addons.packages."${system}";
+
+					flake-root = self.outPath;
 				};
 			});
 

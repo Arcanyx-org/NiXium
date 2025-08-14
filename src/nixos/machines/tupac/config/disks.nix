@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, self, ... }:
 
 # Nix-based Disk Management of TUPAC
 
@@ -27,7 +27,7 @@ let
 in {
 	config = mkMerge [
 		{
-			# age.secrets.tupac-disks-password.file = ../secrets/tupac-disks-password.age;
+			age.secrets.tupac-disks-password.file = "${self.outPath}src/nixos/machines/tupac/secrets/tupac-disks-password.age";
 
 			# age.secrets.tupac-unlock-key.file = ../secrets/tupac-unlock-key.age; # KeyFile for unlocking the filesystems
 

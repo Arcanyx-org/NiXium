@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, self, ... }:
 
 # Nix-based Disk Management of IGNUCIUS with disko and impermenance on tmpfs
 
@@ -23,7 +23,7 @@ let
 	diskoDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF";
 in mkMerge [
 	{
-		age.secrets.ignucius-disks-password.file = ../secrets/ignucius-disks-password.age; # Supply password for disk encryption
+		age.secrets.ignucius-disks-password.file = "${self.outPath}src/nixos/machines/ignucius/secrets/ignucius-disks-password.age"; # Supply password for disk encryption
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why

@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, self, ... }:
 
 # Nix-based Disk Management of FLEXY with disko and impermenance on tmpfs
 
@@ -14,7 +14,7 @@ let
 	diskoDevice = "/dev/disk/by-id/nvme-UMIS_RPJTJ256MEE1OWX_SS0W76181Z1CD11J23ED";
 in mkMerge [
 	{
-		age.secrets.flexy-disks-password.file = ../secrets/flexy-disks-password.age; # Supply password for disk encryption
+		age.secrets.flexy-disks-password.file = "${self.outPath}src/nixos/machines/flexy/secrets/flexy-disks-password.age"; # Supply password for disk encryption
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why

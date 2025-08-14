@@ -1,16 +1,16 @@
 [submodule "vendor/impermanence"]
 	path = vendor/impermanence
-	url = git@github.com:NiXium-org/impermanence.git
+	url = git@github.com:Arcanyx-org/impermanence.git
 [submodule "vendor/agenix"]
 	path = vendor/agenix
-	url = git@github.com:NiXium-org/agenix.git
+	url = git@github.com:Arcanyx-org/agenix.git
 [submodule "vendor/ragenix"]
 	path = vendor/ragenix
-	url = git@github.com:NiXium-org/ragenix.git
+	url = git@github.com:Arcanyx-org/ragenix.git
 [submodule "vendor/gjs-osk"]
 	path = vendor/gjs-osk
 	url = git@github.com:Kreyren/gjs-osk.git
 	branch = central
 [submodule "vendor/nixpkgs-stable"]
 	path = vendor/nixpkgs-stable
-	url = git@github.com:NiXium-org/nixpkgs-stable.git
+	url = git@github.com:Arcanyx-org/nixpkgs-stable.git

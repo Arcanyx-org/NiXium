@@ -5,6 +5,11 @@ let
 	kreyren = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve";
 	kira = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICWLIYYAXRUD0+bg5CXsxh9F4spvqCz4jaxvtGMsezl/";
 
+	all-users = [
+		kreyren
+		kira
+	];
+
 	# Systems
 	flexy-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFSY5vNrQFfnDqBOqse2AHSWY1hIIpZWiBYTdQEIYnV9";
 	ignucius-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
@@ -30,8 +35,12 @@ in {
 		kreyren
 	] ++ all-systems;
 
-	"./users/users/kreyren/home/modules/vpn/kreyren-wireproxy-protonvpn-config.age".publicKeys = [
-		kreyren sinnenfreude-system
+	"./users/users/kreyren/home/secrets/kreyren-wireproxy-protonvpn-config.age".publicKeys = [
+		kreyren
+	];
+
+	"./users/users/kreyren/home/secrets/kreyren-github-access-token.age".publicKeys = [
+		kreyren
 	];
 
 	# Kira (user)

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, aagl, aagl-unstable, unstable, polymc, ... }:
+{ config, pkgs, lib, aagl, aagl-unstable, unstable, polymc, self, ... }:
 
 let
 	inherit (lib) mkIf;
