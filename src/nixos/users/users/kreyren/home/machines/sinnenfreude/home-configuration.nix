@@ -63,16 +63,16 @@ in {
 			pkgs.hexchat # Unmaintained package, no better known for the protocol
 
 			# Discord client for flexibility
-			pkgs.dissent
+      # pkgs.dissent
 
 		pkgs.libreoffice
 
-		polymc.polymc
+    # polymc.polymc
 
 		# Slicers
 		pkgs.prusa-slicer
 		# FIXME-QA(Krey): Broken on current stable, move back when fixed
-			unstable.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+      #unstable.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
 		aagl.anime-game-launcher # An Anime Game
@@ -124,7 +124,7 @@ in {
 		pkgs.moonlight-qt
 
 		# Video
-		pkgs.stremio # Media Server Client
+    #pkgs.stremio # Media Server Client
 		pkgs.freetube # YouTube Client
 		pkgs.mpv
 		pkgs.vlc
