@@ -42,8 +42,24 @@ in {
 
 	home.packages = [
 		pkgs.fractal
-		unstable.dorion
-		pkgs.dissent
+		pkgs.goofcord
+		(pkgs.dissent.overrideAttrs (super: {
+			# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
+			postInstall = (super.postInstall or "") + ''
+				mv "$out/bin/dissent" "$out/bin/.dissent-wrapped" # Rename the old binary
+
+				# Wrap in short script that prefixes the command with `torsocks`
+				cat > "$out/bin/dissent" <<-SCRIPT
+					#!${pkgs.busybox}/bin/sh
+					script_dir=\$(dirname "\$(readlink -f "\$0")")
+					exec torsocks "\$script_dir/.dissent-wrapped" "\$@"
+				SCRIPT
+
+				# Ensure that it's executable
+				chmod +x "$out/bin/dissent"
+			'';
+		}))
 		unstable.simplex-chat-desktop
 		unstable.signal-desktop
 		pkgs.hexchat
@@ -107,7 +123,7 @@ in {
 		unstable.hydralauncher
 		unstable.nexusmods-app
 		pkgs.flashrom
-		(pkgs.alpaca.override { ollama = pkgs.ollama-cuda; })
+		# (pkgs.alpaca.override { ollama = pkgs.ollama-cuda; })
 		(pkgs.geary.overrideAttrs (super: {
 			# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
 			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];

@@ -27,20 +27,20 @@ let
 in {
 	config = mkMerge [
 		{
-			age.secrets.tupac-disks-password.file = "${self.outPath}src/nixos/machines/tupac/secrets/tupac-disks-password.age";
+			# age.secrets.tupac-disks-password.file = "${self.outPath}src/nixos/machines/tupac/secrets/tupac-disks-password.age";
 
 			# age.secrets.tupac-unlock-key.file = ../secrets/tupac-unlock-key.age; # KeyFile for unlocking the filesystems
 
 			# Needed to find the SD Card device during initrd stage
-			boot.initrd.kernelModules = [
-				"mmc_core"
-				"mmc_block"
-				"sd_mod"
-				"sdhci"
-				"sdhci_pci"
-				"cqhci"
-				"scsi_mod"
-			];
+			# boot.initrd.kernelModules = [
+			# 	"mmc_core"
+			# 	"mmc_block"
+			# 	"sd_mod"
+			# 	"sdhci"
+			# 	"sdhci_pci"
+			# 	"cqhci"
+			# 	"scsi_mod"
+			# ];
 		}
 
 		# FIXME-QA(Krey): Produces an infinite recursion -- (config.boot.impermanence.enable == true)

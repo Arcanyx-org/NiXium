@@ -28,6 +28,8 @@ in mkIf config.programs.vscode.enable (mkMerge [
 
 					# To make the built-in web browser in vscodium to work
 					"browse-lite.chromeExecutable" = "${pkgs.ungoogled-chromium}/bin/chromium";
+
+					"http.proxy" = "socks5://127.0.0.1:25344"; # Use ProtonVPN for VSCodium
 				};
 			};
 		};

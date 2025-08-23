@@ -5,7 +5,8 @@ let
 in {
 	flake.homeManagerModules.default = {
 		imports = [
-			homeManagerModules.editors-vscode
+			homeManagerModules.editors
+			homeManagerModules.services
 			homeManagerModules.system
 			homeManagerModules.terminal-emulators
 			homeManagerModules.tools

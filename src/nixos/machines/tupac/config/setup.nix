@@ -76,6 +76,7 @@ in {
 	services.ollama.enable = true;
 	services.open-webui.enable = true;
 		services.ollama.acceleration = "cuda";
+	services.opensnitch.enable = true;
 	services.printing.enable = true;
 	programs.localsend.enable = true;
 		programs.localsend.openFirewall = true;

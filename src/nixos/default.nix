@@ -24,6 +24,7 @@ in {
 
 				nixosModules.services-distributedBuilds
 				nixosModules.services-monero
+				nixosModules.services-opensnitch
 				nixosModules.services-sshd
 				nixosModules.services-tor
 
