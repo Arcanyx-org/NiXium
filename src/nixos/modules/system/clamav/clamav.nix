@@ -9,6 +9,35 @@ in mkIf config.services.clamav.daemon.enable {
 
 	services.clamav.updater.enable = true; # Daemon to update malware definitions
 
+	# OpenSnitch
+		# FIXME-PRIVACY(Krey): Should go over Tor
+	services.opensnitch.rules = mkIf config.services.opensnitch.enable {
+		freshclam= {
+			name = "Allow clamav to update signatures";
+			enabled = true;
+			action = "allow";
+			duration = "always";
+			operator = {
+				type = "list";
+				operand = "list";
+				list = [
+					{
+						type = "simple";
+						sensitive = false;
+						operand = "process.path";
+						data = "${lib.getBin pkgs.clamav}/bin/freshclam";
+					}
+					{
+						type = "simple";
+						operand = "dest.host";
+						sensitive = false;
+						data = "database.clamav.net";
+					}
+				];
+			};
+		};
+	};
+
 	# Impermanence
 	environment.persistence."/nix/persist/system".directories = mkIf config.boot.impermanence.enable [
 		(mkIf config.services.clamav.daemon.enable config.services.clamav.updater.settings.DatabaseDirectory) # ClamAV
