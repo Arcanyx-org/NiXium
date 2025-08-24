@@ -21,9 +21,18 @@ let
 	inherit (lib) mkMerge;
 
 	diskoDevice = "/dev/disk/by-id/ata-WDC_WDS500G2B0A-00SM50_21101J456803";
+	swapSize = "30G";
+	tempSize = "10G"; # >=10GB Needed to avoid no space left errors during rebuilds
+	imageSize = "50G"; # Size of Image for VM
+
 in mkMerge [
 	{
 		age.secrets.mracek-disks-password.file = ../secrets/mracek-disks-password.age; # Supply password for disk encryption
+
+		# age.secrets.mracek-unlock-key.file = ../secrets/mracek-unlock-key.age; # KeyFile for unlocking the filesystems
+
+		# Needed to find the SD Card device during initrd stage
+		# boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
@@ -38,7 +47,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=1G"
+					"size=${tempSize}"
 					"defaults"
 					"mode=755"
 				];
@@ -48,7 +57,7 @@ in mkMerge [
 				system = {
 					device = diskoDevice;
 					type = "disk";
-					imageSize = "50G"; # Size of the generated image
+					imageSize = "${imageSize}"; # Size of the generated image
 					content = {
 						type = "gpt";
 						partitions = {
@@ -60,6 +69,10 @@ in mkMerge [
 								content = {
 									type = "filesystem";
 									format = "vfat"; # FAT32
+									# SECURITY(Krey): Required since systemd 254, to not make the random-seed file writtable by default
+									# * https://github.com/nix-community/disko/issues/527#issuecomment-1924076948
+									# * https://discourse.nixos.org/t/nixos-install-with-custom-flake-results-in-boot-being-world-accessible/34555/14
+									mountOptions = [ "umask=0077" ];
 									mountpoint = "/boot";
 								};
 							};
@@ -93,10 +106,19 @@ in mkMerge [
 												mountpoint = "/nix";
 												mountOptions = [ "compress=lzo" "noatime" ];
 											};
-											"@persist" = {
+											"@system-persist" = {
 												mountpoint = "/nix/persist/system";
 												mountOptions = [ "compress=lzo" "noatime" ];
 											};
+											"@user-persist" = {
+												mountpoint = "/nix/persist/users";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											# FIXME(Krey): Causes emergency shell
+											# "@nixium-persist" = {
+											#  	mountpoint = "/nix/persist/NiXium";
+											# 	mountOptions = [ "compress=lzo" "noatime" ];
+											# };
 										};
 									};
 								};
@@ -104,7 +126,7 @@ in mkMerge [
 
 							swap = {
 								priority = 2;
-								size = "30G";
+								size = "${swapSize}";
 								content = {
 									name = "swap";
 									type = "luks";
@@ -147,7 +169,7 @@ in mkMerge [
 			system = {
 				device = diskoDevice;
 				type = "disk";
-				imageSize = "50G"; # Size of the generated image
+				imageSize = "${imageSize}"; # Size of the generated image
 				content = {
 					type = "gpt";
 					partitions = {
@@ -188,22 +210,26 @@ in mkMerge [
 									type = "btrfs";
 									extraArgs = [ "--label NIX_STORE" ];
 									subvolumes = {
-										"@nix" = {
-											mountpoint = "/nix";
-											mountOptions = [ "compress=lzo" "noatime" ];
+											"@nix" = {
+												mountpoint = "/nix";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											"@system-persist" = {
+												mountpoint = "/nix/persist/system";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											"@user-persist" = {
+												mountpoint = "/nix/persist/users";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
 										};
-										"@persist" = {
-											mountpoint = "/nix/persist/system";
-											mountOptions = [ "compress=lzo" "noatime" ];
-										};
-									};
 								};
 							};
 						};
 
 						swap = {
 							priority = 2;
-							size = "30G";
+							size = "${swapSize}";
 							content = {
 								name = "swap";
 								type = "luks";

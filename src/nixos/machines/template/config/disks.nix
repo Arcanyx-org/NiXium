@@ -2,12 +2,6 @@
 
 # Nix-based Disk Management of TEMPLATE with disko and impermenance on tmpfs
 
-# Formatting strategy:
-#    Table: GPT
-#    2048 - 1050623 (1048576) -- 512M EFI System
-#    1050624 - 913858559 (912807936) -- -30G nix store BTRFS
-#    913858560 - 976773119 (62914560) -- 100% Encrypted swap
-
 # Reference: https://github.com/ryan4yin/nix-config/blob/82dccbdecaf73835153a6470c1792d397d2881fa/hosts/12kingdoms-suzu/disko-fs.nix#L21
 
 # Reference: https://github.com/lilyinstarlight/foosteros/blob/ccaca3910a61ee790f9cfd000cf77074524676b8/hosts/minimal/disks.nix#L4
@@ -15,10 +9,19 @@
 let
 	inherit (lib) mkMerge;
 
-	diskoDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF";
+	diskoDevice = "/dev/disk/by-id/DEVICE";
+	swapSize = "60G";
+	tempSize = "10G"; # >=10GB Needed to avoid no space left errors during rebuilds
+	imageSize = "50G"; # Size of Image for VM
+
 in mkMerge [
 	{
-		age.secrets.template-disks-password.file = ../secrets/template-disks-password.age; # Supply password for disk encryption
+		age.secrets.TEMPLATE-disks-password.file = ../secrets/TEMPLATE-disks-password.age; # Supply password for disk encryption
+
+		age.secrets.TEMPLATE-unlock-key.file = ../secrets/TEMPLATE-unlock-key.age; # KeyFile for unlocking the filesystems
+
+		# Needed to find the SD Card device during initrd stage
+		boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
@@ -33,7 +36,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=5G" # >=5GB Needed to avoid no space left errors during rebuilds
+					"size=${tempSize}"
 					"defaults"
 					"mode=755"
 				];
@@ -43,7 +46,7 @@ in mkMerge [
 				system = {
 					device = diskoDevice;
 					type = "disk";
-					imageSize = "50G"; # Size of the generated image
+					imageSize = "${imageSize}"; # Size of the generated image
 					content = {
 						type = "gpt";
 						partitions = {
@@ -71,7 +74,7 @@ in mkMerge [
 									type = "luks";
 									settings.allowDiscards = true;
 
-									passwordFile = config.age.secrets.template-disks-password.path;
+									passwordFile = config.age.secrets.TEMPLATE-disks-password.path;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -112,14 +115,14 @@ in mkMerge [
 
 							swap = {
 								priority = 2;
-								size = "30G";
+								size = "${swapSize}";
 								content = {
 									name = "swap";
 									type = "luks";
 
 									settings.allowDiscards = true;
 
-									passwordFile = config.age.secrets.template-disks-password.path;
+									passwordFile = config.age.secrets.TEMPLATE-disks-password.path;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -155,7 +158,7 @@ in mkMerge [
 			system = {
 				device = diskoDevice;
 				type = "disk";
-				imageSize = "50G"; # Size of the generated image
+				imageSize = "${imageSize}"; # Size of the generated image
 				content = {
 					type = "gpt";
 					partitions = {
@@ -179,7 +182,7 @@ in mkMerge [
 								type = "luks";
 								settings.allowDiscards = true;
 
-								passwordFile = config.age.secrets.template-disks-password.path;
+								passwordFile = config.age.secrets.TEMPLATE-disks-password.path;
 
 								initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -215,14 +218,14 @@ in mkMerge [
 
 						swap = {
 							priority = 2;
-							size = "30G";
+							size = "${swapSize}";
 							content = {
 								name = "swap";
 								type = "luks";
 
 								settings.allowDiscards = true;
 
-								passwordFile = config.age.secrets.template-disks-password.path;
+								passwordFile = config.age.secrets.TEMPLATE-disks-password.path;
 
 								initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 

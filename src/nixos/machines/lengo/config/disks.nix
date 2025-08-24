@@ -2,21 +2,16 @@
 
 # Nix-based Disk Management of LENGO with disko and impermenance on tmpfs
 
-# Formatting strategy:
-#    Table: GPT
-#    2048 - 1050623 (1048576) -- 512M EFI System
-#    1050624 - 937291775 (936241152) -- -30G nix store BTRFS
-#    937291776 - 1000206866 (62915091) -- 100% Encrypted swap
-
 # Reference: https://github.com/ryan4yin/nix-config/blob/82dccbdecaf73835153a6470c1792d397d2881fa/hosts/12kingdoms-suzu/disko-fs.nix#L21
 
 # Reference: https://github.com/lilyinstarlight/foosteros/blob/ccaca3910a61ee790f9cfd000cf77074524676b8/hosts/minimal/disks.nix#L4
 
 let
 	inherit (lib) mkMerge;
-
 	diskoDevice = "/dev/disk/by-id/nvme-WD_PC_SN740_SDDPMQD-512G-1101_2335R1406872";
 	swapSize = "60G";
+	tempSize = "10G"; # >=10GB Needed to avoid no space left errors during rebuilds
+	imageSize = "50G";
 in mkMerge [
 	{
 		age.secrets.lengo-disks-password.file = ../secrets/lengo-disks-password.age; # Supply password for disk encryption
@@ -25,14 +20,6 @@ in mkMerge [
 
 		# Needed to find the SD Card device during initrd stage
 		boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
-	}
-
-	# FIXME(Krey): Causes infinite recursion, no idea why
-	# (if (config.boot.impermenance.enable == true) then {
-	(if (true) then {
-		age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
-
-		fileSystems."/nix/persist/system".neededForBoot = true;
 
 		boot.initrd.luks.devices = {
 			swap = {
@@ -52,13 +39,22 @@ in mkMerge [
 				# fallbackToPassword = true;
 			};
 		};
+	}
+
+	# FIXME(Krey): Causes infinite recursion, no idea why
+	# (if (config.boot.impermenance.enable == true) then {
+	(if (true) then {
+		age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
+
+		fileSystems."/nix/persist/system".neededForBoot = true;
+
 
 		# FIXME(Krey): Figure out how to do labels
 		disko.devices = {
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=5G" # >=5GB Needed to avoid no space left errors during rebuilds
+					"size=${tempSize}"
 					"defaults"
 					"mode=755"
 				];
@@ -68,7 +64,7 @@ in mkMerge [
 				system = {
 					device = diskoDevice;
 					type = "disk";
-					imageSize = "50G"; # Size of the generated image
+					imageSize = "${imageSize}"; # Size of the generated image
 					content = {
 						type = "gpt";
 						partitions = {
@@ -97,8 +93,6 @@ in mkMerge [
 									settings.allowDiscards = true;
 
 									passwordFile = config.age.secrets.lengo-disks-password.path;
-
-									keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -137,10 +131,9 @@ in mkMerge [
 								};
 							};
 
-							# FIXME(Krey): This partition should be last to make it easier to make on-fly adjustments to it
 							swap = {
 								priority = 2;
-								size = swapSize;
+								size = "${swapSize}";
 								content = {
 									name = "swap";
 									type = "luks";
@@ -148,8 +141,6 @@ in mkMerge [
 									settings.allowDiscards = true;
 
 									passwordFile = config.age.secrets.lengo-disks-password.path;
-
-									keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -163,6 +154,7 @@ in mkMerge [
 									];
 
 									content = {
+										# FIXME-QA(Krey): Add label 'SWAP'
 										type = "swap";
 										resumeDevice = true; # resume from hiberation from this device
 
@@ -209,7 +201,7 @@ in mkMerge [
 			system = {
 				device = diskoDevice;
 				type = "disk";
-				imageSize = "50G"; # Size of the generated image
+				imageSize = "${imageSize}"; # Size of the generated image
 				content = {
 					type = "gpt";
 					partitions = {
@@ -269,7 +261,7 @@ in mkMerge [
 
 						swap = {
 							priority = 2;
-							size = "30G";
+							size = "${swapSize}";
 							content = {
 								name = "swap";
 								type = "luks";
