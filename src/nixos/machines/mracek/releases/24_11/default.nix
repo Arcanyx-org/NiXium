@@ -1,11 +1,11 @@
 { inputs, lib, self, config, ... }:
 
-# Declaration for STABLE release of NixOS for MRACEK
+# Declaration for 24.11 release of NixOS for MRACEK
 
 let
 	inherit (lib) mkForce;
 in {
-	flake.nixosConfigurations."nixos-mracek-stable" = inputs.nixpkgs.lib.nixosSystem {
+	flake.nixosConfigurations."nixos-mracek-24_11" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
 
 		pkgs = import inputs.nixpkgs {
@@ -74,7 +74,7 @@ in {
 
 	# Task to perform installation of MRACEK in NixOS distribution, stable release
 	perSystem = { system, pkgs, inputs', self', ... }: {
-		packages.nixos-mracek-stable-install = pkgs.writeShellApplication {
+		packages.nixos-mracek-24_11-install = pkgs.writeShellApplication {
 				name = "nixos-mracek-stable-install";
 				bashOptions = [
 					"errexit" # Exit on False Return
@@ -98,14 +98,14 @@ in {
 
 					secretSSHHostKeyPath = self.nixosConfigurations.nixos-mracek-stable.config.age.secrets.mracek-ssh-ed25519-private.file;
 				};
-				text = builtins.readFile ./mracek-nixos-stable-install.sh;
+				text = builtins.readFile ./mracek-nixos-24_11-install.sh;
 			};
 
 		# Declare for `nix run`
-		apps.nixos-mracek-stable-install.program = self'.packages.nixos-mracek-stable-install;
+		apps.nixos-mracek-24_11-install.program = self'.packages.nixos-mracek-24_11-install;
 
 		# Unattended installer
-		packages.nixos-mracek-stable-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
+		packages.nixos-mracek-24_11-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
 			pkgs = import inputs.nixpkgs {
 				inherit system;
 				config.allowUnfree = true;
@@ -148,7 +148,7 @@ in {
 						];
 
 						serviceConfig = {
-							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-mracek-stable-install";
+							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-mracek-24_11-install";
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
@@ -176,6 +176,6 @@ in {
 			};
 		};
 
-		apps.nixos-mracek-stable-unattended-installer-iso.program = self'.packages.nixos-mracek-stable-unattended-installer-iso;
+		apps.nixos-mracek-24_11-unattended-installer-iso.program = self'.packages.nixos-mracek-24_11-unattended-installer-iso;
 	};
 }

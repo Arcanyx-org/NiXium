@@ -15,6 +15,7 @@ in {
 				"steamdeck-hw-theme"
 				"steam-jupiter-unwrapped"
 				"steam"
+				"steam-unwrapped"
 			];
 		};
 

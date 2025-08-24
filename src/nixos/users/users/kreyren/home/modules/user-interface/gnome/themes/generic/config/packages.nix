@@ -9,10 +9,16 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 		"24.05" = {
 			home.packages = [];
 		};
+		# FIXME(Krey): Duplicate Code
 		"24.11" = {
 			home.packages = [];
 		};
+		# FIXME(Krey): Duplicate Code
 		"25.05" = {
+			home.packages = [];
+		};
+		# FIXME(Krey): Duplicate Code
+		"25.11" = {
 			home.packages = [];
 		};
 	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")

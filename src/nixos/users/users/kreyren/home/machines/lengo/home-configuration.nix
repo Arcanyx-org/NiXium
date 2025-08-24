@@ -37,8 +37,11 @@ in {
 		programs.vim.enable = true;
 		programs.vscode.enable = true;
 
-	# Non-Free Allow List
-	nixpkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) [
+	nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+		# FIXME(Krey): What the fuck? - https://www.reddit.com/r/Stremio/comments/1isd5xp/comment/mdlf66w/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+		"stremio-shell"
+		"stremio-server"
+
 		# FIXME(Krey): Using vscodium, no idea why this needs 'vscode' set
 		"vscode"
 
@@ -46,6 +49,7 @@ in {
 		"etlegacy"
 		"etlegacy-assets"
 	];
+
 
 	home.packages = [
 		# Instant-Chats

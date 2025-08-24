@@ -23,15 +23,18 @@ in {
 	nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
 		"checkra1n"
 
-		"vscode"
-		"etlegacy"
-		"etlegacy-assets"
-
 		"discord"
 
 		# FIXME(Krey): What the fuck? - https://www.reddit.com/r/Stremio/comments/1isd5xp/comment/mdlf66w/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 		"stremio-shell"
 		"stremio-server"
+
+		# FIXME(Krey): Using vscodium, no idea why this needs 'vscode' set
+		"vscode"
+
+		# FIXME(Krey): It's ET: Legacy, what's proprietary there?
+		"etlegacy"
+		"etlegacy-assets"
 	];
 
 	home.packages = [

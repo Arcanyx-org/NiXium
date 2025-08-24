@@ -14,12 +14,14 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 				pkgs.pinentry-gnome # Needed for inputting passwords
 			];
 		};
+		# FIXME-QA(Krey): Duplicate Code
 		"24.05" = {
 			home.packages = [
 				pkgs.gnome.dconf-editor
 				pkgs.pinentry-gnome3 # Needed for inputting passwords
 			];
 		};
+		# FIXME-QA(Krey): Duplicate Code
 		"24.11" = {
 			home.packages = [
 				pkgs.dconf-editor
@@ -28,6 +30,13 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 		};
 		# FIXME-QA(Krey): Duplicate Code
 		"25.05" = {
+			home.packages = [
+				pkgs.dconf-editor
+				pkgs.pinentry-gnome3 # Needed for inputting passwords
+			];
+		};
+		# FIXME-QA(Krey): Duplicate Code
+		"25.11" = {
 			home.packages = [
 				pkgs.dconf-editor
 				pkgs.pinentry-gnome3 # Needed for inputting passwords

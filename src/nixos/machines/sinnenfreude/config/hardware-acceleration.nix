@@ -13,8 +13,12 @@
 			driSupport32Bit = true;
 		};
 	};
-
 	"24.11" = {
+		hardware.graphics.enable = true;
+		hardware.graphics.enable32Bit = true;
+	};
+	# FIXME(Krey): Duplicate Code
+	"25.05" = {
 		hardware.graphics.enable = true;
 		hardware.graphics.enable32Bit = true;
 	};

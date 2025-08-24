@@ -31,8 +31,6 @@ in {
 		# FIXME(Krey): It's ET: Legacy, what's proprietary there?
 		"etlegacy"
 		"etlegacy-assets"
-
-		"discord"
 	];
 
 	home.packages = [
