@@ -35,13 +35,6 @@ in {
 
 	# Non-Free Allow List
 	nixpkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) [
-		# FIXME(Krey): Using vscodium, no idea why this needs 'vscode' set
-		"vscode"
-
-		# FIXME(Krey): It's ET: Legacy, what's proprietary there?
-		"etlegacy"
-		"etlegacy-assets"
-
 		# Flexibility of communication with some projects that hate privacy or what the fuck
 		"discord"
 	];
