@@ -1,3 +1,7 @@
+This is an experimental branch where experiments are conducted prior to their submission to the central branch, it is provided for transparency.
+
+---
+
 # NiXium (N/X)
 
 Transparent Nix-based Open-Source Infrastructure as Code (OSS IaaC) Management Solution for Multiple Systems and Domains designed to be a reliable tool for mission-critical tasks in paranoid and high-security environment.
