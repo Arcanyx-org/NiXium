@@ -2,19 +2,20 @@
 
 # Nix-based Disk Management of FLEXY with disko and impermenance on tmpfs
 
-# Formatting strategy:
-#    Table: GPT
-#    2048 - 1050623 (1048576) -- 512M EFI System
-#    1050624 - 479145983 (478095360) -- -10G nix store BTRFS
-#    479145984 - 500117503 (20971520) -- 100% Encrypted swap
-
 let
 	inherit (lib) mkMerge;
-
 	diskoDevice = "/dev/disk/by-id/nvme-UMIS_RPJTJ256MEE1OWX_SS0W76181Z1CD11J23ED";
+	swapSize = "10G";
+	tempSize = "10G"; # >=10GB Needed to avoid no space left errors during rebuilds
+	imageSize = "50G";
 in mkMerge [
 	{
 		age.secrets.flexy-disks-password.file = ../secrets/flexy-disks-password.age; # Supply password for disk encryption
+
+		age.secrets.flexy-unlock-key.file = ../secrets/flexy-unlock-key.age; # KeyFile for unlocking the filesystems
+
+		# Needed to find the SD Card device during initrd stage
+		boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
@@ -29,7 +30,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=1G"
+					"size=${tempSize}"
 					"defaults"
 					"mode=755"
 				];
@@ -39,7 +40,7 @@ in mkMerge [
 				system = {
 					device = diskoDevice;
 					type = "disk";
-					# imageSize = "50G"; # Size of the generated image
+					imageSize = "${imageSize}"; # Size of the generated image
 					content = {
 						type = "gpt";
 						partitions = {
@@ -88,10 +89,19 @@ in mkMerge [
 												mountpoint = "/nix";
 												mountOptions = [ "compress=lzo" "noatime" ];
 											};
-											"@persist" = {
+											"@system-persist" = {
 												mountpoint = "/nix/persist/system";
 												mountOptions = [ "compress=lzo" "noatime" ];
 											};
+											"@user-persist" = {
+												mountpoint = "/nix/persist/users";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											# FIXME(Krey): Causes emergency shell
+											# "@nixium-persist" = {
+											#  	mountpoint = "/nix/persist/NiXium";
+											# 	mountOptions = [ "compress=lzo" "noatime" ];
+											# };
 										};
 									};
 								};
@@ -99,7 +109,7 @@ in mkMerge [
 
 							swap = {
 								priority = 2;
-								size = "10G";
+								size = "${swapSize}";
 								content = {
 									name = "swap";
 									type = "luks";
@@ -142,7 +152,7 @@ in mkMerge [
 			system = {
 				device = diskoDevice;
 				type = "disk";
-				# imageSize = "50G"; # Size of the generated image
+				imageSize = "${imageSize}"; # Size of the generated image
 				content = {
 					type = "gpt";
 					partitions = {
@@ -183,22 +193,26 @@ in mkMerge [
 									type = "btrfs";
 									extraArgs = [ "--label NIX_STORE" ];
 									subvolumes = {
-										"@nix" = {
-											mountpoint = "/nix";
-											mountOptions = [ "compress=lzo" "noatime" ];
+											"@nix" = {
+												mountpoint = "/nix";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											"@system-persist" = {
+												mountpoint = "/nix/persist/system";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
+											"@user-persist" = {
+												mountpoint = "/nix/persist/users";
+												mountOptions = [ "compress=lzo" "noatime" ];
+											};
 										};
-										"@persist" = {
-											mountpoint = "/nix/persist/system";
-											mountOptions = [ "compress=lzo" "noatime" ];
-										};
-									};
 								};
 							};
 						};
 
 						swap = {
 							priority = 2;
-							size = "10G";
+							size = "${swapSize}";
 							content = {
 								name = "swap";
 								type = "luks";

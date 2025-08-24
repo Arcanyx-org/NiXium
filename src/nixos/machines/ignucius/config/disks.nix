@@ -21,9 +21,18 @@ let
 	inherit (lib) mkMerge;
 
 	diskoDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF";
+	swapSize = "30G";
+	tempSize = "10G"; # >=10GB Needed to avoid no space left errors during rebuilds
+	imageSize = "50G"; # Size of Image for VM
+
 in mkMerge [
 	{
 		age.secrets.ignucius-disks-password.file = ../secrets/ignucius-disks-password.age; # Supply password for disk encryption
+
+		# age.secrets.ignucius-unlock-key.file = ../secrets/ignucius-unlock-key.age; # KeyFile for unlocking the filesystems
+
+		# Needed to find the SD Card device during initrd stage
+		# boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
@@ -38,7 +47,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=5G" # >=5GB Needed to avoid no space left errors during rebuilds
+					"size=${tempSize}"
 					"defaults"
 					"mode=755"
 				];
@@ -48,7 +57,7 @@ in mkMerge [
 				system = {
 					device = diskoDevice;
 					type = "disk";
-					imageSize = "50G"; # Size of the generated image
+					imageSize = "${imageSize}"; # Size of the generated image
 					content = {
 						type = "gpt";
 						partitions = {
@@ -117,7 +126,7 @@ in mkMerge [
 
 							swap = {
 								priority = 2;
-								size = "30G";
+								size = "${swapSize}";
 								content = {
 									name = "swap";
 									type = "luks";
@@ -160,7 +169,7 @@ in mkMerge [
 			system = {
 				device = diskoDevice;
 				type = "disk";
-				imageSize = "50G"; # Size of the generated image
+				imageSize = "${imageSize}"; # Size of the generated image
 				content = {
 					type = "gpt";
 					partitions = {
@@ -220,7 +229,7 @@ in mkMerge [
 
 						swap = {
 							priority = 2;
-							size = "30G";
+							size = "${swapSize}";
 							content = {
 								name = "swap";
 								type = "luks";
