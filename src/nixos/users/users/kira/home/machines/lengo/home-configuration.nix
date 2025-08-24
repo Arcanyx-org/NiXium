@@ -59,6 +59,8 @@ in {
 		# Games
 		pkgs.etlegacy # Wolfenstein: Enemy Territory
 		pkgs.mindustry
+		# NOTE(Krey): Required to play Elite Dangerous without annoyances
+			pkgs.min-ed-launcher
 
 		# Web Browsers
 		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
