@@ -69,6 +69,12 @@ in {
 		# FIXME-QA(Krey): Remove this once it's fixed upstream
 		environment.variables.GSK_RENDERER = "ngl";
 	services.displayManager.defaultSession = "gnome";
+		# Enable screen keyboard in GDM for touch login
+		programs.dconf.profiles.gdm.databases = [{
+				settings."org/gnome/desktop/a11y/applications" = {
+					screen-keyboard-enabled = true;
+				};
+			}];
 
 	programs.coolercontrol.enable = true; # Enable solution to control the fans
 
@@ -99,7 +105,7 @@ in {
 
 	# HandHeld Daemon ("HHD")
 		# NOTE(Krey): The HHD emulates the controllers as Steam Controller which is unwanted for Lengo
-		services.handheld-daemon.enable = false;
+		services.handheld-daemon.enable = true;
 		services.handheld-daemon.ui.enable = true;
 			services.handheld-daemon.user = "kira";
 
