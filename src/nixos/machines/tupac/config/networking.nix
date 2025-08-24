@@ -20,4 +20,8 @@ in {
 		1716 # KDE Connect
 		40000 # SimpleX (https://github.com/simplex-chat/simplex-chat/issues/3425#issuecomment-2336520556)
 	];
+
+	# Include the wireless Regulatory Database to use higher-bandwidth WiFi Standards
+	hardware.wirelessRegulatoryDatabase = true;
+		boot.extraModprobeConfig = ''options cfg80211 ieee80211_regdom="CZ"'';
 }
