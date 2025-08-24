@@ -38,14 +38,7 @@ in {
 		programs.vscode.enable = true;
 
 	# Non-Free Allow List
-	nixpkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) [
-		# FIXME(Krey): Using vscodium, no idea why this needs 'vscode' set
-		"vscode"
-
-		# FIXME(Krey): It's ET: Legacy, what's proprietary there?
-		"etlegacy"
-		"etlegacy-assets"
-	];
+	nixpkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) [];
 
 	home.packages = [
 		# Instant-Chats

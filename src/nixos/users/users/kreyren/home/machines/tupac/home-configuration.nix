@@ -23,10 +23,6 @@ in {
 	nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
 		"checkra1n"
 
-		"vscode"
-		"etlegacy"
-		"etlegacy-assets"
-
 		"discord"
 
 		# FIXME(Krey): What the fuck? - https://www.reddit.com/r/Stremio/comments/1isd5xp/comment/mdlf66w/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button

@@ -28,13 +28,6 @@ in {
 	nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
 		"checkra1n"
 
-		# FIXME(Krey): Using vscodium, no idea why this needs 'vscode' set
-		"vscode"
-
-		# FIXME(Krey): It's ET: Legacy, what's proprietary there?
-		"etlegacy"
-		"etlegacy-assets"
-
 		"discord"
 	];
 
