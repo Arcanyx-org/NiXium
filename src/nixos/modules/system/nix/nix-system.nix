@@ -1,4 +1,4 @@
-{ self, lib, config, ... }:
+{ self, lib, pkgs, config, ... }:
 
 # Global Management of Nix for all systems
 
@@ -50,6 +50,21 @@ in {
 			"min-free = ${toString (512 * 1024 * 1024)}"
 			"max-free = ${toString (2048 * 1024 * 1024)}"
 		];
+	};
+
+		# OpenSnitch
+		# FIXME-PRIVACY(Krey): Should go over VPN
+	services.opensnitch.rules.nix = mkIf config.services.opensnitch.enable {
+		name = "Permit the nix-daemon";
+		enabled = true;
+		action = "allow";
+		duration = "always";
+		operator = {
+			type = "simple";
+			sensitive = false;
+			operand = "process.path";
+			data = "${lib.getBin pkgs.nix}/bin/nix";
+		};
 	};
 
 	# Impermanence
