@@ -72,6 +72,8 @@ in {
 
 	programs.coolercontrol.enable = true; # Enable solution to control the fans
 
+	services.xserver.displayManager.gdm.banner = "Return to the Base48 Hackerspace for finder's reward";
+
 	# Steam
 		# FIXME(Krey): Try to use the unstable release of NixOS to get later releases of Steam and proton-ge-bin to maybe make it less of a shitware?.. or probably far worse than it is already
 		programs.steam = {
