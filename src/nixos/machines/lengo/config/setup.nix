@@ -69,6 +69,12 @@ in {
 		# FIXME-QA(Krey): Remove this once it's fixed upstream
 		environment.variables.GSK_RENDERER = "ngl";
 	services.displayManager.defaultSession = "gnome";
+		# Enable screen keyboard by default in GDM for touch login
+		programs.dconf.profiles.gdm.databases = [{
+			settings."org/gnome/desktop/a11y/applications" = {
+				screen-keyboard-enabled = true;
+			};
+		}];
 
 	programs.coolercontrol.enable = true; # Enable solution to control the fans
 

@@ -86,11 +86,13 @@ in {
 		# Keyboard
 			# pkgs.gnomeExtensions.gjs-osk
 			# FIXME(Krey): Remove this once it arrives in nixpkgs - https://github.com/Vishram1123/gjs-osk/issues/85
-			(pkgs.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
+			(unstable.gnomeExtensions.gjs-osk.overrideAttrs (finalAttrs: previousAttrs: {
 				src = pkgs.fetchzip {
 					url = "https://github.com/Vishram1123/gjs-osk/releases/download/5ecc8e8/gjsosk@vishram1123_main.zip";
-					hash = "sha256-qJvvQI3EwrhjMXfuXPHzG9pET60ztU2EXcmkSLu0xUs=";
+					# url = "https://github.com/Kreyren/gjs-osk/archive/refs/heads/central.zip";
+					hash = "sha256-fKmJmCLMyEJt4UaoqNXOMnFZQzshwkCVJhehFj7prYs=";
 					stripRoot = false;
+					postFetch = ''echo ewogICAgImRlc2NyaXB0aW9uIjogIkEgbmV3IE9uc2NyZWVuIEtleWJvYXJkIGJ1aWx0IHVzaW5nIEdOT01FIEpTIiwKICAgICJnZXR0ZXh0LWRvbWFpbiI6ICJnanNvc2tAdmlzaHJhbTExMjMuY29tIiwKICAgICJuYW1lIjogIkdKUyBPU0siLAogICAgInNldHRpbmdzLXNjaGVtYSI6ICJvcmcuZ25vbWUuc2hlbGwuZXh0ZW5zaW9ucy5nanNvc2siLAogICAgInNlc3Npb24tbW9kZXMiIDogWwogICAgICAidXNlciIsCiAgICAgICJ1bmxvY2stZGlhbG9nIiwKICAgICAgImdkbSIKICAgIF0sCiAgICAic2hlbGwtdmVyc2lvbiI6IFsKICAgICAgICAiNDUiLAogICAgICAgICI0NiIsCiAgICAgICAgIjQ3IiwKICAgICAgICAiNDgiCiAgICBdLAogICAgInVybCI6ICJodHRwczovL2dpdGh1Yi5jb20vVmlzaHJhbTExMjMvZ2pzLW9zayIsCiAgICAidXVpZCI6ICJnanNvc2tAdmlzaHJhbTExMjMuY29tIiwKICAgICJ2ZXJzaW9uIjogMTAwMDAwCn0K | base64 --decode > $out/metadata.json'';
 				};
 			}))
 
