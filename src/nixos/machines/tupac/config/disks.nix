@@ -50,20 +50,20 @@ in {
 			fileSystems."/nix/persist/system".neededForBoot = true;
 
 			# Set up decryption via key
-			#boot.initrd.luks.devices = {
-			#	swap = {
-			#		device = "/dev/disk/by-partlabel/disk-system-swap";
-			#		keyFile = keyDevice;
-			#		keyFileSize = 4096;
-			#		# fallbackToPassword = true;
-			#	};
-			#	store = {
-			#		device = "/dev/disk/by-partlabel/disk-system-store";
-			#		keyFile = keyDevice;
-			#		keyFileSize = 4096;
-			#		# fallbackToPassword = true;
-			#	};
-			#};
+			boot.initrd.luks.devices = {
+				swap = {
+					device = "/dev/disk/by-partlabel/disk-system-swap";
+					# keyFile = keyDevice;
+					# keyFileSize = 4096;
+					# fallbackToPassword = true;
+				};
+				store = {
+					device = "/dev/disk/by-partlabel/disk-system-store";
+					# keyFile = keyDevice;
+					# keyFileSize = 4096;
+					# fallbackToPassword = true;
+				};
+			};
 
 			# FIXME(Krey): Figure out how to do labels
 			disko.devices = {
