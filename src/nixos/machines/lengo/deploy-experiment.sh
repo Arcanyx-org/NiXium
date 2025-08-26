@@ -3,6 +3,7 @@
 # Experiment
 
 targetIP="10.48.2.92"
+targetFlake="github:Arcanyx-org/NiXium/central#nixos-lengo-stable"
 
 set -e # Exit on false return
 
@@ -24,7 +25,8 @@ ssh "root@$targetIP" 'cat > /key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/ma
 
 ssh "root@$targetIP" 'dd if=/key of=/dev/disk/by-id/mmc-NCard_0x23904944 conv=sync status=progress'
 
-ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' run github:nix-community/disko#disko -- --mode disko --root-mountpoint /mnt --debug --flake github:kreyren/nixos-config/tinker#nixos-lengo-stable"
+# shellcheck disable=SC2029 # We want this to expand on client-side
+ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' run github:nix-community/disko#disko -- --mode disko --root-mountpoint /mnt --debug --flake \"$targetFlake\""
 
 ssh "root@$targetIP" 'mount -v -o remount,size=30G,noatime /nix/.rw-store'
 ssh "root@$targetIP" 'mount -v -o remount,size=5G,noatime /mnt'
@@ -45,10 +47,10 @@ ssh "root@$targetIP" 'cp -v /etc/ssh/ssh_host_ed25519_key /mnt/nix/persist/syste
 
 ssh "root@$targetIP" 'chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key' # Ensure correct permission
 
-nix copy --to ssh://root@$targetIP "$(nix build 'git+file:///nix/persist/NiXium#nixosConfigurations."nixos-lengo-stable".config.system.build.toplevel' --print-out-paths || true)"
+nix copy --to ssh://root@$targetIP "$(nix build \"${targetFlake//#*/}#nixosConfigurations.\"nixos-lengo-stable\".config.system.build.toplevel\" --print-out-paths || true)"
 
-# FIXME(Krey): This takes the longest ~20 min as the build has to re-build itself on the remote
-ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' shell nixpkgs#nixos-install-tools --command nixos-install --verbose --root /mnt --flake github:kreyren/nixos-config/tinker#nixos-lengo-stable"
+# shellcheck disable=SC2029 # We expect this to expand on client side
+ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' shell nixpkgs#nixos-install-tools --command nixos-install --verbose --root /mnt --flake \"$targetFlake\""
 
 ssh "root@$targetIP" 'mkdir -v -p /mnt/nix/persist/users/kreyren/.ssh'
 
