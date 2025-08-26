@@ -27,6 +27,11 @@ in {
 			"kvm-amd" # Use KVM
 			"usb-storage" # Use USB drives on hardened kernel
 
+			# USB Tethering
+				"rndis_host"
+				"cdc-ether"
+				"usbnet"
+
 		"zenpower"
 
 		# Doesn't seem to provide anything beneficial
