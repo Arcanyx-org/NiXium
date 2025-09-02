@@ -10,7 +10,7 @@ in {
 
 		pkgs = import inputs.nixpkgs-unstable {
 			system = "x86_64-linux";
-			config.allowUnfree = mkForce false; # Forbid proprietary code
+			config.allowUnfree = mkForce true; # Forbid proprietary code
 			config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
 				"steamdeck-hw-theme"
 				"steam-jupiter-unwrapped"
@@ -57,22 +57,22 @@ in {
 			# Priciple args
 			stable = import inputs.nixpkgs {
 				system = "x86_64-linux";
-				config.allowUnfree = mkForce false; # Forbid proprietary code
+				config.allowUnfree = mkForce true; # Forbid proprietary code
 			};
 
 			unstable = import inputs.nixpkgs-unstable {
 				system = "x86_64-linux";
-				config.allowUnfree = mkForce false; # Forbid proprietary code
+				config.allowUnfree = mkForce true; # Forbid proprietary code
 			};
 
 			staging = import inputs.nixpkgs-staging {
 				system = "x86_64-linux";
-				config.allowUnfree = mkForce false; # Forbid proprietary code
+				config.allowUnfree = mkForce true; # Forbid proprietary code
 			};
 
 			staging-next = import inputs.nixpkgs-staging-next {
 				system = "x86_64-linux";
-				config.allowUnfree = mkForce false; # Forbid proprietary code
+				config.allowUnfree = mkForce true; # Forbid proprietary code
 			};
 		};
 	};

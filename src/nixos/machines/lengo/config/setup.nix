@@ -50,7 +50,7 @@ in {
 
 	# Desktop Environment
 	services.xserver.enable = false; # Do not use X11 as it has issues on this device
-	services.xserver.desktopManager.kodi.enable = true;
+	services.xserver.desktopManager.kodi.enable = false;
 	services.xserver.displayManager.gdm.enable = true;
 		services.xserver.displayManager.gdm.wayland = true; # Do not use wayland as it has issues rn
 		# FIXME(Krey): Enable screen keyboard by default in GDM (minor inconvinience)

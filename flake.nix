@@ -28,7 +28,10 @@
 
 			flake-root.url = "github:srid/flake-root";
 			# NOTE(Krey): Lanzaboote was updated to 0.4.1, but those versions are not compatible with the nixpkgs stable channel
-			lanzaboote.url = "github:nix-community/lanzaboote/v0.3.0"; # MAINTAIN(Krey): has to be kept up to date -- https://github.com/nix-community/lanzaboote/issues/343
+			lanzaboote = {
+				url = "github:nix-community/lanzaboote/v0.4.2"; # MAINTAIN(Krey): has to be kept up to date -- https://github.com/nix-community/lanzaboote/issues/343
+			};
+			# lanzaboote-unstable.url = "github:nix-community/lanzaboote/v0.4.2"; # MAINTAIN(Krey): has to be kept up to date -- https://github.com/nix-community/lanzaboote/issues/343
 
 		arkenfox = {
 			url = "github:dwarfmaster/arkenfox-nixos";
@@ -68,15 +71,15 @@
 
 		# Ragenix
 			ragenix = {
-				url = "github:NiXium-org/ragenix";
+				url = "github:yaxitech/ragenix";
 				inputs.nixpkgs.follows = "nixpkgs";
 			};
 			ragenix-unstable = {
-				url = "github:NiXium-org/ragenix";
+				url = "github:yaxitech/ragenix";
 				inputs.nixpkgs.follows = "nixpkgs-unstable";
 			};
 			ragenix-master = {
-				url = "github:NiXium-org/ragenix";
+				url = "github:yaxitech/ragenix";
 				inputs.nixpkgs.follows = "nixpkgs-master";
 			};
 
@@ -97,7 +100,7 @@
 		# AAGL
 			aagl = {
 				url = "github:ezKEa/aagl-gtk-on-nix/release-25.05";
-				inputs.nixpkgs.follows = "nixpkgs-24_11";
+				inputs.nixpkgs.follows = "nixpkgs-24_05";
 			};
 
 			aagl-25_05 = {

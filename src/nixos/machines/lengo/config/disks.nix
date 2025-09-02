@@ -9,6 +9,7 @@
 let
 	inherit (lib) mkMerge;
 	diskoDevice = "/dev/disk/by-id/nvme-WD_PC_SN740_SDDPMQD-512G-1101_2335R1406872";
+	keyDevice = "/dev/disk/by-id/mmc-NCard_0x23904944";
 	swapSize = "60G";
 	tempSize = "10G"; # >=10GB Needed to avoid no space left errors during rebuilds
 	imageSize = "50G";
@@ -26,16 +27,18 @@ in mkMerge [
 				device = "/dev/disk/by-partlabel/disk-system-swap";
 				preLVM = true;
 				allowDiscards = true;
-				keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+				keyFile = keyDevice;
 				keyFileSize = 4096;
+				# FIXME(Krey): Only for non-systemd init, to be managed..
 				# fallbackToPassword = true;
 			};
 			store = {
 				device = "/dev/disk/by-partlabel/disk-system-store";
 				preLVM = true;
 				allowDiscards = true;
-				keyFile = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+				keyFile = keyDevice;
 				keyFileSize = 4096;
+				# FIXME(Krey): Only for non-systemd init, to be managed..
 				# fallbackToPassword = true;
 			};
 		};
@@ -47,7 +50,6 @@ in mkMerge [
 		age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
 
 		fileSystems."/nix/persist/system".neededForBoot = true;
-
 
 		# FIXME(Krey): Figure out how to do labels
 		disko.devices = {
@@ -92,6 +94,7 @@ in mkMerge [
 									type = "luks";
 									settings.allowDiscards = true;
 
+									# FIXME-BUG(Krey): This doesn't get added correctly!
 									passwordFile = config.age.secrets.lengo-disks-password.path;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
@@ -140,6 +143,7 @@ in mkMerge [
 
 									settings.allowDiscards = true;
 
+									# FIXME-BUG(Krey): This doesn't get added correctly!
 									passwordFile = config.age.secrets.lengo-disks-password.path;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
@@ -170,7 +174,7 @@ in mkMerge [
 
 				# Partition with a key used to decrypt the filesystems
 				# unlock = {
-				# 	device = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0"; # SD Card
+				# 	device = keyDevice; # SD Card
 				# 	type = "disk";
 				# 	content = {
 				# 		type = "gpt";
