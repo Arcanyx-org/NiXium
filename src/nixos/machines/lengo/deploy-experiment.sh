@@ -2,8 +2,8 @@
 
 # Experiment
 
-targetIP="10.48.1.191"
-targetFlake="github:Arcanyx-org/NiXium/experimental#nixos-lengo-stable"
+targetIP="192.168.0.220"
+targetFlake="github:kreyren/nixos-config/central-lengo-fix#nixos-lengo-stable"
 
 set -e # Exit on false return
 
@@ -19,14 +19,16 @@ ssh "root@$targetIP" chmod --verbose 700 "/run/agenix.d/1" # Ensure expected per
 
 ssh "root@$targetIP" 'echo 000000 > /run/agenix/lengo-disks-password'
 
-ssh "root@$targetIP" 'cat > /etc/ssh/ssh_host_ed25519_key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/lengo/secrets/lengo-ssh-ed25519-private.age || true)
+# # shellcheck disable=SC2312
+ssh "root@$targetIP" 'cat > /etc/ssh/ssh_host_ed25519_key' < <(nix run nixpkgs#age -- -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/lengo/secrets/lengo-ssh-ed25519-private.age)
 
-ssh "root@$targetIP" 'cat > /key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/lengo/secrets/l-unlock-key.age || true)
+# # shellcheck disable=SC2312
+ssh "root@$targetIP" 'cat > /key' < <(nix run nixpkgs#age -- -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/lengo/secrets/lengo-unlock-key.age)
 
 ssh "root@$targetIP" 'dd if=/key of=/dev/disk/by-id/mmc-NCard_0x23904944 conv=sync status=progress'
 
 # shellcheck disable=SC2029 # We want this to expand on client-side
-ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' run github:nix-community/disko#disko -- --mode disko --root-mountpoint /mnt --debug --flake \"$targetFlake\""
+ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' run github:nix-community/disko#disko -- --mode disko --root-mountpoint /mnt --debug --flake $targetFlake"
 
 ssh "root@$targetIP" 'mount -v -o remount,size=40G,noatime /nix/.rw-store'
 ssh "root@$targetIP" 'mount -v -o remount,size=15G,noatime /mnt'
