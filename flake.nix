@@ -11,6 +11,7 @@
 			nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
 			# nixpkgs.url = "git+file:///nix/persist/NiXium/vendor/nixpkgs-stable";
 
+			nixpkgs-25_05.url = "github:nixos/nixpkgs/nixos-25.05";
 			nixpkgs-23_05.url = "github:nixos/nixpkgs/nixos-23.05";
 			nixpkgs-23_11.url = "github:nixos/nixpkgs/nixos-23.11";
 			nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
@@ -104,12 +105,12 @@
 		# AAGL
 			aagl = {
 				url = "github:ezKEa/aagl-gtk-on-nix/release-25.05";
-				inputs.nixpkgs.follows = "nixpkgs";
+				inputs.nixpkgs.follows = "nixpkgs-25_05";
 			};
 
 			aagl-25_05 = {
 				url = "github:ezKEa/aagl-gtk-on-nix/release-24.05";
-				inputs.nixpkgs.follows = "nixpkgs-24_05";
+				inputs.nixpkgs.follows = "nixpkgs-25_05";
 			};
 			aagl-24_11 = {
 				url = "github:ezKEa/aagl-gtk-on-nix/release-24.11";

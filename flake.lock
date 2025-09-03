@@ -93,7 +93,7 @@
       "inputs": {
         "flake-compat": "flake-compat_5",
         "nixpkgs": [
-          "nixpkgs-24_05"
+          "nixpkgs-25_05"
         ]
       },
       "locked": {
