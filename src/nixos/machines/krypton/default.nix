@@ -1,32 +1,29 @@
 { self, ... }:
 
-# Flake management of TEMPLATE system
+# Flake management of KRYPTON system
 
 {
-	flake.nixosModules."nixos-template" = {
+	flake.nixosModules."nixos-krypton" = {
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration
 
 			# Users
 			self.nixosModules.users-kreyren
-			self.homeManagerModules."kreyren@template"
+			# self.homeManagerModules."kreyren@krypton"
+
+			(import "${self.inputs.mobile-nixos}/lib/configuration.nix" { device = "furilabs-krypton"; })
 
 			# Files
 			./config/bootloader.nix
-			./config/disks.nix
 			./config/firmware.nix
 			./config/hardware-acceleration.nix
 			./config/initrd.nix
 			./config/kernel.nix
 			./config/networking.nix
 			./config/plymouth.nix
-			./config/power-management.nix
 			./config/security.nix
 			./config/setup.nix
 			./config/sound.nix
-			./config/suspend-then-hibernate.nix
-			./config/thinkfan.nix
-			./config/usbguard.nix
 			./config/vm-build.nix
 
 			./services/binfmt.nix
@@ -41,5 +38,5 @@
 	];
 
 	# Module export to other systems in the infrastructure
-	flake.nixosModules.machine-ignucius = ./lib/ignucius-export.nix;
+	flake.nixosModules.machine-ignucius = ./lib/krypton-export.nix;
 }

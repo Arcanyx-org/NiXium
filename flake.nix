@@ -14,7 +14,6 @@
 			nixpkgs-23_11.url = "github:nixos/nixpkgs/nixos-23.11";
 			nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
 			nixpkgs-24_11.url = "github:nixos/nixpkgs/nixos-24.11";
-
 			nixpkgs-kreyren.url = "github:kreyren/nixpkgs/central";
 
 		# Principle inputs
@@ -162,6 +161,12 @@
 				url = "github:nix-community/home-manager/master";
 				inputs.nixpkgs.follows = "nixpkgs-master";
 			};
+
+		mobile-nixos = {
+			# url = "github:Arcanyx-org/mobile-nixos/upstream";
+			url = "git+file:///nix/persist/NiXium/vendor/mobile-nixos";
+			flake = false;
+		};
 
 		nixos-generators = {
 			url = "github:nix-community/nixos-generators";

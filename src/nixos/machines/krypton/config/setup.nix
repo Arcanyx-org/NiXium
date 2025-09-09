@@ -1,19 +1,19 @@
 { config, lib, pkgs, ... }:
 
-# Setup of TEMPLATE
+# Setup of KRYPTON
 
 let
 	inherit (lib) mkIf;
 in {
-	networking.hostName = "template";
+	networking.hostName = "krypton";
 
 	boot.impermanence.enable = true; # Use impermanence
 
 	boot.plymouth.enable = true;
 
-	nix.distributedBuilds = true; # Perform distributed builds
+	nix.distributedBuilds = false;
 
-	programs.noisetorch.enable = true;
+	programs.noisetorch.enable = false;
 	programs.adb.enable = true;
 	programs.nix-ld.enable = true;
 	programs.appimage = {
@@ -27,58 +27,58 @@ in {
 			];
 		};
 	};
+
 	services.openssh.enable = true;
 	services.tor.enable = true;
 	# TODO(Krey): Pending Management
 		services.usbguard.dbus.enable = false;
-	services.smartd.enable = true;
+	services.smartd.enable = false;
 	services.clamav.daemon.enable = true;
 	services.printing.enable = true;
-	services.thinkfan.enable = true;
 	powerManagement.powertop.enable = true;
 
-	networking.wireguard.enable = false;
+	# Sudo
+		# FIXME-QA(Krey): Should be in system module
+		security.sudo.enable = false;
+		security.sudo-rs.enable = true;
 
-	security.sudo.enable = false;
-	security.sudo-rs.enable = true;
-
-	virtualisation.waydroid.enable = true;
-	virtualisation.docker.enable = false;
+	# FIXME(Krey): Enable later
+		virtualisation.waydroid.enable = false;
+		virtualisation.docker.enable = false;
 
 	nix.channel.enable = true; # To be able to use nix repl :l <nixpkgs> as loading flake loads only 16 variables
 
 	users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
 		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
 	];
-	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
+	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFUdaKciGgJW6QiwwFPAN2cSHwC8iEh98OEvxPWcmWf9";
 
 	# Desktop Environment
-	services.xserver.enable = true;
-	services.xserver.displayManager.gdm.enable = true;
+	services.xserver.enable = false;
+	services.xserver.displayManager.gdm.enable = false;
 	services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has issues rn
-	services.xserver.desktopManager.gnome.enable = true;
-		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
+	services.xserver.desktopManager.gnome.enable = false;
+		programs.dconf.enable = false; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
 		services.xserver.displayManager.gdm.autoSuspend = false;
 
 	# Fingerprint
 	services.fprintd.enable = true;
-		services.fprintd.tod.enable = false;
 
 	# FIXME(Krey): Figure out how to handle this
-	# Japanese Keyboard Input
-	# i18n.inputMethod.enable = true;
-	# i18n.inputMethod.type = "fcitx5";
-	# i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
+		# Japanese Keyboard Input
+		# i18n.inputMethod.enable = true;
+		# i18n.inputMethod.type = "fcitx5";
+		# i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
 
 	# Power Management
 	powerManagement.enable = true; # Enable Power Management
-	services.tlp.enable = true; # TLP-Based Managemnt (For Fine Tuning)
-	services.power-profiles-daemon.enable = false; # PPD-Based Management (Predefined through system data only)
+	# services.tlp.enable = false; # TLP-Based Managemnt (For Fine Tuning)
+	# services.power-profiles-daemon.enable = true; # PPD-Based Management (Predefined through system data only)
 
 	# Extending life of the SSD
-	services.fstrim.enable = true;
+	# services.fstrim.enable = true;
 
-	age.secrets.template-ssh-ed25519-private.file = ../secrets/template-ssh-ed25519-private.age; # Declare private key
+	age.secrets.krypton-ssh-ed25519-private.file = ../secrets/krypton-ssh-ed25519-private.age; # Declare private key
 
-	nixpkgs.hostPlatform = "x86_64-linux";
+	nixpkgs.hostPlatform = "aarch64-linux";
 }
