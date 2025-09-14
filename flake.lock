@@ -1228,18 +1228,17 @@
     "mobile-nixos": {
       "flake": false,
       "locked": {
-        "lastModified": 1756053156,
-        "narHash": "sha256-S3Hc9YfNg2uZV6OKnJw6LZMj0l+Di8i0DqdMo+cYdd4=",
-        "owner": "Arcanyx-org",
-        "repo": "mobile-nixos",
-        "rev": "a47b88eee1b5c5f61f6f8f377592fee06b8933ab",
-        "type": "github"
+        "lastModified": 1757388830,
+        "narHash": "sha256-PfbCRK5AKuB0Opbbnl9Qgkyxs0vkPcBh2KIXWRIK3es=",
+        "ref": "refs/heads/furiphone",
+        "rev": "3d703590e6d50e50d5b9368ee1f057f467a955c5",
+        "revCount": 3115,
+        "type": "git",
+        "url": "file:///nix/persist/NiXium/vendor/mobile-nixos"
       },
       "original": {
-        "owner": "Arcanyx-org",
-        "ref": "upstream",
-        "repo": "mobile-nixos",
-        "type": "github"
+        "type": "git",
+        "url": "file:///nix/persist/NiXium/vendor/mobile-nixos"
       }
     },
     "nixlib": {

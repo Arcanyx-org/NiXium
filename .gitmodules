@@ -18,3 +18,7 @@
 	path = vendor/mobile-nixos
 	url = git@github.com:Arcanyx-org/mobile-nixos.git
 	branch = furiphone
+[submodule "vendor/linux-krypton"]
+	path = vendor/linux-krypton
+	url = git@github.com:ivoszbg/linux-next.git
+	branch = v6.14rc5-quintus
