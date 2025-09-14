@@ -1,6 +1,6 @@
 { self, config, lib, ... }:
 
-# TEMPLATE-specific configuration of Tor
+# KRYPTON-specific configuration of Tor
 
 let
 	inherit (lib) mkIf;

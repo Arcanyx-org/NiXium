@@ -1225,6 +1225,22 @@
         "type": "github"
       }
     },
+    "mobile-nixos": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1757388830,
+        "narHash": "sha256-PfbCRK5AKuB0Opbbnl9Qgkyxs0vkPcBh2KIXWRIK3es=",
+        "ref": "refs/heads/furiphone",
+        "rev": "3d703590e6d50e50d5b9368ee1f057f467a955c5",
+        "revCount": 3115,
+        "type": "git",
+        "url": "file:///nix/persist/NiXium/vendor/mobile-nixos"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:///nix/persist/NiXium/vendor/mobile-nixos"
+      }
+    },
     "nixlib": {
       "locked": {
         "lastModified": 1736643958,
@@ -1906,6 +1922,7 @@
         "impermanence": "impermanence",
         "lanzaboote": "lanzaboote",
         "mission-control": "mission-control",
+        "mobile-nixos": "mobile-nixos",
         "nixos-flake": "nixos-flake",
         "nixos-generators": "nixos-generators",
         "nixos-generators-master": "nixos-generators-master",

@@ -1,10 +1,10 @@
 { ... }:
 
-# BinFMT Management of TEMPLATE
+# BinFMT Management of KRYPTON
 
 {
 	boot.binfmt.emulatedSystems = [
-		"aarch64-linux"
+		"x86_64-linux"
 		"riscv64-linux"
 		"armv7l-linux"
 	];

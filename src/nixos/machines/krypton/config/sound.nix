@@ -1,6 +1,6 @@
 { config, lib, ... }:
 
-# Sound management of TEMPLATE
+# Sound management of KRYPTON
 
 {
 	"24.05" = {

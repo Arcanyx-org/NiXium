@@ -8,6 +8,7 @@ let
 	# Systems
 	flexy-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFSY5vNrQFfnDqBOqse2AHSWY1hIIpZWiBYTdQEIYnV9";
 	ignucius-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
+	krypton-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFUdaKciGgJW6QiwwFPAN2cSHwC8iEh98OEvxPWcmWf9";
 	lengo-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOWBw3MYmx7bTJPBKd51kFxXXSJDJEenLKR2R55VkwDU";
 	morph-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFJh5Bd1p4GGCAvNkfoWoflrRIFnoj43b2aMs0GxmULs";
 	mracek-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8d9Nz64gE+x/+Dar4zknmXMAZXUAxhF1IgrA9DO4Ma";
@@ -18,6 +19,7 @@ let
 	all-systems = [
 		flexy-system
 		ignucius-system
+		krypton-system
 		lengo-system
 		morph-system
 		mracek-system
@@ -86,6 +88,27 @@ in {
 	];
 
 	"./machines/ignucius/secrets/ignucius-usbguard-config.age".publicKeys = [
+		kreyren ignucius-system
+	];
+
+	# KRYPTON (system)
+	"./machines/krypton/secrets/krypton-disks-password.age".publicKeys = [
+		kreyren krypton-system
+	];
+
+	"./machines/krypton/secrets/krypton-onion.age".publicKeys = [
+		kreyren
+	] ++ all-systems;
+
+	"./machines/krypton/secrets/krypton-ssh-ed25519-private.age".publicKeys = [
+		kreyren krypton-system
+	];
+
+	"./machines/krypton/secrets/krypton-onion-openssh-private.age".publicKeys = [
+		kreyren krypton-system
+	];
+
+	"./machines/krypton/secrets/krypton-builder-ssh-ed25519-private.age".publicKeys = [
 		kreyren ignucius-system
 	];
 
