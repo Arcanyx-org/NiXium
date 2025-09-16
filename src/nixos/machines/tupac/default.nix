@@ -10,8 +10,8 @@
 			# Users
 			self.nixosModules.users-kreyren
 			self.homeManagerModules."kreyren@tupac"
-			# self.nixosModules.users-kira
-			# self.homeManagerModules."kira@tupac"
+			self.nixosModules.users-kira
+			self.homeManagerModules."kira@tupac"
 
 			# Files
 			./config/autoUpgrade.nix
