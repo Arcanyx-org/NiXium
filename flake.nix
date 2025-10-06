@@ -206,6 +206,7 @@
 					name = "NiXium-devshell";
 					nativeBuildInputs = [
 						# Shell
+						inputs.nixpkgs.legacyPackages.${system}.ksh # For Scripting
 						inputs.nixpkgs.legacyPackages.${system}.bashInteractive # For terminal
 						inputs.nixpkgs.legacyPackages.${system}.shellcheck # Linting of shell files
 
@@ -223,6 +224,9 @@
 						inputs.nixpkgs.legacyPackages.${system}.sops # Secret management
 						inputs.nixpkgs.legacyPackages.${system}.sbctl # To set up secureboot
 						inputs.nixpkgs.legacyPackages.${system}.fira-code # For liquratures in code editors
+
+						# Benchmarks
+						inputs.nixpkgs.legacyPackages.${system}.linuxPackages.perf
 
 						# Utilities
 						inputs.nixpkgs.legacyPackages.${system}.git # Working with the codebase

@@ -2,9 +2,34 @@
 
 # TUPAC-specific configuration of Open-WebUI
 
+# FIXME(Krey): Wrong /var/lib/private permissions:
+	# Oct 05 08:45:10 tupac systemd[1]: Starting Server for local large language models...
+	# Oct 05 08:45:10 tupac (ollama)[281416]: Directory "/var/lib/private" already exists, but has mode 0755 that is too permissive (0700 was requested), refusing.
+	# Oct 05 08:45:10 tupac (ollama)[281416]: ollama.service: Failed to set up special execution directory in /var/lib: File exists
+	# Oct 05 08:45:10 tupac (ollama)[281416]: ollama.service: Failed at step STATE_DIRECTORY spawning /nix/store/idlkxlr1rqwy9k55kqh5say6ch143vk3-ollama-0.11.10/bin/ollama: File exists
+	# Oct 05 08:45:10 tupac systemd[1]: ollama.service: Main process exited, code=exited, status=238/STATE_DIRECTORY
+	# Oct 05 08:45:10 tupac systemd[1]: ollama.service: Failed with result 'exit-code'.
+	# Oct 05 08:45:10 tupac systemd[1]: Failed to start Server for local large language models.
+
+# FIXME(Krey): Fails to detect GPU:
+	# Oct 05 08:46:59 tupac ollama[286890]: time=2025-10-05T08:46:59.408+02:00 level=WARN source=gpu.go:616 msg="unknown error initializing cuda driver library /nix/store/ikx3iqd996g3gk4c5f9sbal75ly1823p-nvidia-x11-570.153.02-6.12.49/lib/libcuda.so.570.153.02: cuda driver library init failure: 999. see https://github.com/ollama/ollama/blob/main/docs/troubleshooting.md for more information"
+	# Oct 05 08:46:59 tupac ollama[286890]: time=2025-10-05T08:46:59.412+02:00 level=INFO source=gpu.go:388 msg="no compatible GPUs were discovered"
+
 let
 	inherit (lib) mkIf;
 in mkIf config.services.open-webui.enable {
+
+	# Ollama
+	services.ollama.acceleration = "cuda";
+	services.ollama.environmentVariables = {
+		# Enable the Nvidia dGPU
+			# NOTE(Krey): Those are needed for CUDA support to not fail as it runs on iGPU otherwise (PRIME)
+			__NV_PRIME_RENDER_OFFLOAD = toString true;
+			__NV_PRIME_RENDER_OFFLOAD_PROVIDER = "NVIDIA-G0";
+			__GLX_VENDOR_LIBRARY_NAME = "nvidia";
+			__VK_LAYER_NV_optimus = "NVIDIA_only";
+	};
+
 	# Refer to https://docs.openwebui.com/getting-started/advanced-topics/env-configuration/
 	services.open-webui.environment = {
 		ENV = "prod"; # Set Production Environment

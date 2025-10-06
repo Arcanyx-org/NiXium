@@ -14,6 +14,8 @@
 			./services/monero.nix
 			./services/murmur.nix
 			./services/navidrome.nix
+			./services/nextcloud.nix
+			./services/nginx.nix
 			./services/openssh.nix
 			./services/tor.nix
 			./services/vaultwarden.nix

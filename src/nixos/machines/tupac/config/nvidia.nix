@@ -37,7 +37,7 @@
 
 			powerManagement.finegrained = true; # Turns off GPU when not in use
 
-			open = true; # Whether to use the open-source driver
+			open = false; # Whether to use the open-source driver
 
 			# NOTE(Krey): Useless app that doesn't let us change anything meaningful
 			nvidiaSettings = false; # Whether to include Nvidia settings menu
@@ -54,7 +54,7 @@
 				nvidiaBusId = "PCI:0:2:0"; # Nvidia GPU bus
 			};
 
-			package = config.boot.kernelPackages.nvidiaPackages.latest; # Which nvidia package to use
+			package = config.boot.kernelPackages.nvidiaPackages.stable; # Which nvidia package to use
 		};
 
 		services.xserver.videoDrivers = [ "nvidia" ]; # Make the xserver to use nvidia

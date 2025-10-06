@@ -30,6 +30,12 @@ in mkIf config.programs.vscode.enable (mkMerge [
 					"browse-lite.chromeExecutable" = "${pkgs.ungoogled-chromium}/bin/chromium";
 
 					"http.proxy" = "socks5://127.0.0.1:25344"; # Use ProtonVPN for VSCodium
+
+					# Privy
+						"privy.autocomplete.model" = "starcoder2:7b";
+						"privy.model" = "custom";
+						"privy.customModel" = "codellama:7b-instruct";
+						"privy.indexRepository.enabled" = true;
 				};
 			};
 		};

@@ -16,8 +16,6 @@ in {
 			security.allowSimultaneousMultithreading = mkForce false; # Disable Simultaneous Multi-Threading as on this system it exposes unwanted attack vectors
 
 			# Kernel
-				boot.kernelPackages = mkForce pkgs.linuxPackages_hardened; # Always use the Hardened Kernel
-
 				boot.kernelParams = mkForce [
 					"tsx=auto" # Let Linux Developers determine if the mitigation is needed
 					"tsx_async_abort=full,nosmt" # Enforce Full Mitigation if the management is needed
@@ -30,9 +28,9 @@ in {
 		}
 
 		# Enforce to use the Tor Proxy
-		(mkIf config.services.tor.enable {
-			networking.proxy.default = mkDefault "socks5://127.0.0.1:9050";
-			networking.proxy.noProxy = mkDefault "127.0.0.1,localhost";
-		})
+		# (mkIf config.services.tor.enable {
+		# 	networking.proxy.default = mkDefault "socks5://127.0.0.1:9050";
+		# 	networking.proxy.noProxy = mkDefault "127.0.0.1,localhost";
+		# })
 	];
 }

@@ -65,6 +65,8 @@ in {
 
 		pkgs.wakeonlan
 
+		pkgs.sqlitebrowser # GUI for SQLite Databases
+
 		# Command-line Pastebins
 		# pkgs.ix # Long-Term Down
 		pkgs.pb_cli

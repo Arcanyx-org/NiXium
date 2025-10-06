@@ -23,6 +23,7 @@ in {
 			"dialout" # To Access e.g. /dev/ttyUSB0 for USB debuggers
 			(mkIf config.programs.adb.enable "adbusers")
 			(mkIf config.programs.gamemode.enable "gamemode")
+			"video"
 		];
 		openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" ];
 	};

@@ -74,10 +74,9 @@ in {
 	services.smartd.enable = true;
 	services.clamav.daemon.enable = true;
 	services.ollama.enable = true;
-	services.open-webui.enable = true;
-		services.ollama.acceleration = "cuda";
+		services.open-webui.enable = true;
 	services.opensnitch.enable = true;
-	services.printing.enable = true;
+	# services.printing.enable = true;
 	programs.localsend.enable = true;
 		programs.localsend.openFirewall = true;
 	# services.rustdesk-server.enable = true;
@@ -141,8 +140,8 @@ in {
 
 	# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead
 	# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
-	# nix.settings = {
-	# 	substituters = mkForce [];
-	# 	trusted-public-keys = mkForce [];
-	# };
+	nix.settings = {
+		substituters = mkForce [];
+		trusted-public-keys = mkForce [];
+	};
 }

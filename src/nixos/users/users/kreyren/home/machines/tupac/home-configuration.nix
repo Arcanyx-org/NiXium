@@ -103,7 +103,7 @@ in {
 		pkgs.yt-dlp
 		pkgs.android-tools
 		pkgs.picocom # Interface for Serial Console devices
-		(pkgs.bottles.override { removeWarningPopup = true; }) # Wine Management Tool
+		(unstable.bottles.override { removeWarningPopup = true; }) # Wine Management Tool
 		pkgs.mtr # Packet Loss Tester
 		pkgs.sc-controller # Steam Controller Software
 		pkgs.monero-gui

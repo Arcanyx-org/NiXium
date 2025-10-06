@@ -13,14 +13,16 @@ in {
 
 	nix.distributedBuilds = true; # Perform distributed builds
 
-	# services.gitea.enable = true;
-	services.monero.enable = true;
-	# services.murmur.enable = false;
-	# services.navidrome.enable = false;
-	services.openssh.enable = true;
-	services.tor.enable = true;
-	# services.vaultwarden.enable = false; # Testing..
-	services.vikunja.enable = true;
+	# Services
+		# services.gitea.enable = true;
+		services.monero.enable = true;
+		# services.murmur.enable = false;
+		services.nextcloud.enable = true;
+		# services.navidrome.enable = false;
+		services.openssh.enable = true;
+		services.tor.enable = true;
+		# services.vaultwarden.enable = false; # Testing..
+		services.vikunja.enable = true;
 
 	# Management for https://github.com/NixOS/nixpkgs/issues/287194#issuecomment-2162085415, proposed workaround https://discourse.nixos.org/t/logrotate-config-fails-due-to-missing-group-30000/28501/2
 	services.logrotate.checkConfig = false;
