@@ -94,14 +94,24 @@ fi
 status "Pre-building the system configuration"
 nixos-rebuild build --flake "$FLAKE_ROOT#nixos-mracek-stable" # pre-build the configuration
 
-#! Perform the Payload
-status "Performing the system installation"
-disko-install \
+#! Make the filesystem and mount them
+
+disko \
 	--flake "$FLAKE_ROOT#nixos-mracek-stable" \
-	--mode format \
+	--mode format,mount \
 	--debug \
-	--disk system "$(realpath "$systemDevice" || true)" \
-	--extra-files "/run/agenix/mracek-ssh-ed25519-private" /nix/persist/system/etc/ssh/ssh_host_ed25519_key
+	--root-mountpoint /mnt
+
+nixos-install \
+  --flake "$FLAKE_ROOT#nixos-mracek-stable" \
+	--verbose \
+	--root /mnt
+
+# Handle Decryption
+[ -f "/mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ] || cp --verbose "/run/agenix/mracek-ssh-ed25519-private" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Move the private key to the system
+[ "$(stat --format="%a" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key || true)" = 400 ] || chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Set the correct permissions for the key
+[ "$(stat --format="%U:%G" /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key || true)" = "root:root" ] || chown --verbose root:root 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key # Set the correct ownership for the key
+
 
 #! Reboot in the new Operating System
 [ "$nixiumDoNotReboot" = 0  ] || {
