@@ -38,7 +38,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=1G"
+					"size=5G"
 					"defaults"
 					"mode=755"
 				];
@@ -97,8 +97,12 @@ in mkMerge [
 												mountpoint = "/nix";
 												mountOptions = [ "compress=lzo" "noatime" ];
 											};
-											"@persist" = {
+											"@system-persist" = {
 												mountpoint = "/nix/persist/system";
+												mountOptions = [ "compress=lzo" "noatime" ];
+												};
+											"@user-persist" = {
+												mountpoint = "/nix/persist/users";
 												mountOptions = [ "compress=lzo" "noatime" ];
 											};
 										};
