@@ -60,7 +60,11 @@ in mkMerge [
 								content = {
 									type = "filesystem";
 									format = "vfat"; # FAT32
-									mountpoint = "/boot";
+										# SECURITY(Krey): Required since systemd 254, to not make the random-seed file writtable by default
+										# * https://github.com/nix-community/disko/issues/527#issuecomment-1924076948
+										# * https://discourse.nixos.org/t/nixos-install-with-custom-flake-results-in-boot-being-world-accessible/34555/14
+										mountOptions = [ "umask=0077" ];
+										mountpoint = "/boot";
 								};
 							};
 
