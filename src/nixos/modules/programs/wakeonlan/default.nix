@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.programs-wakeonlan = ./wakeonlan.nix;
+	flake.nixosModules.programs-wakeonlan = ./programs-wakeonlan.nix;
 }

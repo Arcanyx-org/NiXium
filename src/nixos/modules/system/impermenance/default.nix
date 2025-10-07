@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-impermenance = ./impermenance.nix;
+	flake.nixosModules.system-impermenance = ./system-impermenance.nix;
 }

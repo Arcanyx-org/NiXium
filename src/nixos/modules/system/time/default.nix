@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-time = ./time.nix;
+	flake.nixosModules.system-time = ./system-time.nix;
 }

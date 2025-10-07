@@ -30,8 +30,7 @@ hostname="$(hostname --short)"
 
 # Check current system if no argument is provided
 [ "$#" != 0 ] || {
-	machine="$1"
-	derivation="$(grep "$machine" "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
+	derivation="$(grep "$hostname" "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
 
 	# FIXME(Krey): It's possible that current system has deployed a configuration that is different from the one in the repo -> Get this derivation somewhere on the filesystem and try to read that first
 	status "Checking current system's configured derivation: $derivation"

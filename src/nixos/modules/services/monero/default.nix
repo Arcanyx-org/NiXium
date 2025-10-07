@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.services-monero = ./monero.nix;
+	flake.nixosModules.services-monero = ./services-monero.nix;
 }

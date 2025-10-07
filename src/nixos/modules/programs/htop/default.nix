@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.programs-htop = ./htop.nix;
+	flake.nixosModules.programs-htop = ./programs-htop.nix;
 }

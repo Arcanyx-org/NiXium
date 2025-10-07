@@ -1,4 +1,4 @@
-{ self, config, lib, ... }:
+{ config, lib, ... }:
 
 # Global Lanzaboote Management Module
 

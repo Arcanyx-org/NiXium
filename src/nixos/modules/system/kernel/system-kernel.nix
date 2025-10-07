@@ -3,7 +3,7 @@
 # Global Kernel Module
 
 let
-	inherit (lib) mkForce mkDefault;
+	inherit (lib) mkDefault;
 in {
 	# FIXME-HARDENING(Krey): We used to use the hardened kernel, but it's too demanding for maintenance and gives us a little of benefit.. We need to make a kernel changes here that just cherry-pick the patches we want
 	boot.kernelPackages = mkDefault pkgs.linuxPackages; # Prefer mainline kernel

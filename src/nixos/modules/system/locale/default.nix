@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-locale = ./locale.nix;
+	flake.nixosModules.system-locale = ./system-locale.nix;
 }

@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-kernel = ./kernel.nix;
+	flake.nixosModules.system-kernel = ./system-kernel.nix;
 }

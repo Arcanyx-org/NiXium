@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-ccache = ./ccache.nix;
+	flake.nixosModules.system-ccache = ./system-ccache.nix;
 }

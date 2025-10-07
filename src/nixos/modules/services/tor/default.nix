@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.services-tor = ./tor.nix;
+	flake.nixosModules.services-tor = ./services-tor.nix;
 }

@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.services-distributedBuilds = ./distributedBuilds.nix;
+	flake.nixosModules.services-distributedBuilds = ./services-distributedBuilds.nix;
 }

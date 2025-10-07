@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-clamav = ./clamav.nix;
+	flake.nixosModules.system-clamav = ./system-clamav.nix;
 }

@@ -13,35 +13,10 @@ in {
 			imports = [
 				# self.inputs.jovian.nixosModules.default
 
-				nixosModules.programs-git
-				nixosModules.programs-htop
-				nixosModules.programs-vim
-				nixosModules.programs-wakeonlan
-
+				nixosModules.programs
 				nixosModules.security
-				nixosModules.security-nvidia
-				nixosModules.security-sudo
-
-				nixosModules.services-distributedBuilds
-				nixosModules.services-monero
-				nixosModules.services-opensnitch
-				nixosModules.services-sshd
-				nixosModules.services-tor
-
-				nixosModules.system-bootloader
-				nixosModules.system-ccache
-				nixosModules.system-clamav
-				nixosModules.system-docker
-				nixosModules.system-environment
-				nixosModules.system-firewall
-				nixosModules.system-impermenance
-				nixosModules.system-kernel
-				nixosModules.system-lanzaboote
-				nixosModules.system-locale
-				nixosModules.system-nix
-				nixosModules.system-release
-				nixosModules.system-time
-				nixosModules.system-wifi
+				nixosModules.services
+				nixosModules.system
 
 				nixosModules.machine-flexy
 				nixosModules.machine-ignucius

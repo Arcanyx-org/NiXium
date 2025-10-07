@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-firewall = ./firewall.nix;
+	flake.nixosModules.system-firewall = ./system-firewall.nix;
 }

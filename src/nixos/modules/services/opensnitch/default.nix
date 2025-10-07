@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.services-opensnitch = ./opensnitch-service.nix;
+	flake.nixosModules.services-opensnitch = ./services-opensnitch.nix;
 }

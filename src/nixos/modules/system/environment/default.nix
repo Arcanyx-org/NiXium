@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-environment = ./environment.nix;
+	flake.nixosModules.system-environment = ./system-environment.nix;
 }

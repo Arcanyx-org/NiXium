@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.programs-vim = ./vim.nix;
+	flake.nixosModules.programs-vim = ./programs-vim.nix;
 }

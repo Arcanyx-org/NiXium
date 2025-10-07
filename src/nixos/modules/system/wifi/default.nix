@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-wifi = ./wifi.nix;
+	flake.nixosModules.system-wifi = ./system-wifi.nix;
 }

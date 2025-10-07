@@ -1,6 +1,6 @@
 { config, lib, ... }:
 
-# Global configuration of Monero
+# Global Configuration of Monero
 
 let
 	inherit (lib) mkIf;

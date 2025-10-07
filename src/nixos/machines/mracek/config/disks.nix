@@ -23,7 +23,7 @@ let
 	diskoDevice = "/dev/disk/by-id/ata-WDC_WDS500G2B0A-00SM50_21101J456803";
 in mkMerge [
 	{
-		age.secrets.mracek-disks-password.file = "${self.outPath}src/nixos/machines/mracek/secrets/mracek-disks-password.age"; # Supply password for disk encryption
+		age.secrets.mracek-disks-password.file = "${self.outPath}/src/nixos/machines/mracek/secrets/mracek-disks-password.age"; # Supply password for disk encryption
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why

@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-lanzaboote = ./lanzaboote.nix;
+	flake.nixosModules.system-lanzaboote = ./system-lanzaboote.nix;
 }

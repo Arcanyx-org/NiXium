@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-docker = ./docker.nix;
+	flake.nixosModules.system-docker = ./system-docker.nix;
 }

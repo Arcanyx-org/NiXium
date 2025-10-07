@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 
-# Global configuration of OpenSnitch
+# Global Configuration of OpenSnitch
 
 let
 	inherit (lib) mkIf mkMerge;

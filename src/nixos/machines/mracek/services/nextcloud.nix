@@ -10,16 +10,20 @@
 
 let
 	inherit (lib) mkIf;
+
+	domainName = "nextcloud.nx";
 in mkIf config.services.nextcloud.enable {
 	# Secrets
 
-
 	# Generic
-		services.nextclud.hostName = "nextcloud.nx";
-		services.nextcloud.settings.trusted_domains = [ "nextcloud.nx" ];
+		services.nextcloud.hostName = domainName;
+		services.nextcloud.settings.trusted_domains = [ domainName ];
 
 	# Database Management
-		services.nextcloud.database.createLocally = false; # Use password-based database instead of socket
+		# Upstream recommends MariaDB/MySQL over SQLite as it's faster and doen't struggle with multiple users
+		# NOTE(Krey): mysql and pgsql fails to deploy, using sqlite instead for now
+		services.nextcloud.config.dbtype = "mysql";
+		# services.nextcloud.database.createLocally = true;
 		# services.nextcloud.config = {
 		# 	dbname = "nextcloud";
 		# 	dbtype = "sqlite";
@@ -46,13 +50,10 @@ in mkIf config.services.nextcloud.enable {
 		# };
 
 	# HTTPS
-		# FIXME(Krey): Turn on HTTPS including self-signed cert
 		services.nextcloud.https = false;
-
-	networking.firewall = {
-		allowedTCPPorts = [ 80 ];
-		# allowedUDPPorts = [ 9757 ];
-	};
+		security.acme.certs = mkIf config.services.nextcloud.https {
+			"${domainName}" = {};
+		};
 
 	# Apps
 		# Review https://github.com/NixOS/nixpkgs/blob/nixos-25.05/pkgs/servers/nextcloud/packages/nextcloud-apps.json for default options
@@ -61,22 +62,25 @@ in mkIf config.services.nextcloud.enable {
 			inherit end_to_end_encryption;
 		};
 
-	# Import the private key for an onion service
-		# age.secrets.mracek-onion-nextcloud-private = {
-		# 	file = ../secrets/mracek-onion-nextcloud-private.age;
+	# The Onion Service
+		services.tor.relay.onionServices."nextcloud" = {
+			map = mkIf config.services.tor.enable [{
+				target = { port = 80; };
+				port = 80;
+			}];
+		};
 
-		# 	owner = "tor";
-		# 	group = "tor";
+		# Import the private key for an onion service
+			# age.secrets.mracek-onion-nextcloud-private = {
+			# 	file = ../secrets/mracek-onion-nextcloud-private.age;
 
-		# 	path = "/var/lib/tor/onion/nextcloud/hs_ed25519_secret_key";
+			# 	owner = "tor";
+			# 	group = "tor";
 
-		# 	symlink = false; # Appears to not work as symlink
-		# };
+			# 	path = "/var/lib/tor/onion/nextcloud/hs_ed25519_secret_key";
 
-		# services.tor.relay.onionServices."nextcloud" = mkIf config.services.tor.enable {
-		# 	# NOTE(Krey): It's declared this way so that we don't have to use `url.onion:3000` as the web browsers will default to using port 80 for HTTP and port 443 for HTTPS
-		# 	map = [{ port = 80; target = { port = config.services.gitea.settings.server.HTTP_PORT; }; }]; # Set up Onionized Gitea
-		# };
+			# 	symlink = false; # Appears to not work as symlink
+			# };
 
 	# Impermanence
 		environment.persistence."/nix/persist/system".directories = mkIf config.boot.impermanence.enable [

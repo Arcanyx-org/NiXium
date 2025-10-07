@@ -138,10 +138,11 @@ in {
 
 	system.autoUpgrade.enable = true;
 
-	# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead
-	# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
-	nix.settings = {
-		substituters = mkForce [];
-		trusted-public-keys = mkForce [];
-	};
+	# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead THE GOOD OLD GENTOO WAY!
+		# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
+		# FIXME-INFRA(Krey): Figured out the hard way that even with GitHub OAuth Token set which significantly expands the API Rate Limit we still hit it in not even 5 min
+		# nix.settings = {
+		# 	substituters = mkForce [];
+		# 	trusted-public-keys = mkForce [];
+		# };
 }

@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-bootloader = ./bootloader.nix;
+	flake.nixosModules.system-bootloader = ./system-bootloader.nix;
 }

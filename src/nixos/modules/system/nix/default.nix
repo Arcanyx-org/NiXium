@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.system-nix = ./nix-system.nix;
+	flake.nixosModules.system-nix = ./system-nix.nix;
 }

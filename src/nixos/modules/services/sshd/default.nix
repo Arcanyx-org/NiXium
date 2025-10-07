@@ -1,3 +1,3 @@
 {
-	flake.nixosModules.services-sshd = ./sshd.nix;
+	flake.nixosModules.services-sshd = ./services-sshd.nix;
 }
