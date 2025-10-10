@@ -14,3 +14,6 @@
 [submodule "vendor/nixpkgs-stable"]
 	path = vendor/nixpkgs-stable
 	url = git@github.com:Arcanyx-org/nixpkgs-stable.git
+[submodule "vendor/stardustxr-telescope"]
+	path = vendor/stardustxr-telescope
+	url = git@github.com:StardustXR/telescope.git

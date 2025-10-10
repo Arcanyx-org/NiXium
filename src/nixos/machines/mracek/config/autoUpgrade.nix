@@ -12,9 +12,11 @@ in mkIf config.system.autoUpgrade.enable {
 	system.autoUpgrade = {
 		operation = "switch";
 		flake = "path:${self.outPath}#nixos-mracek-stable";
-		flags = [ "--print-build-logs" ];
-		dates = "8h"; # Every Day
-		randomizedDelaySec = "2h";
+		flags = [
+			"--print-build-logs" # Keep logs to audit upgrades
+		];
+		dates = "daily"; # Every Day
+		randomizedDelaySec = "4h";
 		allowReboot = false;
 	};
 }

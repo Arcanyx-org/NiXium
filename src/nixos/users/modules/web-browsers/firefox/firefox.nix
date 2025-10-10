@@ -1,4 +1,4 @@
-{ config, firefox-addons, pkgs, lib, nixosConfig, nixpkgs-24_05, ... }:
+{ self, config, firefox-addons, pkgs, lib, nixosConfig, nixpkgs-24_05, ... }:
 
 # FIXME-REFACTOR(Krey): This file is pending refactor to be more flexible
 
@@ -92,6 +92,11 @@ in {
 				# 	Block = [<all_urls>];
 				# 	Exceptions = [http =//example.org/*]
 				# };
+
+		# Certificates
+			Certificates = {
+				ImportEnterpriseRoots = true; # Trust certs installed in the system CA Store
+			};
 
 		# Search Engine Management
 			SearchBar = "separate";
@@ -462,6 +467,8 @@ in {
 				throw ("This arkenfox version" + config.programs.firefox.arkenfox.version + "is not implemented!");
 			settings = {
 				"network.proxy.socks_remote_dns" = true; # Do DNS lookup through proxy (required for tor to work)
+
+				"browser.fixup.domainsuffixwhitelist.nx" = true; # Whitelist NX TLD used by NiXium
 			};
 		};
 	};

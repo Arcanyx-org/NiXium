@@ -17,8 +17,8 @@ in mkIf config.services.nginx.enable {
 		# 	symlink = false; # Appears to not work as symlink
 		# };
 
-	services.tor.relay.onionServices."nginx".map = mkIf config.services.tor.enable [
-		80 # HTTP
-		443 # HTTPS
-	];
+	# services.tor.relay.onionServices."nginx".map = mkIf config.services.tor.enable [
+	# 	80 # HTTP
+	# 	443 # HTTPS
+	# ];
 }

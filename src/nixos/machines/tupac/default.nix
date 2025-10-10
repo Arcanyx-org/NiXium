@@ -36,6 +36,7 @@
 			./services/distributedBuilds.nix
 			./services/openssh.nix
 			./services/openwebui.nix
+			./services/sunshine.nix
 			./services/tor.nix
 			./services/wivrn.nix
 		];

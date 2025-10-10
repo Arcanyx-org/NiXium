@@ -29,7 +29,45 @@
 # FIXME(Krey): Remove hard-coded 200mbps max for bitrate
 
 let
+	inherit (builtins) concatStringsSep;
 	inherit (lib) mkIf;
+	inherit (pkgs) runCommand;
+
+	# Wrap StardustXR as a session package for GDM
+		stardustXRSession = runCommand "stardust-xr-session" {
+			buildInputs = [ pkgs.stardust-xr-server ];
+			passthru = {
+				providedSessions = [ "stardust-xr-server" ]; # session name must match the .desktop filename (without extension)
+			};
+		} (concatStringsSep "\n" [
+			"mkdir -p $out/share/wayland-sessions"
+			"cat > $out/share/wayland-sessions/stardust-xr-server.desktop <<EOF"
+				"[Desktop Entry]"
+				"Name=stardust-xr-server"
+				"Comment=Launch StardustXR"
+				"Exec=${pkgs.stardust-xr-server}/bin/stardust-xr-server"
+				"TryExec=${pkgs.stardust-xr-server}/bin/stardust-xr-server"
+				"Type=Application"
+			"EOF"
+		]);
+
+	# Wrap wlx-overlay-s as a session package for GDM
+		wlxOverlaySSession = runCommand "wlx-overlay-s-session" {
+			buildInputs = [ pkgs.wlx-overlay-s ];
+			passthru = {
+				providedSessions = [ "wlx-overlay-s" ]; # session name must match the .desktop filename (without extension)
+			};
+		} (concatStringsSep "\n" [
+			"mkdir -p $out/share/wayland-sessions"
+			"cat > $out/share/wayland-sessions/wlx-overlay-s.desktop <<EOF"
+				"[Desktop Entry]"
+				"Name=wlx-overlay-s"
+				"Comment=Launch wlx-overlay-s"
+				"Exec=${pkgs.wlx-overlay-s}/bin/wlx-overlay-s"
+				"TryExec=${pkgs.wlx-overlay-s}/bin/wlx-overlay-s"
+				"Type=Application"
+			"EOF"
+		]);
 in mkIf config.services.wivrn.enable {
 	# Required for discovery by the WiVRn client
 	services.avahi = {
@@ -51,7 +89,7 @@ in mkIf config.services.wivrn.enable {
 
 	services.wivrn.highPriority = true; # Set High Priority Scheduling
 
-	services.wivrn.autoStart = true; # Run on system startup
+	services.wivrn.autoStart = false; # Run on system startup
 
 	services.wivrn.package = pkgs.wivrn.override { config.cudaSupport = true; }; # Include Nvidia Support for NVENC
 
@@ -59,6 +97,7 @@ in mkIf config.services.wivrn.enable {
 	services.wivrn.monadoEnvironment = {
 		IPC_EXIT_ON_DISCONNECT = toString false; # Exit the service whenever a client quits
 		WMR_HANDTRACKING = toString true; # Enable hand tracking
+		U_PACING_COMP_MIN_TIME_MS = toString 5;
 
 		# Enable the Nvidia dGPU
 			# NOTE(Krey): Those are needed for CUDA support to not fail as it runs on iGPU otherwise (PRIME)
@@ -75,7 +114,10 @@ in mkIf config.services.wivrn.enable {
 	services.wivrn.config = {
 		enable = true;
 		json = {
-			application = pkgs.wlx-overlay-s;
+			# application = runCommand "stardustxr" (concatStringsSep "\n" [
+			# 	"${pkgs.stardust-xr-server}/bin/stardust-xr-server &"
+			# 	"${pkgs.stardust-xr-flatland}/bin/stardust-xr-flatland &"
+			# ]);
 			# scale = 0.5; # foveation scaling
 			# 50~100 Mb/s recommended for wireless, 200 Mb/s for wired, 200 Mb/s is hard coded max
 			bitrate = 1000000 * 10; # Mb/s
@@ -104,6 +146,12 @@ in mkIf config.services.wivrn.enable {
 			];
 		};
 	};
+
+	# GDM
+		services.displayManager.sessionPackages = [
+			stardustXRSession # Add StardustXR into GDM
+			wlxOverlaySSession # Add wlx-overlay-s into GDM
+		];
 
 	# Need Git LFS for hand tracking data
 	programs.git.enable = true;

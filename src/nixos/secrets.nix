@@ -209,6 +209,23 @@ in {
 		kreyren
 	] ++ all-systems;
 
+	## Nextcloud
+		"./machines/mracek/secrets/mracek-onion-nextcloud-private.age".publicKeys = [
+			kreyren mracek-system
+		];
+
+		"./machines/mracek/secrets/mracek-nextcloud-admin-pw.age".publicKeys = [
+			kreyren mracek-system
+		];
+
+		"./machines/mracek/secrets/mracek-nextcloud-ssl-cert.age".publicKeys = [
+			kreyren mracek-system
+		];
+
+		"./machines/mracek/secrets/mracek-nextcloud-onion.age".publicKeys = [
+			kreyren
+		] ++ all-systems;
+
 	"./machines/mracek/secrets/mracek-ssh-ed25519-private.age".publicKeys = [
 		kreyren mracek-system
 	];

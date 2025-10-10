@@ -1,4 +1,4 @@
-{ config, pkgs, lib, unstable, ... }:
+{ self, config, pkgs, lib, unstable, ... }:
 
 # The Setup of TUPAC system
 
@@ -58,6 +58,8 @@ in {
 
 					pkgs.webkitgtk_4_1 # libwebkit2gtk-4.1.so.0
 					pkgs.webkitgtk_4_0 # libwebkit2gtk-4.0.so.0
+
+					pkgs.openxr-loader
 			];
 		};
 	};
@@ -73,10 +75,12 @@ in {
 		services.usbguard.dbus.enable = false;
 	services.smartd.enable = true;
 	services.clamav.daemon.enable = true;
-	services.ollama.enable = true;
+	services.ollama.enable = false;
 		services.open-webui.enable = true;
-	services.opensnitch.enable = true;
+	# FIXME(Krey): Pending work
+		services.opensnitch.enable = false;
 	# services.printing.enable = true;
+	services.sunshine.enable = true;
 	programs.localsend.enable = true;
 		programs.localsend.openFirewall = true;
 	# services.rustdesk-server.enable = true;

@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ self, config, lib, ... }:
 
 ### SUPER ADMINISTRATOR ###
 
@@ -7,7 +7,7 @@
 let
 	inherit (lib) mkIf mkForce;
 in {
-	age.secrets.kreyren-user-password.file = ./kreyren-user-password.age;
+	age.secrets.kreyren-user-password.file = "${self.outPath}/src/nixos/users/users/kreyren/kreyren-user-password.age";
 	# sops.secrets."users/kreyren/hashed-password".neededForUsers = true;
 
 	users.users.kreyren = {
