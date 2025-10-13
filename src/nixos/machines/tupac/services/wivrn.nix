@@ -154,7 +154,7 @@ in mkIf config.services.wivrn.enable {
 		];
 
 	# Need Git LFS for hand tracking data
-	programs.git.enable = true;
-	programs.git.lfs.enable = true;
+		programs.git.enable = true;
+			programs.git.lfs.enable = true;
 
 }

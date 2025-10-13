@@ -18,12 +18,14 @@ in mkIf config.boot.impermanence.enable {
 			{ directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "u=rwx,g=rx,o="; }
 
 			# FIXME(Krey): Move this to it's own module
-			(mkIf config.virtualisation.waydroid.enable "/var/lib/waydroid")
+				(mkIf config.virtualisation.waydroid.enable "/var/lib/waydroid")
 
-			(mkIf config.services.fprintd.enable "/var/lib/fprint")
+			# FIXME(Krey): Move this to it's own module
+				(mkIf config.services.fprintd.enable "/var/lib/fprint")
 
-			# (mkIf config.services.ollama.enable config.services.ollama.home)
-			(mkIf config.services.ollama.enable "/var/lib/private/ollama")
+			# FIXME(Krey): Move this to it's own module
+				# (mkIf config.services.ollama.enable config.services.ollama.home)
+				(mkIf config.services.ollama.enable "/var/lib/private/ollama")
 		];
 		files = [
 			"/etc/machine-id" # Unique ID of the system

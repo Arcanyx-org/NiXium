@@ -1,6 +1,8 @@
 # shellcheck shell=sh # POSIX
 set +u # Do not fail on nounset as we use command-line arguments for logic
 
+# QA(Krey): This is experimental file designed to research how to implement this functionality
+
 hostname="$(hostname --short)" # Capture the hostname of the current system
 
 # FIXME(Krey): Implement better management for this so that ideally `die` is always present by default
@@ -27,11 +29,26 @@ command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;} # Ter
 
 	echo "Deploying configured derivation for '$machine', which is: $derivation"
 
-	nixos-rebuild switch \
-		--flake "git+file://$FLAKE_ROOT#$derivation" \
-		--option eval-cache false \
-		--verbose \
-		--target-host "root@$machine.systems.nx" || die 1 "Deployment of the configured derivation '$derivation' on machine '$machine' failed"
+	echo "Looking for localIP"
+	localIP="$("ssh.$machine" "ip -4 addr show scope global | grep inet | awk '{print \$2}' | cut -d/ -f1 | head -1")"
+
+	echo "Found Local IP: $localIP"
+
+	if [ "$(ssh "root@$localIP" hostname || true)" = "$machine" ]; then
+		echo "Deploying over local IP"
+		nixos-rebuild switch \
+			--flake "git+file://$FLAKE_ROOT#$derivation" \
+			--option eval-cache false \
+			--verbose \
+			--target-host "root@$localIP" || die 1 "Deployment of the configured derivation '$derivation' on machine '$machine' failed"
+	else
+		echo "Deploying over Tor"
+		nixos-rebuild switch \
+			--flake "git+file://$FLAKE_ROOT#$derivation" \
+			--option eval-cache false \
+			--verbose \
+			--target-host "root@$machine.systems.nx" || die 1 "Deployment of the configured derivation '$derivation' on machine '$machine' failed"
+	fi
 
 		exit 0 # Success
 }

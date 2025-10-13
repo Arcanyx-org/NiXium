@@ -9,10 +9,6 @@ hostname="$(hostname --short)" # Capture the hostname of the current system
 # FIXME-QA(Krey): Hacky af
 derivation="$(grep "$hostname" "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
 
-# FIXME-SECURITY(Krey): Temporary workaround before we figure out how to manage this
-# shellcheck disable=SC2029 # We want the FLAKE_ROOT variable to expand on the client side
-ssh root@localhost git config --system safe.directory "$FLAKE_ROOT" # Add the current repository into a safe directory to bypass failure of repository not owned by current user
-
 # If no argument is used then switch the specified distribution on the current system
 [ "$#" != 0 ] || {
 	echo "Switching derivation '$derivation' on current system"
