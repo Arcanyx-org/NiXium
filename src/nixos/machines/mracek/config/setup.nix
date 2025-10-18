@@ -17,6 +17,7 @@ in {
 	services.monero.enable = true;
 	# services.murmur.enable = false;
 	# services.navidrome.enable = false;
+	services.nextcloud.enable = true;
 	services.openssh.enable = true;
 	services.tor.enable = true;
 	# services.vaultwarden.enable = false; # Testing..

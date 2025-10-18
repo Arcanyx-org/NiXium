@@ -208,6 +208,23 @@ in {
 		kreyren mracek-system
 	];
 
+	## Nextcloud
+		"./machines/mracek/secrets/mracek-onion-nextcloud-private.age".publicKeys = [
+			kreyren mracek-system
+		];
+
+		"./machines/mracek/secrets/mracek-nextcloud-admin-pw.age".publicKeys = [
+			kreyren mracek-system
+		];
+
+		"./machines/mracek/secrets/mracek-nextcloud-ssl-cert.age".publicKeys = [
+			kreyren mracek-system
+		];
+
+		"./machines/mracek/secrets/mracek-nextcloud-onion.age".publicKeys = [
+			kreyren
+		] ++ all-systems;
+
 	# SINNENFREUDE (system)
 	"./machines/sinnenfreude/secrets/sinnenfreude-disks-password.age".publicKeys = [
 		kreyren sinnenfreude-system
