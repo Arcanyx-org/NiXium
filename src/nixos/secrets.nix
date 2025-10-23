@@ -43,6 +43,10 @@ in {
 		kreyren
 	];
 
+	"./secrets/b48-printer-farm-auth.age".publicKeys = [
+		kreyren tupac-system
+	];
+
 	# Kira (user)
 	"./users/users/kira/kira-user-password.age".publicKeys = [
 		kreyren kira

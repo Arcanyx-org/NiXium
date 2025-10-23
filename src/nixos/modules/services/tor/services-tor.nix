@@ -16,6 +16,9 @@ in mkIf config.services.tor.enable {
 		"ProxyCommand ${pkgs.netcat}/bin/nc -X 5 -x 127.0.0.1:9050 %h %p"
 	];
 
+	# Client Authorization - https://community.torproject.org/onion-services/advanced/client-auth/
+		services.tor.settings.ClientOnionAuthDir = mkDefault "${config.services.tor.settings.DataDirectory}/onion_auth"; # Set Client Auth Dir
+
 	# Impermanence
 		# environment.persistence."/nix/persist/system".files = [
 		# 	# { file = "${config.services.tor.settings.DataDirectory}/state"; parentDirectory = { mode = "u=rwx,g=,o="; }; }
@@ -29,6 +32,5 @@ in mkIf config.services.tor.enable {
 		# 		"${config.services.tor.settings.DataDirectory}/cached-microdescs"
 		# 		"${config.services.tor.settings.DataDirectory}/cached-microdescs.new"
 		# ];
-
 }
 

@@ -69,6 +69,16 @@ in {
 	services.flatpak.enable = true;
 	services.openssh.enable = true;
 	services.tor.enable = true;
+		age.secrets.b48-printer-farm-auth = {
+			file = "${self.outPath}/src/nixos/secrets/b48-printer-farm-auth.age";
+
+			owner = "tor";
+			group = "tor";
+
+			path = "${config.services.tor.settings.DataDirectory}/onion_auth/kreyren.auth_private";
+
+			symlink = false; # Appears to not work as symlink
+		};
 	services.hardware.openrgb.enable = true;
 	services.gvfs.enable = true;
 	# TODO(Krey): Pending Management
