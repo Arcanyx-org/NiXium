@@ -43,10 +43,6 @@ in {
 		kreyren
 	];
 
-	"./secrets/b48-printer-farm-auth.age".publicKeys = [
-		kreyren tupac-system
-	];
-
 	# Kira (user)
 	"./users/users/kira/kira-user-password.age".publicKeys = [
 		kreyren kira
@@ -158,6 +154,10 @@ in {
 
 	# MRACEK (system)
 	"./machines/mracek/secrets/mracek-disks-password.age".publicKeys = [
+		kreyren mracek-system
+	];
+
+		"./machines/mracek/secrets/mracek-unlock-key.age".publicKeys = [
 		kreyren mracek-system
 	];
 
@@ -293,4 +293,57 @@ in {
 	"./modules/system/wifi/homeBaseKreyren-WiFi-PSK.age".publicKeys = [
 		kreyren kira
 	] ++ all-systems;
+
+
+	# Base48
+	## Website
+	"./secrets/b48-website-mapAddress.age".publicKeys = [
+		kreyren tupac-system
+	];
+	## Home Assistant
+	"./secrets/b48-home-assistant-mapAddress.age".publicKeys = [
+		kreyren tupac-system
+	];
+	## FDM Printer Charlotte
+	"./secrets/b48-fdm-printer-charlotte-auth.age".publicKeys = [
+		kreyren tupac-system
+	];
+	"./secrets/b48-fdm-printer-charlotte-mapAddress.age".publicKeys = [
+		kreyren tupac-system
+	];
+	## FDM Printer Ondrej
+	"./secrets/b48-fdm-printer-ondrej-auth.age".publicKeys = [
+		kreyren tupac-system
+	];
+	"./secrets/b48-fdm-printer-ondrej-mapAddress.age".publicKeys = [
+		kreyren tupac-system
+	];
+	## FDM Printer Plague
+	"./secrets/b48-fdm-printer-plague-auth.age".publicKeys = [
+		kreyren tupac-system
+	];
+	"./secrets/b48-fdm-printer-plague-mapAddress.age".publicKeys = [
+		kreyren tupac-system
+	];
+	## FDM Printer Vidi
+	"./secrets/b48-fdm-printer-vidi-auth.age".publicKeys = [
+		kreyren tupac-system
+	];
+	"./secrets/b48-fdm-printer-vidi-mapAddress.age".publicKeys = [
+		kreyren tupac-system
+	];
+	## FDM Printer Wine
+	"./secrets/b48-fdm-printer-wine-auth.age".publicKeys = [
+		kreyren tupac-system
+	];
+	"./secrets/b48-fdm-printer-wine-mapAddress.age".publicKeys = [
+		kreyren tupac-system
+	];
+	## Paper Printer
+	"./secrets/b48-paper-printer-auth.age".publicKeys = [
+		kreyren tupac-system
+	];
+	"./secrets/b48-paper-printer-mapAddress.age".publicKeys = [
+		kreyren tupac-system
+	];
 }

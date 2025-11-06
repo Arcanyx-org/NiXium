@@ -123,7 +123,8 @@ in {
 		unstable.hydralauncher
 		unstable.nexusmods-app
 		pkgs.flashrom
-		# (pkgs.alpaca.override { ollama = pkgs.ollama-cuda; })
+		# (unstable.alpaca.override { ollama = pkgs.ollama-cuda; })
+		# unstable.alpaca
 		(pkgs.geary.overrideAttrs (super: {
 			# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
 			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];

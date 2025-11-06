@@ -39,6 +39,9 @@
 			./services/sunshine.nix
 			./services/tor.nix
 			./services/wivrn.nix
+
+			# Extras
+			self.nixosModules.infra-base48
 		];
 	};
 

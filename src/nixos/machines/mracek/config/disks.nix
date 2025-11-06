@@ -21,10 +21,42 @@ let
 	inherit (lib) mkMerge;
 
 	diskoDevice = "/dev/disk/by-id/ata-WDC_WDS500G2B0A-00SM50_21101J456803";
+	keyDevice = "/dev/disk/by-id/mmc-SA02G_0x272bcf2e";
+	swapSize = "30G";
+	impermanentSize = "5G";
 in mkMerge [
 	{
 		age.secrets.mracek-disks-password.file = "${self.outPath}/src/nixos/machines/mracek/secrets/mracek-disks-password.age"; # Supply password for disk encryption
 	}
+
+	{
+		# Enable SD-Card Unattended-boot
+
+			# Needed to find the SD Card device during initrd stage
+			boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
+
+			age.secrets.lengo-unlock-key.file = ../secrets/mracek-unlock-key.age; # KeyFile for unlocking the filesystems
+
+			boot.initrd.luks.devices = {
+				swap = {
+					device = "/dev/disk/by-partlabel/disk-system-swap";
+					preLVM = true;
+					allowDiscards = true;
+					keyFile = keyDevice;
+					keyFileSize = 4096;
+					# fallbackToPassword = true;
+				};
+				store = {
+					device = "/dev/disk/by-partlabel/disk-system-store";
+					preLVM = true;
+					allowDiscards = true;
+					keyFile = keyDevice;
+					keyFileSize = 4096;
+					# fallbackToPassword = true;
+				};
+			};
+	}
+
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
 	# (if (config.boot.impermenance.enable == true) then {
@@ -38,7 +70,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=5G"
+					"size=${impermanentSize}"
 					"defaults"
 					"mode=755"
 				];
@@ -78,6 +110,8 @@ in mkMerge [
 
 									passwordFile = config.age.secrets.mracek-disks-password.path;
 
+									keyFile = keyDevice;
+
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
 									extraFormatArgs = [
@@ -112,7 +146,7 @@ in mkMerge [
 
 							swap = {
 								priority = 2;
-								size = "30G";
+								size = swapSize;
 								content = {
 									name = "swap";
 									type = "luks";
@@ -120,6 +154,8 @@ in mkMerge [
 									settings.allowDiscards = true;
 
 									passwordFile = config.age.secrets.mracek-disks-password.path;
+
+									keyFile = keyDevice;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -181,6 +217,8 @@ in mkMerge [
 
 								passwordFile = config.age.secrets.mracek-disks-password.path;
 
+								keyFile = keyDevice;
+
 								initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
 								extraFormatArgs = [
@@ -211,7 +249,7 @@ in mkMerge [
 
 						swap = {
 							priority = 2;
-							size = "30G";
+							size = swapSize;
 							content = {
 								name = "swap";
 								type = "luks";
@@ -219,6 +257,8 @@ in mkMerge [
 								settings.allowDiscards = true;
 
 								passwordFile = config.age.secrets.mracek-disks-password.path;
+
+								keyFile = keyDevice;
 
 								initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 

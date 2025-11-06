@@ -21,7 +21,7 @@ let
 	impermanentSize = "5G"; # Size of the impermanent filesystem during impermanence
 in mkMerge [
 	{
-		age.secrets.lengo-disks-password.file = "${self.outPath}src/nixos/machines/lengo/secrets/lengo-disks-password.age"; # Supply password for disk encryption
+		age.secrets.lengo-disks-password.file = "${self.outPath}/src/nixos/machines/lengo/secrets/lengo-disks-password.age"; # Supply password for disk encryption
 	}
 
 	{

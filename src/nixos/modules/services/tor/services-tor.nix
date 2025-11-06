@@ -20,17 +20,34 @@ in mkIf config.services.tor.enable {
 		services.tor.settings.ClientOnionAuthDir = mkDefault "${config.services.tor.settings.DataDirectory}/onion_auth"; # Set Client Auth Dir
 
 	# Impermanence
-		# environment.persistence."/nix/persist/system".files = [
-		# 	# { file = "${config.services.tor.settings.DataDirectory}/state"; parentDirectory = { mode = "u=rwx,g=,o="; }; }
+		environment.persistence."/nix/persist/system" = mkIf config.boot.impermanence.enable {
+			directories = [
+				{
+					directory = "${config.services.tor.settings.DataDirectory}";
+					user = "tor";
+					group = "tor";
+					mode = "u=rwx,g=rx,o=";
+				}
+				{
+					directory = "${config.services.tor.settings.DataDirectory}/onion_auth";
+					user = "tor";
+					group = "tor";
+					mode = "u=rwx,g=rx,o=";
+				}
+			];
+			files = [
+				# FIXME(Krey): Tor seems very unhappy with symlinks..
+					# { file = "${config.services.tor.settings.DataDirectory}/state"; parentDirectory = { mode = "u=rwx,g=,o="; }; }
 
-		# 	# Required to prevent Tor's slow startup (~15 min at the worst)
-		# 		"${config.services.tor.settings.DataDirectory}/state"
+					# Required to prevent Tor's slow startup (~15 min at the worst)
+					# 	"${config.services.tor.settings.DataDirectory}/state"
 
-		# 	# Optimization to reduce stress on the Tor Network and enhance deployment speed
-		# 		"${config.services.tor.settings.DataDirectory}/cached-certs"
-		# 		"${config.services.tor.settings.DataDirectory}/cached-microdesc-consensus"
-		# 		"${config.services.tor.settings.DataDirectory}/cached-microdescs"
-		# 		"${config.services.tor.settings.DataDirectory}/cached-microdescs.new"
-		# ];
+					# # Optimization to reduce stress on the Tor Network and enhance deployment speed
+					# 	"${config.services.tor.settings.DataDirectory}/cached-certs"
+					# 	"${config.services.tor.settings.DataDirectory}/cached-microdesc-consensus"
+					# 	"${config.services.tor.settings.DataDirectory}/cached-microdescs"
+					# 	"${config.services.tor.settings.DataDirectory}/cached-microdescs.new"
+			];
+		};
 }
 

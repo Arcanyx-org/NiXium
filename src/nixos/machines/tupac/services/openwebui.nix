@@ -1,4 +1,4 @@
-{ self, config, lib, unstable, ... }:
+{ self, config, lib, pkgs, unstable, ... }:
 
 # TUPAC-specific configuration of Open-WebUI
 
@@ -109,6 +109,11 @@ in mkIf config.services.open-webui.enable {
 			WEB_SEARCH_ENGINE = "searxng";
 			BYPASS_WEB_SEARCH_EMBEDDING_AND_RETRIEVAL = "False"; # Bypasses the web search embedding and retrieval process
 			SEARXNG_QUERY_URL = "http://localhost:3002/search?q=<query>"; # The SearXNG search API URL supporting JSON output. <query> is replaced with the search query. Example: http://searxng.local/search?q=<query>
+
+			# Image Generation
+			ENABLE_IMAGE_GENERATION = "True";
+			IMAGE_GENERATION_ENGINE = "comfyui";
+			COMFYUI_BASE_URL = "http://127.0.0.1:7860";
 		};
 
 		services.searx.enable = true;
@@ -158,6 +163,33 @@ in mkIf config.services.open-webui.enable {
 				};
 			};
 		};
+
+	services.comfyui = {
+		enable = false;
+		acceleration = "cuda";
+		port = 7860;
+		models = lib.attrsets.attrVals [
+			# Commented models are gated and require special tokens to access
+			# "christmas-couture-lora"
+			# "flux-ae"
+			# "flux-text-encoder-1"
+			# "flux1-dev-q4_0"
+
+			"hyper-sd15-1step-lora"
+			"ltx-video"
+			"stable-diffusion-v1-5"
+			"t5-v1_1-xxl-encoder"
+			"t5xxl_fp16"
+			# "sams"
+			"ultrarealistic-lora"
+		] pkgs.nixified-ai.models ;
+		customNodes = with self.inputs.nixified-ai.packages.x86_64-linux.comfyui-nvidia.pkgs; [
+			comfyui-gguf
+			comfyui-impact-pack
+		];
+	};
+	nix.settings.trusted-substituters = ["https://ai.cachix.org"];
+	nix.settings.trusted-public-keys = ["ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="];
 
 	# Impermanence
 	# environment.persistence."/nix/persist/system".directories = mkIf config.boot.impermanence.enable [

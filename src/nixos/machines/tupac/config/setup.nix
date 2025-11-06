@@ -69,27 +69,32 @@ in {
 	services.flatpak.enable = true;
 	services.openssh.enable = true;
 	services.tor.enable = true;
-		age.secrets.b48-printer-farm-auth = {
-			file = "${self.outPath}/src/nixos/secrets/b48-printer-farm-auth.age";
-
-			owner = "tor";
-			group = "tor";
-
-			path = "${config.services.tor.settings.DataDirectory}/onion_auth/kreyren.auth_private";
-
-			symlink = false; # Appears to not work as symlink
-		};
-	services.hardware.openrgb.enable = true;
+	services.hardware.openrgb.enable = false;
 	services.gvfs.enable = true;
 	# TODO(Krey): Pending Management
 		services.usbguard.dbus.enable = false;
 	services.smartd.enable = true;
 	services.clamav.daemon.enable = true;
-	services.ollama.enable = false;
+	services.ollama.enable = true;
 		services.open-webui.enable = true;
+		users.users.alpaka = {
+			description = "Alpaka";
+			uid = 1050;
+			isNormalUser = true;
+			createHome = true;
+			extraGroups = [
+				(mkIf config.virtualisation.docker.enable "docker")
+				(mkIf config.programs.adb.enable "adbusers")
+				"video"
+			];
+			openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHmtDqiOqgXx0WaJE3C+DWCdTegP6vC74/ICAcmA5xja kreyren@tupac" ];
+		};
+
+		nix.settings.trusted-users = [ "kreyren" ]; # Add Kreyren in Trusted-Users
+
 	# FIXME(Krey): Pending work
 		services.opensnitch.enable = false;
-	# services.printing.enable = true;
+	services.printing.enable = true;
 	services.sunshine.enable = true;
 	programs.localsend.enable = true;
 		programs.localsend.openFirewall = true;

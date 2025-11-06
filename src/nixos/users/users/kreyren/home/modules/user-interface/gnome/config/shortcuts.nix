@@ -59,9 +59,8 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 
 					# Flameshot GUI
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4" = {
-						name = "Flameshot GUI";
-						# FIXME-QA(Krey): This is weird, why this way?
-						command = "${pkgs.flameshot}/bin/flameshot-gui";
+						name = "Gradia GUI";
+						command = "${pkgs.gradia}/bin/gradia --screenshot=INTERACTIVE";
 						binding = "<Control>Print";
 					};
 			};

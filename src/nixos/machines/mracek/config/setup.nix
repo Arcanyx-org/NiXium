@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ self, config, lib, ... }:
 
 # Setup of MRACEK
 
@@ -31,7 +31,7 @@ in {
 		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
 	];
 
-	age.secrets.mracek-ssh-ed25519-private.file = ../secrets/mracek-ssh-ed25519-private.age; # Declare private key
+	age.secrets.mracek-ssh-ed25519-private.file = "${self.outPath}/src/nixos/machines/mracek/secrets/mracek-ssh-ed25519-private.age"; # Declare private key
 
 	nixpkgs.hostPlatform = "x86_64-linux";
 

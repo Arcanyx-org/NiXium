@@ -1,5 +1,6 @@
 {
 	imports = [
+		./infra
 		./programs
 		./security
 		./services

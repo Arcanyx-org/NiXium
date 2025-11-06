@@ -16,7 +16,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/mracek-onion.conf";
+			path = "${config.services.tor.settings.DataDirectory}/conf/mracek-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;
@@ -39,7 +39,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/mracek-vikunja-onion.conf";
+			path = "${config.services.tor.settings.DataDirectory}/conf/mracek-vikunja-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;
@@ -62,7 +62,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/mracek-gitea-onion.conf";
+			path = "${config.services.tor.settings.DataDirectory}/conf/mracek-gitea-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;
@@ -85,7 +85,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/mracek-monero-onion.conf";
+			path = "${config.services.tor.settings.DataDirectory}/conf/mracek-monero-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;
@@ -100,7 +100,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/mracek-monero-p2p-onion.conf";
+			path = "${config.services.tor.settings.DataDirectory}/conf/mracek-monero-p2p-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;
@@ -123,7 +123,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/mracek-murmur-onion.conf";
+			path = "${config.services.tor.settings.DataDirectory}/conf/mracek-murmur-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;
@@ -146,7 +146,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/mracek-navidrome-onion.conf";
+			path = "${config.services.tor.settings.DataDirectory}/conf/mracek-navidrome-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;
@@ -169,7 +169,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/mracek-nextcloud-onion.conf";
+			path = "${config.services.tor.settings.DataDirectory}/conf/mracek-nextcloud-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;

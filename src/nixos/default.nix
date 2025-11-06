@@ -12,6 +12,7 @@ in {
 			# Keep this sorted
 			imports = [
 				# self.inputs.jovian.nixosModules.default
+				self.inputs.nixified-ai.nixosModules.comfyui
 
 				nixosModules.programs
 				nixosModules.security

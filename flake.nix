@@ -18,7 +18,7 @@
 			nixpkgs-24_11.url = "github:nixos/nixpkgs/nixos-24.11";
 
 			nixpkgs-kreyren.url = "github:kreyren/nixpkgs/central";
-			nixpkgs-alpaca.url = "github:Gliczy/nixpkgs/alpaca-7.0.0";
+			# nixpkgs-alpaca.url = "github:Gliczy/nixpkgs/alpaca-7.0.0";
 
 			nur-xddxdd = {
 				url = "github:xddxdd/nur-packages";
@@ -58,7 +58,19 @@
 
 		# rust-overlay.url = "github:oxalica/rust-overlay";
 
+		nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+
+		# Plasma Manager
+		# plasma-manager.url = "github:nix-community/plasma-manager";
+		# plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
+		# plasma-manager.inputs.home-manager.follows = "home-manager";
+
 		polymc.url = "github:PolyMC/PolyMC";
+
+		nixified-ai = {
+			url = "github:nixified-ai/flake";
+			inputs.nixpkgs.follows = "nixpkgs";
+		};
 
 		# SOPS
 			sops = {
