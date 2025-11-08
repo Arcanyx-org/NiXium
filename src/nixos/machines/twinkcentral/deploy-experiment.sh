@@ -4,7 +4,7 @@
 
 targetIP="10.48.1.92"
 # targetFlake="github:Arcanyx-org/NiXium/experimental#nixos-twinkcentral-stable"
-targetFlake="github:Arcanyx-org/NiXium/568a1cd62b714aa72793839a29af1f355202dff6#nixos-twinkcentral-stable"
+targetFlake="github:Arcanyx-org/NiXium/f1d1fb1a89dca338c5d01dba13ebac02399e7469#nixos-twinkcentral-stable"
 
 set -e # Exit on false return
 
@@ -33,8 +33,8 @@ ssh "root@$targetIP" 'chown root:root /etc/ssh/ssh_host_ed25519_key'
 ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' run github:nix-community/disko#disko -- --mode disko --root-mountpoint /mnt --debug --flake $targetFlake"
 
 ssh "root@$targetIP" 'mount -v -o remount,size=30G,noatime /nix/.rw-store'
-ssh "root@$targetIP" 'mount -v -o remount,size=10G,noatime /mnt
-'
+ssh "root@$targetIP" 'mount -v -o remount,size=10G,noatime /mnt'
+
 ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' run nixpkgs#sbctl -- create-keys"
 
 ssh "root@$targetIP" 'mkdir -v -p /mnt/nix/persist/system/var/lib/'
