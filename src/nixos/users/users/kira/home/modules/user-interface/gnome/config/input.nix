@@ -13,8 +13,8 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 					"org/gnome/desktop/input-sources" = {
 						shob-all-sources = true;
 						sources = [
+							(mkTuple [ "xkb" "cz" ]) # Standard Czech Keyboard
 							(mkTuple [ "xkb" "us" ]) # Standard US Keyboard
-							(mkTuple [ "xkb" "cz+qwerty" ]) # Standard Czech Keyboard
 						];
 						xkb-options = [ "terminate:ctrl_alt_bksp" ];
 					};
