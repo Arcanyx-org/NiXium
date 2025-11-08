@@ -7,5 +7,6 @@
 		./mracek
 		./sinnenfreude
 		./tupac
+		./twinkcentral
 	];
 }
