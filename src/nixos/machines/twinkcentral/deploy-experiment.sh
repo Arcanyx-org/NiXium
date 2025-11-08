@@ -2,9 +2,9 @@
 
 # Experiment
 
-targetIP="10.48.1.92"
+targetIP="192.168.0.174"
 # targetFlake="github:Arcanyx-org/NiXium/experimental#nixos-twinkcentral-stable"
-targetFlake="github:Arcanyx-org/NiXium/5bc83fc7dbaea0d99e17e08bc92c4eac66039cfb#nixos-twinkcentral-stable"
+targetFlake="github:Arcanyx-org/NiXium/a94fb7522cb14bdcf1d1fe873ab9b99f2ea97e01#nixos-twinkcentral-stable"
 
 set -e # Exit on false return
 
@@ -51,7 +51,7 @@ ssh "root@$targetIP" 'cp -v /etc/ssh/ssh_host_ed25519_key /mnt/nix/persist/syste
 
 ssh "root@$targetIP" 'chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key' # Ensure correct permission
 
-# nix copy --to ssh://root@$targetIP "$(nix build "${targetFlake//#*/}#nixosConfigurations.\"nixos-twinkcentral-stable\".config.system.build.toplevel" --print-out-paths || true)"
+nix copy --to ssh://root@$targetIP "$(nix build "${targetFlake//#*/}#nixosConfigurations.\"nixos-twinkcentral-stable\".config.system.build.toplevel" --print-out-paths || true)"
 
 # shellcheck disable=SC2029 # Expecting expansion on host
 ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' shell nixpkgs#nixos-install-tools --command nixos-install --verbose --root /mnt --flake $targetFlake"
