@@ -1,6 +1,6 @@
 { ... }:
 
-# BinFMT Management of IGNUCIUS
+# BinFMT Management of TWINKCENTRAL
 
 {
 	boot.binfmt.emulatedSystems = [

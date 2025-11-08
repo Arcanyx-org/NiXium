@@ -1,6 +1,6 @@
 { self, config, lib, ... }:
 
-# IGNUCIUS-specific configuration of Tor
+# TEMPLATE-specific configuration of Tor
 
 let
 	inherit (lib) mkIf;

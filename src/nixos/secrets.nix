@@ -19,6 +19,7 @@ let
 	sinnenfreude-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji";
 	tsvetan-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdqMVQ3TO5ckmk9nepAY/7zLHy555EkzBJxpfTIwuT5";
 	tupac-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEpbUbuXYWfIdh4w3FI++1/1Zwhg/ow/FVr8r2kC1bhL";
+	twinkcentral-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF09cYoBvYXwmsd7S6pC5dfuaKCiHcSTmGkp3HXjsL3e";
 
 	all-systems = [
 		flexy-system
@@ -28,6 +29,7 @@ let
 		mracek-system
 		sinnenfreude-system
 		tupac-system
+		twinkcentral-system
 	];
 in {
 	# Kreyren (user)
@@ -288,6 +290,30 @@ in {
 		kreyren tupac-system
 	];
 
+	# TWINKCENTRAL (system)
+	"./machines/twinkcentral/secrets/twinkcentral-builder-ssh-ed25519-private.age".publicKeys = [
+		kreyren twinkcentral-system
+	];
+
+	"./machines/twinkcentral/secrets/twinkcentral-disks-password.age".publicKeys = [
+		kreyren twinkcentral-system
+	];
+
+	"./machines/twinkcentral/secrets/twinkcentral-onion-openssh-private.age".publicKeys = [
+		kreyren twinkcentral-system
+	];
+
+	"./machines/twinkcentral/secrets/twinkcentral-openssh-onion.age".publicKeys = [
+		kreyren
+	] ++ all-systems;
+
+	"./machines/twinkcentral/secrets/twinkcentral-ssh-ed25519-private.age".publicKeys = [
+		kreyren twinkcentral-system
+	];
+
+	"./machines/twinkcentral/secrets/twinkcentral-onion.age".publicKeys = [
+		kreyren
+	] ++ all-systems;
 
 	# WiFi
 	"./modules/system/wifi/homeBaseKreyren-WiFi-PSK.age".publicKeys = [

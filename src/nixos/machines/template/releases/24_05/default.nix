@@ -1,11 +1,11 @@
 { inputs, lib, self, config, ... }:
 
-# Declaration for 24_05 release of NixOS for IGNUCIUS
+# Declaration for 24_05 release of NixOS for TEMPLATE
 
 let
 	inherit (lib) mkForce;
 in {
-	flake.nixosConfigurations."nixos-ignucius-24_05" = inputs.nixpkgs.lib.nixosSystem {
+	flake.nixosConfigurations."nixos-template-24_05" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
 
 		pkgs = import inputs.nixpkgs {
@@ -14,7 +14,7 @@ in {
 		};
 
 		modules = [
-			self.nixosModules."nixos-ignucius"
+			self.nixosModules."nixos-template"
 
 			{
 				nix.nixPath = [
@@ -76,10 +76,10 @@ in {
 		};
 	};
 
-	# Task to perform installation of IGNUCIUS in NixOS distribution, 24_05 release
+	# Task to perform installation of TEMPLATE in NixOS distribution, 24_05 release
 	perSystem = { system, pkgs, inputs', self', ... }: {
-		packages.nixos-ignucius-24_05-install = pkgs.writeShellApplication {
-				name = "nixos-ignucius-24_05-install";
+		packages.nixos-template-24_05-install = pkgs.writeShellApplication {
+				name = "nixos-template-24_05-install";
 				bashOptions = [
 					"errexit" # Exit on False Return
 					"posix" # Run in POSIX mode
@@ -96,26 +96,26 @@ in {
 					pkgs.util-linux # mountpoint
 				];
 				runtimeEnv = {
-					systemDevice = self.nixosConfigurations.nixos-ignucius-24_05.config.disko.devices.disk.system.device;
+					systemDevice = self.nixosConfigurations.nixos-template-24_05.config.disko.devices.disk.system.device;
 
-					systemSwapDevice = self.nixosConfigurations.nixos-ignucius-24_05.config.disko.devices.disk.system.content.partitions.swap.device;
+					systemSwapDevice = self.nixosConfigurations.nixos-template-24_05.config.disko.devices.disk.system.content.partitions.swap.device;
 
-					secretPasswordPath = self.nixosConfigurations.nixos-ignucius-24_05.config.age.secrets.ignucius-disks-password.file;
+					secretPasswordPath = self.nixosConfigurations.nixos-template-24_05.config.age.secrets.template-disks-password.file;
 
-					secretSSHHostKeyPath = self.nixosConfigurations.nixos-ignucius-24_05.config.age.secrets.ignucius-ssh-ed25519-private.file;
+					secretSSHHostKeyPath = self.nixosConfigurations.nixos-template-24_05.config.age.secrets.template-ssh-ed25519-private.file;
 
-					derivation = "nixos-ignucius-24_05";
+					derivation = "nixos-template-24_05";
 
-					machineName = "ignucius";
+					machineName = "template";
 				};
-				text = builtins.readFile ./ignucius-nixos-24_05-install.sh;
+				text = builtins.readFile ./template-nixos-24_05-install.sh;
 			};
 
 		# Declare for `nix run`
-		apps.nixos-ignucius-24_05-install.program = self'.packages.nixos-ignucius-24_05-install;
+		apps.nixos-template-24_05-install.program = self'.packages.nixos-template-24_05-install;
 
 		# Unattended installer
-		packages.nixos-ignucius-24_05-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
+		packages.nixos-template-24_05-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
 			pkgs = import inputs.nixpkgs {
 				inherit system;
 				config.allowUnfree = true;
@@ -158,7 +158,7 @@ in {
 						];
 
 						serviceConfig = {
-							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-ignucius-24_05-install";
+							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-template-24_05-install";
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
@@ -186,6 +186,6 @@ in {
 			};
 		};
 
-		apps.nixos-ignucius-24_05-unattended-installer-iso.program = self'.packages.nixos-ignucius-24_05-unattended-installer-iso;
+		apps.nixos-template-24_05-unattended-installer-iso.program = self'.packages.nixos-template-24_05-unattended-installer-iso;
 	};
 }

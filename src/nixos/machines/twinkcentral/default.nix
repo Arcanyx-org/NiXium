@@ -1,15 +1,15 @@
 { self, ... }:
 
-# Flake management of TEMPLATE system
+# Flake management of TWINKCENTRAL system
 
 {
-	flake.nixosModules."nixos-template" = {
+	flake.nixosModules."nixos-twinkcentral" = {
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration
 
 			# Users
-			self.nixosModules.users-kreyren
-			self.homeManagerModules."kreyren@template"
+			# self.nixosModules.users-kreyren
+			# self.homeManagerModules."kreyren@twinkcentral"
 
 			# Files
 			./services/binfmt.nix
@@ -30,7 +30,6 @@
 			./config/security.nix
 			./config/setup.nix
 			./config/sound.nix
-			./config/thinkfan.nix
 			./config/usbguard.nix
 			./config/vm-build.nix
 		];
@@ -41,5 +40,5 @@
 	];
 
 	# Module export to other systems in the infrastructure
-	flake.nixosModules.machine-ignucius = ./lib/ignucius-export.nix;
+	flake.nixosModules.machine-twinkcentral = ./lib/twinkcentral-export.nix;
 }

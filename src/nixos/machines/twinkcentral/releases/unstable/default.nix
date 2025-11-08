@@ -1,11 +1,11 @@
 { inputs, lib, self, config, ... }:
 
-# Declaration for UNSTABLE release of NixOS for IGNUCIUS
+# Declaration for UNSTABLE release of NixOS for TWINKCENTRAL
 
 let
 	inherit (lib) mkForce;
 in {
-	flake.nixosConfigurations."nixos-ignucius-unstable" = inputs.nixpkgs.lib.nixosSystem {
+	flake.nixosConfigurations."nixos-twinkcentral-unstable" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
 
 		pkgs = import inputs.nixpkgs {
@@ -14,7 +14,7 @@ in {
 		};
 
 		modules = [
-			self.nixosModules."nixos-ignucius"
+			self.nixosModules."nixos-twinkcentral"
 
 			{
 				nix.nixPath = [
@@ -71,10 +71,10 @@ in {
 		};
 	};
 
-	# Task to perform installation of IGNUCIUS in NixOS distribution, UNSTABLE release
+	# Task to perform installation of TWINKCENTRAL in NixOS distribution, UNSTABLE release
 	perSystem = { system, pkgs, inputs', self', ... }: {
-		packages.nixos-ignucius-unstable-install = pkgs.writeShellApplication {
-				name = "nixos-ignucius-unstable-install";
+		packages.nixos-twinkcentral-unstable-install = pkgs.writeShellApplication {
+				name = "nixos-twinkcentral-unstable-install";
 				bashOptions = [
 					"errexit" # Exit on False Return
 					"posix" # Run in POSIX mode
@@ -91,26 +91,26 @@ in {
 					pkgs.util-linux # mountpoint
 				];
 				runtimeEnv = {
-					systemDevice = self.nixosConfigurations.nixos-ignucius-unstable.config.disko.devices.disk.system.device;
+					systemDevice = self.nixosConfigurations.nixos-twinkcentral-unstable.config.disko.devices.disk.system.device;
 
-					systemSwapDevice = self.nixosConfigurations.nixos-ignucius-unstable.config.disko.devices.disk.system.content.partitions.swap.device;
+					systemSwapDevice = self.nixosConfigurations.nixos-twinkcentral-unstable.config.disko.devices.disk.system.content.partitions.swap.device;
 
-					secretPasswordPath = self.nixosConfigurations.nixos-ignucius-unstable.config.age.secrets.ignucius-disks-password.file;
+					secretPasswordPath = self.nixosConfigurations.nixos-twinkcentral-unstable.config.age.secrets.twinkcentral-disks-password.file;
 
-					secretSSHHostKeyPath = self.nixosConfigurations.nixos-ignucius-unstable.config.age.secrets.ignucius-ssh-ed25519-private.file;
+					secretSSHHostKeyPath = self.nixosConfigurations.nixos-twinkcentral-unstable.config.age.secrets.twinkcentral-ssh-ed25519-private.file;
 
-					derivation = "nixos-ignucius-unstable";
+					derivation = "nixos-twinkcentral-unstable";
 
-					machineName = "ignucius";
+					machineName = "twinkcentral";
 				};
-				text = builtins.readFile ./ignucius-nixos-unstable-install.sh;
+				text = builtins.readFile ./twinkcentral-nixos-unstable-install.sh;
 			};
 
 		# Declare for `nix run`
-		apps.nixos-ignucius-unstable-install.program = self'.packages.nixos-ignucius-unstable-install;
+		apps.nixos-twinkcentral-unstable-install.program = self'.packages.nixos-twinkcentral-unstable-install;
 
 		# Unattended installer
-		packages.nixos-ignucius-unstable-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
+		packages.nixos-twinkcentral-unstable-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
 			pkgs = import inputs.nixpkgs {
 				inherit system;
 				config.allowUnfree = true;
@@ -153,7 +153,7 @@ in {
 						];
 
 						serviceConfig = {
-							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-ignucius-unstable-install";
+							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-twinkcentral-unstable-install";
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
@@ -181,6 +181,6 @@ in {
 			};
 		};
 
-		apps.nixos-ignucius-unstable-unattended-installer-iso.program = self'.packages.nixos-ignucius-unstable-unattended-installer-iso;
+		apps.nixos-twinkcentral-unstable-unattended-installer-iso.program = self'.packages.nixos-twinkcentral-unstable-unattended-installer-iso;
 	};
 }
