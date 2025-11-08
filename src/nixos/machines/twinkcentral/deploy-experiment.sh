@@ -4,7 +4,7 @@
 
 targetIP="10.48.1.92"
 # targetFlake="github:Arcanyx-org/NiXium/experimental#nixos-twinkcentral-stable"
-targetFlake="github:Arcanyx-org/NiXium/f1d1fb1a89dca338c5d01dba13ebac02399e7469#nixos-twinkcentral-stable"
+targetFlake="github:Arcanyx-org/NiXium/5bc83fc7dbaea0d99e17e08bc92c4eac66039cfb#nixos-twinkcentral-stable"
 
 set -e # Exit on false return
 

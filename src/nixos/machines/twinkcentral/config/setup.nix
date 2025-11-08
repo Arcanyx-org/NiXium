@@ -46,10 +46,10 @@ in {
 	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF09cYoBvYXwmsd7S6pC5dfuaKCiHcSTmGkp3HXjsL3e";
 
 	# Desktop Environment
-	services.xserver.enable = true;
-	services.xserver.displayManager.gdm.enable = true;
+	services.xserver.enable = false;
+	services.xserver.displayManager.gdm.enable = false;
 	services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has issues rn
-	services.xserver.desktopManager.gnome.enable = true;
+	services.xserver.desktopManager.gnome.enable = false;
 		programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
 		services.xserver.displayManager.gdm.autoSuspend = false;
 
