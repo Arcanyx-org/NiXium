@@ -1,15 +1,15 @@
 { config, lib, self, ... }:
 
-# Nix-based Disk Management of TEMPLATE with disko and impermenance on tmpfs
+# Nix-based Disk Management of TWINKCENTRAL with disko and impermenance on tmpfs
 
 # Formatting strategy:
 #    Table: GPT
 #    2048 - 1050623 (1048576) -- 512M EFI System
-#    1050624 - 913858559 (912807936) -- -30G nix store BTRFS
-#    913858560 - 976773119 (62914560) -- 100% Encrypted swap
+#    1050624 - 126879743 (125829120) -- -60G nix store BTRFS
+#    126879744 - 976773119 (849893376) -- 100% Encrypted swap
 
 # Deployment:
-#     # nix run 'github:nix-community/disko#disko-install' -- --flake 'github:kreyren/nixos-config#template' --disk system /dev/disk/by-id/ata-WDC_WDS500G2B0A-00SM50_21101J456803
+#     # nix run 'github:nix-community/disko#disko-install' -- --flake 'github:kreyren/nixos-config#twinkcentral' --disk system /dev/disk/by-id/ata-WDC_WDS500G2B0A-00SM50_21101J456803
 
 # FIXME(Krey): Refer to https://github.com/nix-community/disko/issues/490
 
@@ -20,13 +20,13 @@
 let
 	inherit (lib) mkMerge;
 
-	diskoDevice = "/dev/disk/by-id/ata-WDC_WDS500G2B0A-00SM50_21101J456803";
+	diskoDevice = "/dev/disk/by-id/ata-TOSHIBA_MQ01ABF050_Y3J2SXCRS";
 	keyDevice = "/dev/disk/by-id/mmc-SA02G_0x272bcf2e";
-	swapSize = "30G";
+	swapSize = "60G";
 	impermanentSize = "5G";
 in mkMerge [
 	{
-		age.secrets.template-disks-password.file = "${self.outPath}/src/nixos/machines/template/secrets/template-disks-password.age"; # Supply password for disk encryption
+		age.secrets.twinkcentral-disks-password.file = "${self.outPath}/src/nixos/machines/twinkcentral/secrets/twinkcentral-disks-password.age"; # Supply password for disk encryption
 	}
 
 	{
@@ -35,7 +35,7 @@ in mkMerge [
 			# Needed to find the SD Card device during initrd stage
 			boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
 
-			age.secrets.lengo-unlock-key.file = ../secrets/template-unlock-key.age; # KeyFile for unlocking the filesystems
+			age.secrets.lengo-unlock-key.file = ../secrets/twinkcentral-unlock-key.age; # KeyFile for unlocking the filesystems
 
 			boot.initrd.luks.devices = {
 				swap = {
@@ -108,7 +108,7 @@ in mkMerge [
 									type = "luks";
 									settings.allowDiscards = true;
 
-									passwordFile = config.age.secrets.template-disks-password.path;
+									passwordFile = config.age.secrets.twinkcentral-disks-password.path;
 
 									keyFile = keyDevice;
 
@@ -153,7 +153,7 @@ in mkMerge [
 
 									settings.allowDiscards = true;
 
-									passwordFile = config.age.secrets.template-disks-password.path;
+									passwordFile = config.age.secrets.twinkcentral-disks-password.path;
 
 									keyFile = keyDevice;
 
@@ -215,7 +215,7 @@ in mkMerge [
 								type = "luks";
 								settings.allowDiscards = true;
 
-								passwordFile = config.age.secrets.template-disks-password.path;
+								passwordFile = config.age.secrets.twinkcentral-disks-password.path;
 
 								keyFile = keyDevice;
 
@@ -256,7 +256,7 @@ in mkMerge [
 
 								settings.allowDiscards = true;
 
-								passwordFile = config.age.secrets.template-disks-password.path;
+								passwordFile = config.age.secrets.twinkcentral-disks-password.path;
 
 								keyFile = keyDevice;
 

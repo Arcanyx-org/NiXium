@@ -1,14 +1,14 @@
 { config, lib, ... }:
 
-# Module exporting configuration from TEMPLATE to other systems
+# Module exporting configuration from TWINKCENTRAL to other systems
 
 let
 	inherit (lib) mkIf mkMerge;
 in mkMerge [
 	{
 		# SSHD on Onions
-		age.secrets.template-onion = {
-			file = ../secrets/template-onion.age;
+		age.secrets.twinkcentral-onion = {
+			file = ../secrets/twinkcentral-onion.age;
 
 			owner = "tor";
 			group = "tor";
@@ -16,7 +16,7 @@ in mkMerge [
 
 			# FIXME(Krey): This should be using `config.services.tor.settings.dataDir`, but that results in `error: infinite recursion encountered` so if we ever change the DataDir then that will have to be changed here as well otherwise it will cause issues
 			# path = "${config.services.tor.settings.DataDir}/pelagus-onion.conf";
-			path = "/var/lib/tor/template-onion.conf";
+			path = "/var/lib/tor/twinkcentral-onion.conf";
 
 			# FIXME(Krey): has to be without symlink due to bug with link ownership https://github.com/ryantm/agenix/issues/261
 			symlink = false;
@@ -24,7 +24,7 @@ in mkMerge [
 
 		# Add to the tor settings
 		services.tor.settings."%include" = [
-			config.age.secrets."template-onion".path
+			config.age.secrets."twinkcentral-onion".path
 		];
 	}
 ]

@@ -1,6 +1,6 @@
 { pkgs, lib, ... }:
 
-# Kernel Management of TEMPLATE
+# Kernel Management of TWINKCENTRAL
 
 let
 	inherit (lib) mkForce;
@@ -16,7 +16,7 @@ in {
 	];
 
 	boot.kernelModules = [
-		"kvm-VENDOR" # Use KVM (kvm-intel or kvm-amd)
+		"kvm-amd" # Use KVM
 		"usb-storage" # Use USB drives on hardened kernel
 	];
 
@@ -26,6 +26,5 @@ in {
 	# SECURITY(Krey): Has vulnerable CPU so this has to be managed
 	security.allowSimultaneousMultithreading = mkForce false; # Disable Simultaneous Multi-Threading as on this system it exposes unwanted attack vectors and CPU vulnerabilities
 
-	# SECURITY(Krey): Handled externally via coreboot management
-	hardware.cpu.intel.updateMicrocode = mkForce false; # Whether to update the intel CPU microcode on system bootup
+	hardware.cpu.intel.updateMicrocode = mkForce true; # Whether to update the intel CPU microcode on system bootup
 }

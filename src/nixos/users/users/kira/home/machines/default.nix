@@ -1,6 +1,7 @@
 {
 	imports = [
 		./lengo
+		./sinnenfreude
 		./tupac
 	];
 }

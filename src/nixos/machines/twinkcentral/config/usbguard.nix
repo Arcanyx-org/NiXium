@@ -1,6 +1,6 @@
 { lib, config, pkgs, ... }:
 
-# USB Guard Management of TEMPLATE
+# USB Guard Management of TWINKCENTRAL
 
 let
 	inherit (lib) mkMerge mkForce mkDefault mkIf;
@@ -32,8 +32,8 @@ in mkIf config.services.usbguard.dbus.enable {
 		# ];
 
 		# Temporary less transparent management
-		age.secrets.template-usbguard-config = {
-				file = ../secrets/template-usbguard-config.age;
+		age.secrets.twinkcentral-usbguard-config = {
+				file = ../secrets/twinkcentral-usbguard-config.age;
 
 				owner = "root";
 				group = "root";
@@ -42,7 +42,7 @@ in mkIf config.services.usbguard.dbus.enable {
 
 				symlink = true;
 			};
-		services.usbguard.ruleFile = config.age.secrets.template-usbguard-config.path;
+		services.usbguard.ruleFile = config.age.secrets.twinkcentral-usbguard-config.path;
 
 	# SECURITY(Krey): Enforce to use the rules file on currently connected devices
 	services.usbguard.presentDevicePolicy = mkForce "apply-policy";

@@ -15,6 +15,9 @@
 			self.nixosModules.users-kreyren
 			self.homeManagerModules."kreyren@sinnenfreude"
 
+			self.nixosModules.users-kira
+			self.homeManagerModules."kira@sinnenfreude"
+
 			# Files
 			./config/bootloader.nix
 			./config/disks.nix

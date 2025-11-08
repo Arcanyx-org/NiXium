@@ -1,6 +1,6 @@
 { config, lib, ... }:
 
-# Hardware-acceleration management of TEMPLATE
+# Hardware-acceleration management of TWINKCENTRAL
 
 {
 	"24.05" = {
