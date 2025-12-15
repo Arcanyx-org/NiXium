@@ -36,6 +36,9 @@
 			./services/distributedBuilds.nix
 			./services/openssh.nix
 			./services/tor.nix
+
+			# Extras
+			self.nixosModules.infra-base48
 		];
 	};
 

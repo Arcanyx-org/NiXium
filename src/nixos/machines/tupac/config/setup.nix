@@ -34,7 +34,7 @@ in {
 			# 	end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
 			# };
 		};
-	programs.steam.enable = false;
+	programs.steam.enable = true;
 	programs.noisetorch.enable = true; # Microphone filtering
 	programs.nix-ld.enable = true;
 	programs.appimage = {

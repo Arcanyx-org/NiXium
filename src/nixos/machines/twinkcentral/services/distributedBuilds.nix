@@ -9,19 +9,18 @@ let
 in mkIf config.nix.distributedBuilds {
 	# Builders Authorizations
 		users.extraUsers.builder.openssh.authorizedKeys.keys = [
-			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILRmGX/iKHM0fwwDjq4fQGt+B8Nj0fJlw7Lq5YA0v3NP" # MORPH (Builder)
 			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve" # KREYREN (User)
-			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDhD5Fel4xaocToIQay3IkytHGaK93cDN52ww2Bw5Nj+" # IGNUCIUS (Builder)
-			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJIGULjxE0+f8yz08cgtU9WtRQtxa3QUIyaw0cILRl/y" # Mracek (Builder)
+			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJIGULjxE0+f8yz08cgtU9WtRQtxa3QUIyaw0cILRl/y" # MRACEK (Builder)
+			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGNpn2sAM07pqQFI3HxiuOxppiEz8OwGDaSMKc7GL8VE" # SINNENFREUDE (Builder)
 		];
 
 		# Add to known hosts
 			programs.ssh.knownHosts."mracek.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8d9Nz64gE+x/+Dar4zknmXMAZXUAxhF1IgrA9DO4Ma";
-			programs.ssh.knownHosts."morph.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFJh5Bd1p4GGCAvNkfoWoflrRIFnoj43b2aMs0GxmULs";
+			programs.ssh.knownHosts."sinnenfreude.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji";
 
 	# Import the SSH Keys for the builder account
-	age.secrets.ignucius-builder-ssh-ed25519-private = {
-		file = ../secrets/ignucius-builder-ssh-ed25519-private.age;
+	age.secrets.twinkcentral-builder-ssh-ed25519-private = {
+		file = ../secrets/twinkcentral-builder-ssh-ed25519-private.age;
 
 		owner = "builder";
 		group = "builder";
@@ -35,7 +34,7 @@ in mkIf config.nix.distributedBuilds {
 	};
 
 	# Set the pubkey
-	environment.etc."ssh/ssh_builder_ed25519_key.pub".text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDhD5Fel4xaocToIQay3IkytHGaK93cDN52ww2Bw5Nj+";
+	environment.etc."ssh/ssh_builder_ed25519_key.pub".text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGNpn2sAM07pqQFI3HxiuOxppiEz8OwGDaSMKc7GL8VE";
 
 	nix = {
 		buildMachines = [

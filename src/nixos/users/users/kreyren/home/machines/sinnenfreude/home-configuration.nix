@@ -35,6 +35,10 @@ in {
 		"etlegacy"
 		"etlegacy-assets"
 
+		# FIXME(Krey): What the fuck? - https://www.reddit.com/r/Stremio/comments/1isd5xp/comment/mdlf66w/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+		"stremio-shell"
+		"stremio-server"
+
 		"discord"
 	];
 
@@ -45,12 +49,31 @@ in {
 			# FIXME-QA(Krey): Enable this on QT-based desktop environments
 				# pkgs.nheko # QT-based Matrix Client
 
-			pkgs.discord
+			pkgs.goofcord
+			(pkgs.dissent.overrideAttrs (super: {
+				# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+				nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
+				postInstall = (super.postInstall or "") + ''
+					mv "$out/bin/dissent" "$out/bin/.dissent-wrapped" # Rename the old binary
+
+					# Wrap in short script that prefixes the command with `torsocks`
+					cat > "$out/bin/dissent" <<-SCRIPT
+						#!${pkgs.busybox}/bin/sh
+						script_dir=\$(dirname "\$(readlink -f "\$0")")
+						exec torsocks "\$script_dir/.dissent-wrapped" "\$@"
+					SCRIPT
+
+					# Ensure that it's executable
+					chmod +x "$out/bin/dissent"
+				'';
+			}))
 
 			# Temporary management of Post-Quantum Safety until matrix manages it, see https://github.com/matrix-org/matrix-spec/issues/975 for details
 			unstable.simplex-chat-desktop
 
 			unstable.signal-desktop
+
+			pkgs.thunderbird-esr
 
 			# Session uses system proxy by default which breaks functionality
 			# (pkgs.session-desktop.overrideAttrs (super: {
@@ -104,6 +127,7 @@ in {
 
 		# Utility
 		pkgs.keepassxc
+		pkgs.localsend
 		pkgs.yt-dlp
 		pkgs.android-tools
 		pkgs.picocom # Interface for Serial Console devices
@@ -122,12 +146,32 @@ in {
 		# FIXME(Krey): To be managed..
 		#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
 		pkgs.moonlight-qt
+		unstable.hydralauncher
+		(pkgs.geary.overrideAttrs (super: {
+			# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
+			postInstall = (super.postInstall or "") + ''
+				mv "$out/bin/geary" "$out/bin/.geary-wrapped" # Rename the old binary
+
+				# Wrap in short script that prefixes the command with `torsocks`
+				cat > "$out/bin/geary" <<-SCRIPT
+					#!${pkgs.busybox}/bin/sh
+					script_dir=\$(dirname "\$(readlink -f "\$0")")
+					exec torsocks "\$script_dir/.geary-wrapped" "\$@"
+				SCRIPT
+
+				# Ensure that it's executable
+				chmod +x "$out/bin/geary"
+			'';
+		}))
 
 		# Video
     #pkgs.stremio # Media Server Client
 		pkgs.freetube # YouTube Client
 		pkgs.mpv
 		pkgs.vlc
+		pkgs.stremio
+		pkgs.gnome-network-displays
 
 		# Gnome extensions
 		pkgs.gnomeExtensions.removable-drive-menu

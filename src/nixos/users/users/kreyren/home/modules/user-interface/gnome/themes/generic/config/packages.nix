@@ -20,6 +20,8 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 	{
 		# FIXME(Krey): Move this to the extension management
 		home.packages = [
+			pkgs.gnome-decoder # QR Code Management
+
 			# Include the expected extensions
 				pkgs.gnomeExtensions.removable-drive-menu
 				pkgs.gnomeExtensions.vitals

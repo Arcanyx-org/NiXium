@@ -59,6 +59,8 @@ in {
 
 		pkgs.cryptsetup
 
+		pkgs.nmap
+
 		pkgs.xclip
 		pkgs.mpv
 		pkgs.torsocks

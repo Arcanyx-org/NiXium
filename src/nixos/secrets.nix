@@ -19,7 +19,7 @@ let
 	sinnenfreude-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji";
 	tsvetan-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdqMVQ3TO5ckmk9nepAY/7zLHy555EkzBJxpfTIwuT5";
 	tupac-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEpbUbuXYWfIdh4w3FI++1/1Zwhg/ow/FVr8r2kC1bhL";
-	twinkcentral-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF09cYoBvYXwmsd7S6pC5dfuaKCiHcSTmGkp3HXjsL3e";
+	twinkcentral-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHcHEgNyhsjEHGaRXKuKopjSgthEn831KGnAXc0c/fLV";
 
 	all-systems = [
 		flexy-system
@@ -324,52 +324,52 @@ in {
 	# Base48
 	## Website
 	"./secrets/b48-website-mapAddress.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	## Home Assistant
 	"./secrets/b48-home-assistant-mapAddress.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	## FDM Printer Charlotte
 	"./secrets/b48-fdm-printer-charlotte-auth.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	"./secrets/b48-fdm-printer-charlotte-mapAddress.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	## FDM Printer Ondrej
 	"./secrets/b48-fdm-printer-ondrej-auth.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	"./secrets/b48-fdm-printer-ondrej-mapAddress.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	## FDM Printer Plague
 	"./secrets/b48-fdm-printer-plague-auth.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	"./secrets/b48-fdm-printer-plague-mapAddress.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	## FDM Printer Vidi
 	"./secrets/b48-fdm-printer-vidi-auth.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	"./secrets/b48-fdm-printer-vidi-mapAddress.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	## FDM Printer Wine
 	"./secrets/b48-fdm-printer-wine-auth.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	"./secrets/b48-fdm-printer-wine-mapAddress.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	## Paper Printer
 	"./secrets/b48-paper-printer-auth.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 	"./secrets/b48-paper-printer-mapAddress.age".publicKeys = [
-		kreyren tupac-system
+		kreyren tupac-system sinnenfreude-system
 	];
 }

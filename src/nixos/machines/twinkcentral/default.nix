@@ -7,10 +7,6 @@
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration
 
-			# Users
-			# self.nixosModules.users-kreyren
-			# self.homeManagerModules."kreyren@twinkcentral"
-
 			# Files
 			./services/binfmt.nix
 			./services/distributedBuilds.nix

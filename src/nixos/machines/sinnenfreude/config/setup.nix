@@ -3,7 +3,7 @@
 # The Setup of SINNENFREUDE system
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) mkIf mkForce;
 in {
 	networking.hostName = "sinnenfreude";
 
@@ -81,4 +81,16 @@ in {
 
 	# NOTE(Krey): Experimenting..
 	time.timeZone = "Europe/Vienna"; # Set Timezone
+
+	# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead THE GOOD OLD GENTOO WAY!
+		# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
+		# FIXME-INFRA(Krey): Figured out the hard way that even with GitHub OAuth Token set which significantly expands the API Rate Limit we still hit it in not even 5 min
+		# nix.settings = {
+		# 	substituters = mkForce [];
+		# 	trusted-public-keys = mkForce [];
+		# };
+
+	# Miracast
+		networking.firewall.allowedTCPPorts = [7236 7250];
+		networking.firewall.allowedUDPPorts = [7236 5353];
 }

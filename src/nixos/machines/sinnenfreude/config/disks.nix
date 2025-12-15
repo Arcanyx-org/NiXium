@@ -23,7 +23,7 @@ let
 	diskoDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF";
 in mkMerge [
 	{
-		age.secrets.sinnenfreude-disks-password.file = "${self.outPath}src/nixos/machines/sinnenfreude/secrets/sinnenfreude-disks-password.age"; # Supply password for disk encryption
+		age.secrets.sinnenfreude-disks-password.file = "${self.outPath}/src/nixos/machines/sinnenfreude/secrets/sinnenfreude-disks-password.age"; # Supply password for disk encryption
 	}
 
 	# FIXME(Krey): Causes infinite recursion, no idea why

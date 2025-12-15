@@ -7,22 +7,19 @@
 let
 	inherit (lib) mkIf;
 in mkIf config.nix.distributedBuilds {
-	# nix.settings.max-jobs = 0; # Do not build on sinnenfreude as it has issues with thermal management and lacks effective system resources for processing
+	nix.settings.max-jobs = 1; # Do not build on sinnenfreude as it has issues with thermal management and lacks effective system resources for processing
 
 	# Builders Authorizations
 		users.extraUsers.builder.openssh.authorizedKeys.keys = [
-			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILRmGX/iKHM0fwwDjq4fQGt+B8Nj0fJlw7Lq5YA0v3NP" # MORPH (Builder)
 			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve" # KREYREN (User)
-			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDhD5Fel4xaocToIQay3IkytHGaK93cDN52ww2Bw5Nj+" # IGNUCIUS (Builder)
-			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJIGULjxE0+f8yz08cgtU9WtRQtxa3QUIyaw0cILRl/y" # Mracek (Builder)
+			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJIGULjxE0+f8yz08cgtU9WtRQtxa3QUIyaw0cILRl/y" # MRACEK (Builder)
+			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFtqcZqSQBdWFapn1OPt5fvSmhUN4vSZvvbVwpxT/cip" # TWINKCENTRAL (Builder)
 		];
 
 		# Add to known hosts
 			programs.ssh.knownHosts."mracek.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8d9Nz64gE+x/+Dar4zknmXMAZXUAxhF1IgrA9DO4Ma";
-				programs.ssh.knownHosts."192.168.0.168".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8d9Nz64gE+x/+Dar4zknmXMAZXUAxhF1IgrA9DO4Ma";
 
-			programs.ssh.knownHosts."morph.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFJh5Bd1p4GGCAvNkfoWoflrRIFnoj43b2aMs0GxmULs";
-				programs.ssh.knownHosts."192.168.0.114".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFJh5Bd1p4GGCAvNkfoWoflrRIFnoj43b2aMs0GxmULs";
+			programs.ssh.knownHosts."twinkcentral.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHcHEgNyhsjEHGaRXKuKopjSgthEn831KGnAXc0c/fLV";
 
 	# Import the SSH Keys for the builder account
 	age.secrets.sinnenfreude-builder-ssh-ed25519-private = {
@@ -45,10 +42,9 @@ in mkIf config.nix.distributedBuilds {
 	nix = {
 		buildMachines = [
 			{
-				# MORPH
-				# hostName = "morph.systems.nx";
-					hostName = "192.168.0.114";
-				systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
+				# TWINKCENTRAL (Compute)
+				hostName = "twinkcentral.systems.nx";
+				systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" "riscv64-linux" ];
 				protocol = "ssh-ng";
 
 				# FIXME-QA(Krey): Set this as a variable from nixos/modules/distributedBuilds
@@ -59,7 +55,7 @@ in mkIf config.nix.distributedBuilds {
 				sshKey = "/etc/ssh/ssh_builder_ed25519_key";
 				#sshKey = "${builder-key-path}/ssh_${builder-account}_ed25519_key";
 
-				maxJobs = 8; # 100%, 16GB RAM available
+				maxJobs = 4; # 100% of system resources
 				speedFactor = 10;
 				supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
 				mandatoryFeatures = [ ];
@@ -67,7 +63,7 @@ in mkIf config.nix.distributedBuilds {
 			{
 				# MRACEK
 				hostName = "mracek.systems.nx";
-				systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
+				systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" "riscv64-linux" ];
 				protocol = "ssh-ng";
 
 				# FIXME-QA(Krey): Set this as a variable from nixos/modules/distributedBuilds
@@ -79,7 +75,7 @@ in mkIf config.nix.distributedBuilds {
 				#sshKey = "${builder-key-path}/ssh_${builder-account}_ed25519_key";
 
 				maxJobs = 2; # 50% of system resources
-				speedFactor = 2;
+				speedFactor = 1;
 				supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
 				mandatoryFeatures = [ ];
 			}

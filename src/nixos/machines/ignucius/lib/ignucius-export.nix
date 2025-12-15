@@ -22,9 +22,9 @@ in mkMerge [
 			symlink = false;
 		};
 
-		# Add to the tor settings
-		services.tor.settings."%include" = [
-			config.age.secrets."ignucius-onion".path
-		];
+		# # Add to the tor settings
+		# services.tor.settings."%include" = [
+		# 	config.age.secrets."ignucius-onion".path
+		# ];
 	}
 ]

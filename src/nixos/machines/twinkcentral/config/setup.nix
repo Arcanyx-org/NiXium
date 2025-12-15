@@ -3,7 +3,7 @@
 # Setup of TWINKCENTRLA
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) mkIf mkForce;
 in {
 	networking.hostName = "twinkcentral";
 
@@ -11,7 +11,7 @@ in {
 
 	boot.plymouth.enable = true;
 
-	nix.distributedBuilds = false; # Perform distributed builds
+	nix.distributedBuilds = true; # Perform distributed builds
 
 	programs.noisetorch.enable = true;
 	programs.adb.enable = true;
@@ -43,7 +43,7 @@ in {
 	users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
 		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
 	];
-	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF09cYoBvYXwmsd7S6pC5dfuaKCiHcSTmGkp3HXjsL3e";
+	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHcHEgNyhsjEHGaRXKuKopjSgthEn831KGnAXc0c/fLV";
 
 	# Desktop Environment
 	services.xserver.enable = false;
@@ -64,4 +64,12 @@ in {
 	age.secrets.twinkcentral-ssh-ed25519-private.file = ../secrets/twinkcentral-ssh-ed25519-private.age; # Declare private key
 
 	nixpkgs.hostPlatform = "x86_64-linux";
+
+	# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead THE GOOD OLD GENTOO WAY!
+		# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
+		# FIXME-INFRA(Krey): Figured out the hard way that even with GitHub OAuth Token set which significantly expands the API Rate Limit we still hit it in not even 5 min
+		nix.settings = {
+			substituters = mkForce [];
+			trusted-public-keys = mkForce [];
+		};
 }

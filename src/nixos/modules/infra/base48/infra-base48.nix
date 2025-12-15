@@ -1,4 +1,4 @@
-{ self, config, lib, ... }:
+{ self, config, lib, pkgs, ... }:
 
 # The Base48 Hackerspace Nix module exposing priviledged access to the infrastructure
 
@@ -182,7 +182,7 @@ in mkMerge ([
 				services.tor.settings."%include" = [ config.age.secrets."b48-fdm-printer-wine-mapAddress".path ];
 		}
 
-	#-- InkJet Printer --#
+	# #-- InkJet Printer --#
 		{
 			# Set Tor Client Authorization
 				age.secrets.b48-paper-printer-auth = {
@@ -227,5 +227,29 @@ in mkMerge ([
 						}
 					];
 				};
+
+				# The printer firmware returns malformed IPP which violates RFC 8011 section 5.1.6 and causes cups to throw an RFC-mandated error, thi is a workaround as `raw` is getting deprecated
+					# networking.hosts = { "127.0.0.1" = [ "paper.base48.cz" ]; };
+
+					# systemd.services.ippTorProxy = let
+					# 	localIppPort = 16311;
+					# 	onionHost = "paper.base48.cz"; # your .onion hostname
+					# 	onionPort = 631;
+					# in {
+					# 	description = "Local IPP proxy forwarding to printer via Tor";
+					# 	wantedBy = [ "multi-user.target" ];
+					# 	after = [ "network.target" "tor.service" ];
+
+					# 	serviceConfig = {
+					# 		Type = "simple";
+					# 		ExecStart = "''
+					# 			${pkgs.socat}/bin/socat \
+					# 				TCP-LISTEN:${toString localIppPort},fork,reuseaddr \
+					# 				SOCKS5:127.0.0.1:${onionHost}:${toString onionPort},socksport=9050
+					# 		''";
+					# 		Restart = "always";
+					# 		RestartSec = 5;
+					# 	};
+					# };
 		}
 ])
