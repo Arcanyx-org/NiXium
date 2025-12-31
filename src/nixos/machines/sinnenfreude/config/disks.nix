@@ -38,7 +38,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=5G" # >=5GB Needed to avoid no space left errors during rebuilds
+					"size=8G" # >=8GB Needed to avoid no space left errors during rebuilds
 					"defaults"
 					"mode=755"
 				];

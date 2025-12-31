@@ -1,4 +1,4 @@
-{ inputs, lib, self, config, ... }:
+{ inputs, lib, self, pkgs, ... }:
 
 # Declaration for STABLE release of NixOS for SINNENFREUDE
 
@@ -18,6 +18,56 @@ in {
 			self.nixosModules."nixos-sinnenfreude"
 
 			{
+				boot.impermanence.enable = true; # Impermanence
+				boot.plymouth.enable = true; # Eye Candy Boot Animation
+
+				nix.distributedBuilds = true; # Perform distributed builds
+
+				programs.adb.enable = true; # Android Debug Bridge
+				programs.appimage.enable = true; # Enable compatibility layer for appimages
+				programs.nix-ld.enable = true;
+				programs.noisetorch.enable = true;
+
+				# Desktop Environment
+				services.displayManager.gdm.enable = true;
+				services.desktopManager.gnome.enable = true;
+					programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
+					services.displayManager.gdm.autoSuspend = false;
+					# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has CONSTANT issues
+
+				services.flatpak.enable = true;
+				services.openssh.enable = true;
+				services.tor.enable = true;
+				# TODO(Krey): Pending Management
+					services.usbguard.dbus.enable = false;
+				services.smartd.enable = true;
+				services.clamav.daemon.enable = true;
+				services.printing.enable = true;
+				# services.rustdesk-server.enable = true;
+				# 	services.rustdesk-server.openFirewall = tru
+				services.usbmuxd.enable = true;
+
+				# Japanese Keyboard Input
+				i18n.inputMethod.enable = true;
+					i18n.inputMethod.type = "fcitx5";
+					# i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
+
+				powerManagement.powertop.enable = true;
+
+				security.sudo.enable = false;
+				security.sudo-rs.enable = true;
+
+				# Miracast
+					networking.firewall.allowedTCPPorts = [7236 7250];
+					networking.firewall.allowedUDPPorts = [7236 5353];
+
+				virtualisation.waydroid.enable = true;
+				virtualisation.docker.enable = true;
+
+				nix.channel.enable = true; # To be able to use nix repl :l <nixpkgs> as loading flake loads only 16 variables
+			}
+
+			{
 				nix.nixPath = [
 					"nixpkgs=${self.inputs.nixpkgs}"
 				];
@@ -25,6 +75,16 @@ in {
 				nix.registry = {
 					nixpkgs = { flake = self.inputs.nixpkgs; };
 				};
+			}
+
+			{
+				# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead THE GOOD OLD GENTOO WAY!
+				# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
+				# FIXME-INFRA(Krey): Figured out the hard way that even with GitHub OAuth Token set which significantly expands the API Rate Limit we still hit it in not even 5 min
+				# nix.settings = {
+				# 	substituters = mkForce [];
+				# 	trusted-public-keys = mkForce [];
+				# };
 			}
 
 			# Principles

@@ -50,23 +50,23 @@ in {
 				# pkgs.nheko # QT-based Matrix Client
 
 			pkgs.goofcord
-			(pkgs.dissent.overrideAttrs (super: {
-				# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
-				nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
-				postInstall = (super.postInstall or "") + ''
-					mv "$out/bin/dissent" "$out/bin/.dissent-wrapped" # Rename the old binary
+			# (pkgs.dissent.overrideAttrs (super: {
+			# 	# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+			# 	nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
+			# 	postInstall = (super.postInstall or "") + ''
+			# 		mv "$out/bin/dissent" "$out/bin/.dissent-wrapped" # Rename the old binary
 
-					# Wrap in short script that prefixes the command with `torsocks`
-					cat > "$out/bin/dissent" <<-SCRIPT
-						#!${pkgs.busybox}/bin/sh
-						script_dir=\$(dirname "\$(readlink -f "\$0")")
-						exec torsocks "\$script_dir/.dissent-wrapped" "\$@"
-					SCRIPT
+			# 		# Wrap in short script that prefixes the command with `torsocks`
+			# 		cat > "$out/bin/dissent" <<-SCRIPT
+			# 			#!${pkgs.busybox}/bin/sh
+			# 			script_dir=\$(dirname "\$(readlink -f "\$0")")
+			# 			exec torsocks "\$script_dir/.dissent-wrapped" "\$@"
+			# 		SCRIPT
 
-					# Ensure that it's executable
-					chmod +x "$out/bin/dissent"
-				'';
-			}))
+			# 		# Ensure that it's executable
+			# 		chmod +x "$out/bin/dissent"
+			# 	'';
+			# }))
 
 			# Temporary management of Post-Quantum Safety until matrix manages it, see https://github.com/matrix-org/matrix-spec/issues/975 for details
 			unstable.simplex-chat-desktop
@@ -95,7 +95,8 @@ in {
 		# Slicers
 		pkgs.prusa-slicer
 		# FIXME-QA(Krey): Broken on current stable, move back when fixed
-      #unstable.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+			# pkgs.cura-appimage
 
 		# Games
 		aagl.anime-game-launcher # An Anime Game
@@ -105,7 +106,9 @@ in {
 		pkgs.mindustry
 
 		# Web Browsers
-		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
+			# FIXME(Krey): Pending managemen: tor-browser-bundle-bin (25.05) -> tor-browser (25.11)
+				pkgs.tor-browser # Standard Tor Web Browser
+				# pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
 		(pkgs.brave.overrideAttrs (super: {
 			postInstall = ''
 				wrapProgram $out/bin/brave \
@@ -170,7 +173,7 @@ in {
 		pkgs.freetube # YouTube Client
 		pkgs.mpv
 		pkgs.vlc
-		pkgs.stremio
+		# pkgs.stremio
 		pkgs.gnome-network-displays
 
 		# Gnome extensions
@@ -178,7 +181,6 @@ in {
 		pkgs.gnomeExtensions.vitals
 		pkgs.gnomeExtensions.blur-my-shell
 		pkgs.gnomeExtensions.gsconnect
-		pkgs.gnomeExtensions.custom-accent-colors
 
 		# FIXME_QA(Krey): Figure out how to enable this only on GNOME
 		# FIXME(Krey): on NixOS 23.11 it's pinentry-gnome, but on unstable it's pinentry-gnome3

@@ -82,7 +82,8 @@ in {
 		pkgs.mindustry
 
 		# Web Browsers
-		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
+			# FIXME(Krey): Pending managemen: tor-browser-bundle-bin (25.05) -> tor-browser (25.11)
+				pkgs.tor-browser # Standard Tor Web Browser
 		(pkgs.brave.overrideAttrs (super: {
 			postInstall = ''
 				wrapProgram $out/bin/brave \
@@ -134,7 +135,6 @@ in {
 		pkgs.gnomeExtensions.vitals
 		pkgs.gnomeExtensions.blur-my-shell
 		pkgs.gnomeExtensions.gsconnect
-		pkgs.gnomeExtensions.custom-accent-colors
 
 		# FIXME_QA(Krey): Figure out how to enable this only on GNOME
 		# FIXME(Krey): on NixOS 23.11 it's pinentry-gnome, but on unstable it's pinentry-gnome3

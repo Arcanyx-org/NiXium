@@ -8,6 +8,7 @@ let
 	inherit (lib) mkIf mkMerge;
 in mkIf nixosConfig.services.xserver.desktopManager.kodi.enable (mkMerge [
 	{
+		# FIXME-QA(Krey): Duplicate Code
 		"23.11" = {
 			home.packages = [];
 		};
@@ -17,8 +18,10 @@ in mkIf nixosConfig.services.xserver.desktopManager.kodi.enable (mkMerge [
 		"24.11" = {
 			home.packages = [];
 		};
-		# FIXME-QA(Krey): Duplicate Code
 		"25.05" = {
+			home.packages = [];
+		};
+		"25.11" = {
 			home.packages = [];
 		};
 	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")

@@ -59,5 +59,8 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 			"25.05" = {
 				dconf.settings."org/gnome/desktop/interface".accent-color = "purple"; # Set Accent Color
 			}; # No Changes Needed
+			"25.11" = {
+				dconf.settings."org/gnome/desktop/interface".accent-color = "purple"; # Set Accent Color
+			}; # No Changes Needed
 		}.${lib.trivial.release} or (throw "Release '${lib.trivial.release}' is not implemented")
 ])

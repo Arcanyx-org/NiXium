@@ -1,0 +1,1 @@
+HANA-related secret files

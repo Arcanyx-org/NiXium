@@ -12,6 +12,7 @@ let
 
 	# Systems
 	flexy-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFSY5vNrQFfnDqBOqse2AHSWY1hIIpZWiBYTdQEIYnV9";
+	hana-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICZ2SsM9PkGXuiulbEFSRJhcs1Vq20L+4pr7DRRFxreb";
 	ignucius-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
 	lengo-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVORJbikrudevtNrK023PsAIRIBfQb1xJmmnSiizalR";
 	morph-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFJh5Bd1p4GGCAvNkfoWoflrRIFnoj43b2aMs0GxmULs";
@@ -23,6 +24,7 @@ let
 
 	all-systems = [
 		flexy-system
+		hana-system
 		ignucius-system
 		lengo-system
 		morph-system
@@ -73,6 +75,27 @@ in {
 
 	"./machines/flexy/secrets/flexy-builder-ssh-ed25519-private.age".publicKeys = [
 		kreyren flexy-system
+	];
+
+	# HANA (system)
+	"./machines/hana/secrets/hana-disks-password.age".publicKeys = [
+		kreyren hana-system
+	];
+
+	"./machines/hana/secrets/hana-onion.age".publicKeys = [
+		kreyren
+	] ++ all-systems;
+
+	"./machines/hana/secrets/hana-ssh-ed25519-private.age".publicKeys = [
+		kreyren hana-system
+	];
+
+	"./machines/hana/secrets/hana-onion-openssh-private.age".publicKeys = [
+		kreyren hana-system
+	];
+
+	"./machines/hana/secrets/hana-builder-ssh-ed25519-private.age".publicKeys = [
+		kreyren hana-system
 	];
 
 	# IGNUCIUS (system)

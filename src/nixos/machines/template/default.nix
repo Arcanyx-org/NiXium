@@ -12,11 +12,6 @@
 			self.homeManagerModules."kreyren@template"
 
 			# Files
-			./services/binfmt.nix
-			./services/distributedBuilds.nix
-			./services/openssh.nix
-			./services/tor.nix
-
 			./config/autoUpgrade.nix
 			./config/bootloader.nix
 			./config/disks.nix
@@ -34,6 +29,11 @@
 			./config/thinkfan.nix
 			./config/usbguard.nix
 			./config/vm-build.nix
+
+			./services/binfmt.nix
+			./services/distributedBuilds.nix
+			./services/openssh.nix
+			./services/tor.nix
 		];
 	};
 

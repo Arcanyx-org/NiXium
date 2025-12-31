@@ -18,8 +18,9 @@ in mkIf config.nix.distributedBuilds {
 
 		# Add to known hosts
 			programs.ssh.knownHosts."mracek.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8d9Nz64gE+x/+Dar4zknmXMAZXUAxhF1IgrA9DO4Ma";
-
 			programs.ssh.knownHosts."twinkcentral.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHcHEgNyhsjEHGaRXKuKopjSgthEn831KGnAXc0c/fLV";
+			programs.ssh.knownHosts."tupac.systems.nx".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEpbUbuXYWfIdh4w3FI++1/1Zwhg/ow/FVr8r2kC1bhL";
+				programs.ssh.knownHosts."10.48.0.157".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEpbUbuXYWfIdh4w3FI++1/1Zwhg/ow/FVr8r2kC1bhL";
 
 	# Import the SSH Keys for the builder account
 	age.secrets.sinnenfreude-builder-ssh-ed25519-private = {
@@ -57,6 +58,26 @@ in mkIf config.nix.distributedBuilds {
 
 				maxJobs = 4; # 100% of system resources
 				speedFactor = 10;
+				supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+				mandatoryFeatures = [ ];
+			}
+			{
+				# TUPAC
+				# hostName = "tupac.systems.nx";
+				hostName = "10.48.0.157";
+				systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" "riscv64-linux" ];
+				protocol = "ssh-ng";
+
+				# FIXME-QA(Krey): Set this as a variable from nixos/modules/distributedBuilds
+				sshUser = "builder";
+				# sshUser = builder-account;
+
+				# FIXME-QA(Krey): Set this as a variable from nixos/modules/distributedBuilds
+				sshKey = "/etc/ssh/ssh_builder_ed25519_key";
+				#sshKey = "${builder-key-path}/ssh_${builder-account}_ed25519_key";
+
+				maxJobs = 2; # 50% of system resources
+				speedFactor = 1;
 				supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
 				mandatoryFeatures = [ ];
 			}

@@ -17,3 +17,6 @@
 [submodule "vendor/stardustxr-telescope"]
 	path = vendor/stardustxr-telescope
 	url = git@github.com:StardustXR/telescope.git
+[submodule "vendor/mobile-nixos"]
+	path = vendor/mobile-nixos
+	url = git@github.com:Arcanyx-org/mobile-nixos.git

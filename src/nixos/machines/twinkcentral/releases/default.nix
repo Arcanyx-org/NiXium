@@ -2,6 +2,6 @@
 
 {
 	imports = [
-		./stable
+		./25_05
 	];
 }

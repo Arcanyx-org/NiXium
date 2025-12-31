@@ -3,7 +3,7 @@
 {
 	imports = [
 		./master
-		./stable
+		./25_05
 		./unstable
 	];
 }

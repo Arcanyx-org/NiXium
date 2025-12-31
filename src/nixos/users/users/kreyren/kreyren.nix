@@ -17,7 +17,8 @@ in {
 		createHome = true;
 		hashedPasswordFile = config.age.secrets.kreyren-user-password.path;
 		# hashedPasswordFile = config.sops.secrets."users/kreyren/hashed-password".path;
-		extraGroups = [
+    extraGroups = [
+      "disk"
 			"wheel"
 			(mkIf config.virtualisation.docker.enable "docker")
 			"dialout" # To Access e.g. /dev/ttyUSB0 for USB debuggers

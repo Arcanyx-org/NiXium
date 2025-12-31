@@ -6,10 +6,10 @@ let
 	inherit (lib) mkForce;
 in {
 	flake.nixosConfigurations."nixos-template-stable" = inputs.nixpkgs.lib.nixosSystem {
-		system = "x86_64-linux";
+		system = "??????-linux";
 
 		pkgs = import inputs.nixpkgs {
-			system = "x86_64-linux";
+			system = "??????-linux";
 			config.allowUnfree = mkForce false; # Forbid proprietary code
 		};
 
@@ -50,22 +50,22 @@ in {
 
 			# Priciple args
 			stable = import inputs.nixpkgs {
-				system = "x86_64-linux";
+				system = "??????-linux";
 				config.allowUnfree = mkForce false; # Forbid proprietary code
 			};
 
 			unstable = import inputs.nixpkgs-unstable {
-				system = "x86_64-linux";
+				system = "??????-linux";
 				config.allowUnfree = mkForce false; # Forbid proprietary code
 			};
 
 			staging = import inputs.nixpkgs-staging {
-				system = "x86_64-linux";
+				system = "??????-linux";
 				config.allowUnfree = mkForce false; # Forbid proprietary code
 			};
 
 			staging-next = import inputs.nixpkgs-staging-next {
-				system = "x86_64-linux";
+				system = "??????-linux";
 				config.allowUnfree = mkForce false; # Forbid proprietary code
 			};
 		};

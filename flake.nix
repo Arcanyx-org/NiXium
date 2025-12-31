@@ -8,14 +8,15 @@
 			nixpkgs-staging.url = "github:nixos/nixpkgs/staging";
 			nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-			nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+			nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 			# nixpkgs.url = "git+file:///nix/persist/NiXium/vendor/nixpkgs-stable";
 
+			nixpkgs-25_11.url = "github:nixos/nixpkgs/nixos-25.11";
 			nixpkgs-25_05.url = "github:nixos/nixpkgs/nixos-25.05";
-			nixpkgs-23_05.url = "github:nixos/nixpkgs/nixos-23.05";
-			nixpkgs-23_11.url = "github:nixos/nixpkgs/nixos-23.11";
-			nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
 			nixpkgs-24_11.url = "github:nixos/nixpkgs/nixos-24.11";
+			nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
+			nixpkgs-23_11.url = "github:nixos/nixpkgs/nixos-23.11";
+			nixpkgs-23_05.url = "github:nixos/nixpkgs/nixos-23.05";
 
 			nixpkgs-kreyren.url = "github:kreyren/nixpkgs/central";
 			# nixpkgs-alpaca.url = "github:Gliczy/nixpkgs/alpaca-7.0.0";
@@ -72,6 +73,12 @@
 			inputs.nixpkgs.follows = "nixpkgs";
 		};
 
+		# FIXME(Krey): Move this to Arcanyx's fork, cuz I ain't dealing with Samuel and his bullshit
+			mobile-nixos-hana = {
+				url = "github:Arcanyx-org/mobile-nixos/google-hana";
+				flake = false;
+			};
+
 		# SOPS
 			sops = {
 				url = "github:Mic92/sops-nix";
@@ -116,12 +123,16 @@
 
 		# AAGL
 			aagl = {
-				url = "github:ezKEa/aagl-gtk-on-nix/release-25.05";
-				inputs.nixpkgs.follows = "nixpkgs-25_05";
+				url = "github:ezKEa/aagl-gtk-on-nix/release-25.11";
+				inputs.nixpkgs.follows = "nixpkgs-25_11";
 			};
 
+			aagl-25_11 = {
+				url = "github:ezKEa/aagl-gtk-on-nix/release-25.11";
+				inputs.nixpkgs.follows = "nixpkgs-25_11";
+			};
 			aagl-25_05 = {
-				url = "github:ezKEa/aagl-gtk-on-nix/release-24.05";
+				url = "github:ezKEa/aagl-gtk-on-nix/release-25.05";
 				inputs.nixpkgs.follows = "nixpkgs-25_05";
 			};
 			aagl-24_11 = {
@@ -148,13 +159,18 @@
 
 		# Home-Manager
 			hm = {
-				url = "github:nix-community/home-manager/release-25.05";
+				url = "github:nix-community/home-manager/release-25.11";
 				inputs.nixpkgs.follows = "nixpkgs";
 			};
 
-			hm-25_05 = {
-				url = "github:nix-community/home-manager/release-24.11";
+			hm-25_11 = {
+				url = "github:nix-community/home-manager/release-25.11";
 				inputs.nixpkgs.follows = "nixpkgs-24_11";
+			};
+
+			hm-25_05 = {
+				url = "github:nix-community/home-manager/release-25.05";
+				inputs.nixpkgs.follows = "nixpkgs-25_05";
 			};
 
 			hm-24_11 = {

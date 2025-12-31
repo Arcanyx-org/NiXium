@@ -11,6 +11,19 @@
 		imports = [
 			self.nixosModules.default
 
+			{
+				networking.hostName = "sinnenfreude";
+
+				# NOTE(Krey): Experimenting..
+					time.timeZone = "Europe/Vienna"; # Set Timezone
+
+				# Necessary Evil :(
+					hardware.enableRedistributableFirmware = true;
+					hardware.cpu.intel.updateMicrocode = true;
+
+				nixpkgs.hostPlatform = "x86_64-linux";
+			}
+
 			# Users
 			self.nixosModules.users-kreyren
 			self.homeManagerModules."kreyren@sinnenfreude"
@@ -28,7 +41,6 @@
 			./config/networking.nix
 			./config/nvidia.nix
 			./config/security.nix
-			./config/setup.nix
 			./config/suspend-then-hibernate.nix
 			./config/vm-build.nix
 

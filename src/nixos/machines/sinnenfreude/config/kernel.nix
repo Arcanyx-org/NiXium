@@ -15,6 +15,7 @@ in {
 	# Kernel Modules
 	boot.kernelModules = [
 		"kvm-intel" # Use KVM
-		(mkIf config.networking.wireguard.enable "wireguard")
+		# FIXME(Krey): Fais on 25.11
+			# (mkIf config.networking.wireguard.enable "wireguard")
 	];
 }

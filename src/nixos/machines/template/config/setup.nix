@@ -74,5 +74,5 @@ in {
 
 	age.secrets.template-ssh-ed25519-private.file = ../secrets/template-ssh-ed25519-private.age; # Declare private key
 
-	nixpkgs.hostPlatform = "x86_64-linux";
+	nixpkgs.hostPlatform = "??????-linux";
 }

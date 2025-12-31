@@ -1,3 +1,3 @@
 {
-	imports = [ ./update-locks ];
+	imports = [ ./update ];
 }

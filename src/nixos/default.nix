@@ -36,6 +36,7 @@ in {
 	);
 
 	imports = [
+		./images
 		./machines
 		./modules
 		./overlays

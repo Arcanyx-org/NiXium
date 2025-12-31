@@ -110,8 +110,6 @@ in mkMerge [
 
 									passwordFile = config.age.secrets.template-disks-password.path;
 
-									keyFile = keyDevice;
-
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
 									extraFormatArgs = [
@@ -154,8 +152,6 @@ in mkMerge [
 									settings.allowDiscards = true;
 
 									passwordFile = config.age.secrets.template-disks-password.path;
-
-									keyFile = keyDevice;
 
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
@@ -217,8 +213,6 @@ in mkMerge [
 
 								passwordFile = config.age.secrets.template-disks-password.path;
 
-								keyFile = keyDevice;
-
 								initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
 								extraFormatArgs = [
@@ -257,8 +251,6 @@ in mkMerge [
 								settings.allowDiscards = true;
 
 								passwordFile = config.age.secrets.template-disks-password.path;
-
-								keyFile = keyDevice;
 
 								initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 

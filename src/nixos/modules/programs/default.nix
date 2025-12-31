@@ -6,6 +6,7 @@ let
 	inherit (config.flake) nixosModules;
 in {
 	flake.nixosModules.programs.imports = [
+		nixosModules.programs-appimage
 		nixosModules.programs-git
 		nixosModules.programs-htop
 		nixosModules.programs-vim
@@ -13,6 +14,7 @@ in {
 	];
 
 	imports = [
+		./appimage
 		./git
 		./htop
 		./vim
