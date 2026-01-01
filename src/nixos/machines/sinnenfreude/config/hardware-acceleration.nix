@@ -13,16 +13,8 @@
 			driSupport32Bit = true;
 		};
 	};
-	"24.11" = {
+	"${lib.trivial.release}" = {
 		hardware.graphics.enable = true;
 		hardware.graphics.enable32Bit = true;
-  };
-  "25.05" = {
-    hardware.graphics.enable = true;
-    hardware.graphics.enable32Bit = true;
-  };
-	"25.11" = {
-    hardware.graphics.enable = true;
-    hardware.graphics.enable32Bit = true;
-  };
+	};
 }."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")

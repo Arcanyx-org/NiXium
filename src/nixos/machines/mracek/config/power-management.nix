@@ -1,15 +1,19 @@
-{ ... }:
+{ config, lib,... }:
 
 #! # Power Management of MRACEK
 #! To optimize the system of it's role of always-on control server it's desirable to get it as power efficient as possible as it's designed to always do tasks at idle state unless something unexpected happened for the client to request remote build or processing of instructions for which it should be able to boost to process the critical tasks.
 
-{
+let
+	inherit (lib) mkIf;
+in mkIf config.powerManagement.enable {
 	boot.blacklistedKernelModules = [
 		"backlight" # Eats constantly ~1W of power even with lid closed and display turned off
 		"realtek" # Eats ~0.40 W
 		"asus-nb-wmi" # Eats ~0.30 W
 		"spi_intel" # Eats ~0.30 W
 	];
+
+	powerManagement.powertop.enable = true;
 
 	services.logind.lidSwitch = "lock"; # Do not suspend on lid close event
 	services.logind.lidSwitchExternalPower = "lock"; # Lock the system on closing the lid when on external power instead of suspend/hibernation

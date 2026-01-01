@@ -16,6 +16,7 @@ We are using:
 * [mission-control](https://github.com/Platonic-Systems/mission-control) as a Frontend for this repository
 * [lanzaboote](https://github.com/nix-community/lanzaboote) for Declarative Secure Boot
 * [nixos-generators](https://github.com/nix-community/nixos-generators) to Generate Filesystem Images
+* [Release-independent Modules](https://github.com/Arcanyx-org/NiXium/blob/central/README.md#release-independent-modules) to ensure compatibility across different releases for flexibility
 
 ## Directory layout
 
@@ -161,6 +162,45 @@ Notes to the implementation:
 
 * **POSIX Shell Script:** The environment and libraries are managed by the Nix Daemon so they do not include shebang and bash options as those are supplemented by Nix, all these files should include notice at the first line about this management (please report this to us if it's not present). Additionally Nix runs these files through a very strict [shellcheck](https://www.shellcheck.net) where any unhandled failure or warning will terminate evaluation with detailed info about the isuse prior to executing the script.
 * **Nix Language:** Is the sole exception that does not follow the standard coding practices provided by upstream as they are considered not sensible and introduce too many security issues that are not fixable at the current NixOS Foundation Administration chaired by Eelco Dolstra for us to be in the process of writting an alternative one. [NixOS/nixpkgs/133088](https://github.com/NixOS/nixpkgs/issues/133088) [NixOS/nixpkgs/133089](https://github.com/NixOS/nixpkgs/issues/133089) [NixOS/nixpkgs/243089](https://github.com/NixOS/nixpkgs/pull/241360) [NixOS/nixpkgs/254625](https://github.com/NixOS/nixpkgs/issues/254625) [NixOS/nixpkgs/296013](https://github.com/NixOS/nixpkgs/issues/296013) [NixOS/nixpkgs/296013](https://github.com/NixOS/nixpkgs/pull/324693)
+
+### Release-independent Modules
+
+We are providing [flake-parts](https://github.com/hercules-ci/flake-parts) integration for our modules which are designed to evaluate on any implemented releases through our abuse of `attrsets` to implement the de-facto case/switch statement as "release-gate" as compared to the traditional `mkIf` or `if` this doesn't evaluate the statement's body which would otherwise result in build failure.
+
+
+```nix
+{ config, lib, ... }:
+
+# Module that implements suspend-then-hibernate for SINNENFREUDE
+
+let
+	inherit (lib) mkIf mkMerge;
+	release = "${lib.trivial.release}";
+in mkIf config.powerManagement.enable (mkMerge [
+	{
+		"${lib.optionalString (lib.elem release [ "24.11" "24.05" "25.05" ]) release}" = {
+			services.logind = {
+				powerKey = "suspend-then-hibernate";
+				powerKeyLongPress = "poweroff";
+			};
+		};
+
+		"25.11" = {
+			services.logind.settings.Login = {
+				HandlePowerKey = "suspend-then-hibernate";
+				HandlePowerKeyLongPress = "poweroff";
+				HandleLidSwitch = "suspend-then-hibernate";
+				HandleLidSwitchExternalPower = "suspend";
+			};
+		};
+	}."${release}"
+
+	{
+		powerManagement.powertop.enable = true;
+		systemd.sleep.extraConfig = "HibernateDelaySec=30s";
+	}
+])
+```
 
 ### Donate - Finance
 

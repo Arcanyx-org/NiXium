@@ -7,6 +7,15 @@
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration
 
+			{
+				networking.hostName = "mracek";
+
+				# NOTE(Krey): Experimenting..
+					time.timeZone = "Europe/Vienna"; # Set Timezone
+
+				nixpkgs.hostPlatform = "x86_64-linux";
+			}
+
 			# Files
 				./config/autoUpgrade.nix
 				./config/bootloader.nix

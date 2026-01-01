@@ -25,4 +25,10 @@ in mkIf config.services.openssh.enable {
 	services.openssh.hostKeys = mkForce []; # Do not generate SSH keys
 
 	services.openssh.openFirewall = true;
+
+	users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
+		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
+	];
+
+	age.secrets.mracek-ssh-ed25519-private.file = "${self.outPath}/src/nixos/machines/mracek/secrets/mracek-ssh-ed25519-private.age"; # Declare private key
 }

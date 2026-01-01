@@ -23,4 +23,8 @@
 		hardware.graphics.enable = true;
 		hardware.graphics.enable32Bit = true;
 	};
+	"25.11" = {
+		hardware.graphics.enable = true;
+		hardware.graphics.enable32Bit = true;
+	};
 }."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
