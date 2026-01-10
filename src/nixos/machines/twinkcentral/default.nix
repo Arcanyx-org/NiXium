@@ -7,6 +7,19 @@
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration
 
+			{
+				networking.hostName = "twinkcentral";
+
+				# NOTE(Krey): Experimenting..
+					time.timeZone = "Europe/Vienna"; # Set Timezone
+
+				# Necessary Evil :(
+					hardware.enableRedistributableFirmware = true;
+					hardware.cpu.intel.updateMicrocode = true;
+
+				nixpkgs.hostPlatform = "x86_64-linux";
+			}
+
 			# Files
 			./services/binfmt.nix
 			./services/distributedBuilds.nix
@@ -24,7 +37,6 @@
 			./config/plymouth.nix
 			./config/power-management.nix
 			./config/security.nix
-			./config/setup.nix
 			./config/sound.nix
 			./config/usbguard.nix
 			./config/vm-build.nix

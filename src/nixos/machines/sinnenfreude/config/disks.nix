@@ -21,14 +21,47 @@ let
 	inherit (lib) mkMerge;
 
 	diskoDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_21052CD42FFF";
+	# keyDevice = "/dev/disk/by-id/mmc-SA02G_0x272bcf2e";
+	swapSize = "30G";
+	impermanentSize = "5G";
+	imageSize = "50G";
 in mkMerge [
 	{
 		age.secrets.sinnenfreude-disks-password.file = "${self.outPath}/src/nixos/machines/sinnenfreude/secrets/sinnenfreude-disks-password.age"; # Supply password for disk encryption
 	}
 
+	{
+		# 	# Enable SD-Card Unattended-boot
+
+		# 		# Needed to find the SD Card device during initrd stage
+		# 		boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
+
+		# 		age.secrets.lengo-unlock-key.file = ../secrets/template-unlock-key.age; # KeyFile for unlocking the filesystems
+
+		# 		boot.initrd.luks.devices = {
+		# 			swap = {
+		# 				device = "/dev/disk/by-partlabel/disk-system-swap";
+		# 				preLVM = true;
+		# 				allowDiscards = true;
+		# 				keyFile = keyDevice;
+		# 				keyFileSize = 4096;
+		# 				# fallbackToPassword = true;
+		# 			};
+		# 			store = {
+		# 				device = "/dev/disk/by-partlabel/disk-system-store";
+		# 				preLVM = true;
+		# 				allowDiscards = true;
+		# 				keyFile = keyDevice;
+		# 				keyFileSize = 4096;
+		# 				# fallbackToPassword = true;
+		# 			};
+		# 		};
+	}
+
 	# FIXME(Krey): Causes infinite recursion, no idea why
 	# (if (config.boot.impermenance.enable == true) then {
 	(if (true) then {
+	# (mkIf config.boot.impermanence.enable {
 		age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
 
 		fileSystems."/nix/persist/system".neededForBoot = true;
@@ -38,7 +71,7 @@ in mkMerge [
 			nodev."/" = {
 				fsType = "tmpfs";
 				mountOptions = [
-					"size=8G" # >=8GB Needed to avoid no space left errors during rebuilds
+					"size=${impermanentSize}" # >=8GB Needed to avoid no space left errors during rebuilds
 					"defaults"
 					"mode=755"
 				];
@@ -48,7 +81,7 @@ in mkMerge [
 				system = {
 					device = diskoDevice;
 					type = "disk";
-					imageSize = "50G"; # Size of the generated image
+					imageSize = imageSize; # Size of the generated image
 					content = {
 						type = "gpt";
 						partitions = {
@@ -117,7 +150,7 @@ in mkMerge [
 
 							swap = {
 								priority = 2;
-								size = "30G";
+								size = swapSize;
 								content = {
 									name = "swap";
 									type = "luks";
@@ -153,14 +186,15 @@ in mkMerge [
 				};
 			};
 		};
-	} else {
+	}
+	 else {
 		age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
 
 		disk = {
 			system = {
 				device = diskoDevice;
 				type = "disk";
-				imageSize = "50G"; # Size of the generated image
+				imageSize = imageSize; # Size of the generated image
 				content = {
 					type = "gpt";
 					partitions = {
@@ -220,7 +254,7 @@ in mkMerge [
 
 						swap = {
 							priority = 2;
-							size = "30G";
+							size = swapSize;
 							content = {
 								name = "swap";
 								type = "luks";

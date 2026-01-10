@@ -154,7 +154,7 @@ in mkIf config.services.nextcloud.enable (mkMerge [
 					calendar
 					contacts
 					end_to_end_encryption
-					maps
+					# maps
 					music
 					news
 					tasks

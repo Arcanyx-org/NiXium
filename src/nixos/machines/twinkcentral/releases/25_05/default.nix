@@ -5,7 +5,7 @@
 let
 	inherit (lib) mkForce;
 in {
-	flake.nixosConfigurations."nixos-twinkcentral-stable" = inputs.nixpkgs.lib.nixosSystem {
+	flake.nixosConfigurations."nixos-twinkcentral-25_05" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
 
 		pkgs = import inputs.nixpkgs {

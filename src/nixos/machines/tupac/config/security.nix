@@ -1,10 +1,8 @@
-{ lib, config, ... }:
+{ ... }:
 
 # Security management of TUPAC
 
-let
-	inherit (lib) mkMerge;
-in {
+{
 	# NOTE(Krey): Make it impossible to hibernate
 	security.protectKernelImage = false;
 

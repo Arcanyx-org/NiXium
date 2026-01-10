@@ -29,7 +29,6 @@
 				./config/power-management.nix
 				./config/remote-unlock.nix
 				./config/security.nix
-				./config/setup.nix
 				./config/sound.nix
 				./config/vm-build.nix
 

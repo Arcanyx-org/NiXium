@@ -1,9 +1,9 @@
-{ config, lib, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 # Kernel management of TUPAC
 
 let
-	inherit (lib) mkForce mkIf;
+	inherit (lib) mkForce;
 in {
 	# boot.kernelPackages = pkgs.linuxPackages_xanmod;
 	boot.kernelPackages = pkgs.linuxPackages;
@@ -28,6 +28,7 @@ in {
 	# Kernel Modules
 	boot.kernelModules = [
 		"kvm-intel" # Use KVM
-		(mkIf config.networking.wireguard.enable "wireguard")
+		# FIXME(Krey): Fix for 25.11
+			# (mkIf config.networking.wireguard.enable "wireguard")
 	];
 }

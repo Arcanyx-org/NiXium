@@ -1,20 +1,20 @@
 { config, lib, ... }:
 
-# Module that implements suspend-then-hibernate for SINNENFREUDE
+# Power Management Module for SINNENFREUDE
 
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) mkIf mkMerge optionalString elem;
 	release = "${lib.trivial.release}";
 in mkIf config.powerManagement.enable (mkMerge [
 	{
-		"${lib.optionalString (lib.elem release [ "24.11" "24.05" "25.05" ]) release}" = {
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = {
 			services.logind = {
 				powerKey = "suspend-then-hibernate";
 				powerKeyLongPress = "poweroff";
 			};
 		};
 
-		"25.11" = {
+		"${release}" = {
 			services.logind.settings.Login = {
 				HandlePowerKey = "suspend-then-hibernate";
 				HandlePowerKeyLongPress = "poweroff";

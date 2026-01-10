@@ -78,7 +78,8 @@ in {
 		polymc.polymc # Minecraft
 
 		# Web Browsers
-		pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
+		# pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
+		pkgs.tor-browser # Standard Tor Web Browser
 		(pkgs.brave.overrideAttrs (super: {
 			postInstall = ''
 				wrapProgram $out/bin/brave \
@@ -145,7 +146,7 @@ in {
 
 		# pkgs.dosbox-x # DOS
 
-		pkgs.duckstation # PlayStation 1
+		# pkgs.duckstation # PlayStation 1
 		# pkgs.pcsx2 # PlayStation 2
 		# pkgs.rpcs3 # PlayStation 3
 		# pkgs.ppsspp-qt # PlayStation Portable
@@ -169,7 +170,7 @@ in {
     # pkgs.xemu # Xbox
 
 		# Video
-		pkgs.stremio # Media Server Client
+		# pkgs.stremio # Media Server Client
 		pkgs.freetube # YouTube Client
 		pkgs.mpv
 		pkgs.vlc
@@ -179,7 +180,6 @@ in {
 		pkgs.gnomeExtensions.vitals
 		pkgs.gnomeExtensions.blur-my-shell
 		pkgs.gnomeExtensions.gsconnect
-		pkgs.gnomeExtensions.custom-accent-colors
 
 		# FIXME_QA(Krey): Figure out how to enable this only on GNOME
 		# FIXME(Krey): on NixOS 23.11 it's pinentry-gnome, but on unstable it's pinentry-gnome3

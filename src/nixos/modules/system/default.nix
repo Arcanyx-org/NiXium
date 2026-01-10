@@ -17,6 +17,7 @@ in {
 		nixosModules.system-lanzaboote
 		nixosModules.system-locale
 		nixosModules.system-nix
+		nixosModules.system-pipewire
 		nixosModules.system-release
 		nixosModules.system-time
 		nixosModules.system-wifi
@@ -34,6 +35,7 @@ in {
 		./lanzaboote
 		./locale
 		./nix
+		./pipewire
 		./release
 		./time
 		./wifi

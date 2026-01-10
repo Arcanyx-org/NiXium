@@ -5,10 +5,10 @@
 let
 	inherit (lib) mkForce mkIf;
 in {
-	flake.nixosConfigurations."nixos-tupac-stable" = inputs.nixpkgs.lib.nixosSystem {
+	flake.nixosConfigurations."nixos-tupac-25_05" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
 
-		pkgs = import inputs.nixpkgs {
+		pkgs = import inputs.nixpkgs-25_05 {
 			system = "x86_64-linux";
 			config.allowUnfree = true;
 			config.nvidia.acceptLicense = true; # Fuck You Nvidia! I am Forced into this!
@@ -51,32 +51,32 @@ in {
 				programs.steam.enable = true;
 				programs.noisetorch.enable = true; # Microphone filtering
 				programs.nix-ld.enable = true;
-				# programs.appimage = {
-				# 	enable = true;
-				# 	binfmt = true;
-				# 	package = inputs'.nixpkgs.legacyPackages.appimage-run.override {
-				# 		extraPkgs = pkgs: [
-				# 			# FIXME(Krey): Once we figure out what packages are in general needed for appimages then move this into a global configuration
-				# 			# Some packages need this dependency, added for utility - https://github.com/NixOS/nixpkgs/issues/350383#issuecomment-2433316461
-				# 			inputs'.nixpkgs.legacyPackages.libepoxy
+				programs.appimage = {
+					enable = true;
+					binfmt = true;
+					package = inputs'.nixpkgs.legacyPackages.appimage-run.override {
+						extraPkgs = pkgs: [
+							# FIXME(Krey): Once we figure out what packages are in general needed for appimages then move this into a global configuration
+							# Some packages need this dependency, added for utility - https://github.com/NixOS/nixpkgs/issues/350383#issuecomment-2433316461
+							inputs'.nixpkgs.legacyPackages.libepoxy
 
-				# 			# Required by Melon Launcher's AppImage (https://github.com/LykosAI/StabilityMatrix/issues/554)
-				# 				# * Process terminated. Couldn't find a valid ICU package installed on the system. Please install libicu (or icu-libs) using your package manager and try again. Alternatively you can set the configuration flag System.Globalization.Invariant to true if you want to run with no globalization support. Please see https://aka.ms/dotnet-missing-libicu for more information.
-				# 				# * May be by bypasseded with:
-				# 				# ** DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
-				# 				# ** DOTNET_SYSTEM_GLOBALIZATION_PREDEFINED_CULTURES_ONLY=false
-				# 				inputs'.nixpkgs.legacyPackages.icu77
-				# 				inputs'.nixpkgs.legacyPackages.libxcrypt-legacy # https://github.com/LykosAI/StabilityMatrix/issues/554#issuecomment-2798941427
-				# 				inputs'.nixpkgs.legacyPackages.python312
-				# 				inputs'.nixpkgs.legacyPackages.python312Packages.torch
+							# Required by Melon Launcher's AppImage (https://github.com/LykosAI/StabilityMatrix/issues/554)
+								# * Process terminated. Couldn't find a valid ICU package installed on the system. Please install libicu (or icu-libs) using your package manager and try again. Alternatively you can set the configuration flag System.Globalization.Invariant to true if you want to run with no globalization support. Please see https://aka.ms/dotnet-missing-libicu for more information.
+								# * May be by bypasseded with:
+								# ** DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+								# ** DOTNET_SYSTEM_GLOBALIZATION_PREDEFINED_CULTURES_ONLY=false
+								inputs'.nixpkgs.legacyPackages.icu77
+								inputs'.nixpkgs.legacyPackages.libxcrypt-legacy # https://github.com/LykosAI/StabilityMatrix/issues/554#issuecomment-2798941427
+								inputs'.nixpkgs.legacyPackages.python312
+								inputs'.nixpkgs.legacyPackages.python312Packages.torch
 
-				# 				inputs'.nixpkgs.legacyPackages.webkitgtk_4_1 # libwebkit2gtk-4.1.so.0
-				# 				inputs'.nixpkgs.legacyPackages.webkitgtk_4_0 # libwebkit2gtk-4.0.so.0
+								inputs'.nixpkgs.legacyPackages.webkitgtk_4_1 # libwebkit2gtk-4.1.so.0
+								inputs'.nixpkgs.legacyPackages.webkitgtk_4_0 # libwebkit2gtk-4.0.so.0
 
-				# 				inputs'.nixpkgs.legacyPackages.openxr-loader
-				# 		];
-				# 	};
-				# };
+								inputs'.nixpkgs.legacyPackages.openxr-loader
+						];
+					};
+				};
 
 				services.flatpak.enable = true;
 				services.openssh.enable = true;
@@ -87,20 +87,20 @@ in {
 					services.usbguard.dbus.enable = false;
 				services.smartd.enable = true;
 				services.clamav.daemon.enable = true;
-				# services.ollama.enable = false;
-				# 	services.open-webui.enable = false;
-				# 	users.users.alpaka = {
-				# 		description = "Alpaka";
-				# 		uid = 1050;
-				# 		isNormalUser = true;
-				# 		createHome = true;
-				# 		extraGroups = [
-				# 			# (mkIf config.virtualisation.docker.enable "docker")
-				# 			(mkIf config.programs.adb.enable "adbusers")
-				# 			"video"
-				# 		];
-				# 		openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHmtDqiOqgXx0WaJE3C+DWCdTegP6vC74/ICAcmA5xja kreyren@tupac" ];
-				# 	};
+				services.ollama.enable = false;
+					services.open-webui.enable = false;
+					users.users.alpaka = {
+						description = "Alpaka";
+						uid = 1050;
+						isNormalUser = true;
+						createHome = true;
+						extraGroups = [
+							(mkIf config.virtualisation.docker.enable "docker")
+							(mkIf config.programs.adb.enable "adbusers")
+							"video"
+						];
+						openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHmtDqiOqgXx0WaJE3C+DWCdTegP6vC74/ICAcmA5xja kreyren@tupac" ];
+					};
 				# FIXME(Krey): Pending work
 				services.opensnitch.enable = false;
 				services.printing.enable = true;
@@ -122,8 +122,9 @@ in {
 				services.wivrn.enable = true;
 
 				# Desktop Environment
-				services.displayManager.gdm.enable = true;
-				services.desktopManager.gnome.enable = true;
+				services.xserver.enable = true;
+				services.xserver.displayManager.gdm.enable = true;
+				services.xserver.desktopManager.gnome.enable = true;
 					programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
 					services.xserver.displayManager.gdm.autoSuspend = false;
 					# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has CONSTANT issues
@@ -134,7 +135,7 @@ in {
 				services.tlp.enable = false;
 					services.power-profiles-daemon.enable = true;
 
-				# networking.wireguard.enable = false;
+				networking.wireguard.enable = false;
 
 				hardware.steam-hardware.enable = true; # Compatibility for Steam Controller
 

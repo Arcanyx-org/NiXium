@@ -1,71 +1,62 @@
-{ inputs, lib, self, pkgs, ... }:
+{ inputs, lib, self, config, ... }:
 
-# Declaration for STABLE release of NixOS for SINNENFREUDE
+# Declaration for STABLE release of NixOS for TWINKCENTRAL
 
 let
 	inherit (lib) mkForce;
 in {
-	flake.nixosConfigurations."nixos-sinnenfreude-stable" = inputs.nixpkgs.lib.nixosSystem {
+	flake.nixosConfigurations."nixos-twinkcentral-stable" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
 
 		pkgs = import inputs.nixpkgs {
 			system = "x86_64-linux";
-			config.allowUnfree = mkForce false; # Forbid proprietary code
-			config.nvidia.acceptLicense = false; # Nvidia, Fuck You!
+			config.allowUnfree = mkForce true; # Forbid proprietary code
 		};
 
 		modules = [
-			self.nixosModules."nixos-sinnenfreude"
+			self.nixosModules."nixos-twinkcentral"
 
 			{
-				boot.impermanence.enable = true; # Impermanence
-				boot.plymouth.enable = true; # Eye Candy Boot Animation
+				boot.impermanence.enable = true; # Use impermanence
 
-				nix.distributedBuilds = true; # Perform distributed builds
+				boot.plymouth.enable = true;
 
-				programs.adb.enable = true; # Android Debug Bridge
-				programs.appimage.enable = true; # Enable compatibility layer for appimages
-				programs.nix-ld.enable = true;
 				programs.noisetorch.enable = true;
+				programs.adb.enable = true;
+				programs.nix-ld.enable = true;
+				programs.appimage.enable = true;
 
-				# Desktop Environment
-				services.displayManager.gdm.enable = true;
-				services.desktopManager.gnome.enable = true;
-					programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
-					services.displayManager.gdm.autoSuspend = false;
-					# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has CONSTANT issues
-
-				services.flatpak.enable = true;
+				# services.fstrim.enable = true;
 				services.openssh.enable = true;
 				services.tor.enable = true;
 				# TODO(Krey): Pending Management
 					services.usbguard.dbus.enable = false;
-				services.smartd.enable = true;
 				services.clamav.daemon.enable = true;
-				services.printing.enable = false;
-				# services.rustdesk-server.enable = true;
-				# 	services.rustdesk-server.openFirewall = tru
-				services.usbmuxd.enable = true;
+				services.printing.enable = true;
 
-				# Japanese Keyboard Input
-				i18n.inputMethod.enable = true;
-					i18n.inputMethod.type = "fcitx5";
-					# i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
-				i18n.defaultLocale = "en_US.UTF-8";
+				nix.distributedBuilds = true; # Perform distributed builds
+				nix.channel.enable = true; # To be able to use nix repl :l <nixpkgs> as loading flake loads only 16 variables
 
-				powerManagement.powertop.enable = true;
+				# Power Management
+				powerManagement.enable = true; # Enable Power Management
+				services.tlp.enable = false; # TLP-Based Managemnt (For Fine Tuning)
+				services.power-profiles-daemon.enable = true; # PPD-Based Management (Predefined through system data only)
+
+				networking.wireguard.enable = false;
 
 				security.sudo.enable = false;
 				security.sudo-rs.enable = true;
 
-				# Miracast
-					networking.firewall.allowedTCPPorts = [7236 7250];
-					networking.firewall.allowedUDPPorts = [7236 5353];
+				virtualisation.waydroid.enable = false;
+				virtualisation.docker.enable = false;
 
-				virtualisation.waydroid.enable = true;
-				virtualisation.docker.enable = true;
-
-				nix.channel.enable = true; # To be able to use nix repl :l <nixpkgs> as loading flake loads only 16 variables
+				# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead THE GOOD OLD GENTOO WAY!
+				# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
+				# FIXME-INFRA(Krey): Figured out the hard way that even with GitHub OAuth Token set which significantly expands the API Rate Limit we still hit it in not even 5 min
+				nix.settings = {
+					substituters = mkForce [];
+					trusted-public-keys = mkForce [];
+				};
 			}
 
 			{
@@ -76,16 +67,6 @@ in {
 				nix.registry = {
 					nixpkgs = { flake = self.inputs.nixpkgs; };
 				};
-			}
-
-			{
-				# De-NixOSfy Experiment - Remove cache.nixos.org and build from source instead THE GOOD OLD GENTOO WAY!
-				# FIXME(Krey): Pending infrastructural management as this is too computationally demanding rn
-				# FIXME-INFRA(Krey): Figured out the hard way that even with GitHub OAuth Token set which significantly expands the API Rate Limit we still hit it in not even 5 min
-				# nix.settings = {
-				# 	substituters = mkForce [];
-				# 	trusted-public-keys = mkForce [];
-				# };
 			}
 
 			# Principles
@@ -133,16 +114,16 @@ in {
 		};
 	};
 
-	# Task to perform installation of SINNENFREUDE in NixOS distribution, stable release
+	# Task to perform installation of TWINKCENTRAL in NixOS distribution, stable release
 	perSystem = { system, pkgs, inputs', self', ... }: {
-		packages.nixos-sinnenfreude-stable-install = pkgs.writeShellApplication {
-				name = "nixos-sinnenfreude-stable-install";
+		packages.nixos-twinkcentral-stable-install = pkgs.writeShellApplication {
+				name = "nixos-twinkcentral-stable-install";
 				bashOptions = [
 					"errexit" # Exit on False Return
 					"posix" # Run in POSIX mode
 				];
 				runtimeInputs = [
-					inputs'.disko.packages.disko-install # disko-install
+					inputs'.disko.packages.disko # disko
 					pkgs.age # age
 					pkgs.nixos-install-tools # nixos-install
 					pkgs.gawk # awk
@@ -153,20 +134,26 @@ in {
 					pkgs.util-linux # mountpoint
 				];
 				runtimeEnv = {
-					systemDevice = self.nixosConfigurations.nixos-sinnenfreude-stable.config.disko.devices.disk.system.device;
+					systemDevice = self.nixosConfigurations.nixos-twinkcentral-stable.config.disko.devices.disk.system.device;
 
-					secretPasswordPath = self.nixosConfigurations.nixos-sinnenfreude-stable.config.age.secrets.sinnenfreude-disks-password.file;
+					systemSwapDevice = self.nixosConfigurations.nixos-twinkcentral-stable.config.disko.devices.disk.system.content.partitions.swap.device;
 
-					secretSSHHostKeyPath = self.nixosConfigurations.nixos-sinnenfreude-stable.config.age.secrets.sinnenfreude-ssh-ed25519-private.file;
+					secretPasswordPath = self.nixosConfigurations.nixos-twinkcentral-stable.config.age.secrets.twinkcentral-disks-password.file;
+
+					secretSSHHostKeyPath = self.nixosConfigurations.nixos-twinkcentral-stable.config.age.secrets.twinkcentral-ssh-ed25519-private.file;
+
+					derivation = "nixos-twinkcentral-stable";
+
+					machineName = "twinkcentral";
 				};
-				text = builtins.readFile ./sinnenfreude-nixos-stable-install.sh;
+				text = builtins.readFile ./twinkcentral-nixos-stable-install.sh;
 			};
 
 		# Declare for `nix run`
-		apps.nixos-sinnenfreude-stable-install.program = self'.packages.nixos-sinnenfreude-stable-install;
+		apps.nixos-twinkcentral-stable-install.program = self'.packages.nixos-twinkcentral-stable-install;
 
 		# Unattended installer
-		packages.nixos-sinnenfreude-stable-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
+		packages.nixos-twinkcentral-stable-unattended-installer-iso = inputs.nixos-generators.nixosGenerate {
 			pkgs = import inputs.nixpkgs {
 				inherit system;
 				config.allowUnfree = true;
@@ -209,7 +196,7 @@ in {
 						];
 
 						serviceConfig = {
-							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-sinnenfreude-stable-install";
+							ExecStart = "${pkgs.nix}/bin/nix run github:NiXium-org/NiXium#nixos-twinkcentral-stable-install";
 							StandardInput = "tty-force";  # Force interaction with TTY1
 							StandardOutput = "tty";       # Show the output on the TTY
 							StandardError = "tty";        # Display any errors on the TTY
@@ -237,6 +224,6 @@ in {
 			};
 		};
 
-		apps.nixos-sinnenfreude-stable-unattended-installer-iso.program = self'.packages.nixos-sinnenfreude-stable-unattended-installer-iso;
+		apps.nixos-twinkcentral-stable-unattended-installer-iso.program = self'.packages.nixos-twinkcentral-stable-unattended-installer-iso;
 	};
 }

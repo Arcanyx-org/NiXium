@@ -1,9 +1,9 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 # Printing Management For TUPAC
 
 let
-	inherit (lib) mkIf mkForce;
+	inherit (lib) mkIf;
 in mkIf config.services.printing.enable {
 	# Discovery is done via the opened UDP port 5353
 	services.avahi = {

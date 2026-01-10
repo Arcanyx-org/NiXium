@@ -10,6 +10,7 @@ in {
 			homeManagerModules.system
 			homeManagerModules.terminal-emulators
 			homeManagerModules.tools
+			homeManagerModules.ui-gnome
 			homeManagerModules.web-browsers
 		];
 	};

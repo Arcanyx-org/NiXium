@@ -12,11 +12,7 @@
 		};
 	};
 
-	"24.11" = {
-		hardware.graphics.enable = true;
-		hardware.graphics.enable32Bit = true;
-	};
-	"25.05" = {
+	"${lib.trivial.release}" = {
 		hardware.graphics.enable = true;
 		hardware.graphics.enable32Bit = true;
 	};

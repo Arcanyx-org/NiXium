@@ -2,10 +2,6 @@
 
 # Flake management of SINNENFREUDE system
 
-# FIXME-SECURITY(Krey): To Be Managed..
-# ⚠️ Mount point '/boot' which backs the random seed file is world accessible, which is a security hole! ⚠️
-# ⚠️ Random seed file '/boot/loader/.#bootctlrandom-seed048bca5ff68f0657' is world accessible, which is a security hole! ⚠️
-
 {
 	flake.nixosModules."nixos-sinnenfreude" = {
 		imports = [
@@ -40,8 +36,8 @@
 			./config/kernel.nix
 			./config/networking.nix
 			./config/nvidia.nix
+			./config/power-management.nix
 			./config/security.nix
-			./config/suspend-then-hibernate.nix
 			./config/vm-build.nix
 
 			./services/binfmt.nix

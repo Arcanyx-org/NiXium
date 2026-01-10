@@ -16,6 +16,9 @@
 let
 	inherit (lib) mkIf mkMerge;
 in mkIf config.powerManagement.enable (mkMerge [
+	{
+		powerManagement.powertop.enable = true;
+	}
 	# TLP Management
 	(mkIf (config.services.tlp.enable == true) {
 		services.tlp.settings = {

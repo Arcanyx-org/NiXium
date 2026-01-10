@@ -2,7 +2,10 @@
 
 # Nvidia management of TUPAC including optimus
 
-{
+let
+	inherit (lib) elem optionalString mkMerge;
+	inherit (lib.trivial) release;
+in {
 	"24.11" = {
 		hardware.nvidia = {
 			modesetting.enable = true; # Modesetting, which is needed for Wayland compositors
@@ -31,7 +34,7 @@
 
 		services.xserver.videoDrivers = [ "nvidia" ]; # Make the xserver to use nvidia
 	};
-	"25.05" = {
+	"${optionalString (elem release [ "25.05" "25.11" ]) release}" = {
 		hardware.nvidia = {
 			modesetting.enable = true; # Modesetting, which is needed for Wayland compositors
 

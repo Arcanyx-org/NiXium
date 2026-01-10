@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ lib, ... }:
 
 # Sound management of MRACEK
 
@@ -6,6 +6,7 @@
 
 let
 	inherit (lib) mkMerge;
+	release = lib.trivial.release;
 in mkMerge [
 	{
 		"24.05" = {
@@ -21,7 +22,8 @@ in mkMerge [
 			};
 		};
 
-		"24.11" = {
+		# Option `sound` was removed in 24.11
+		"${lib.optionalString (lib.elem release [ "24.11" "25.05" "25.11" ]) release}" = {
 			hardware.pulseaudio.enable = false;
 
 			services.pipewire = {
@@ -31,18 +33,7 @@ in mkMerge [
 				pulse.enable = false;
 			};
 		};
-
-		"25.05" = {
-			services.pulseaudio.enable = false;
-
-			services.pipewire = {
-				enable = false;
-				alsa.enable = false;
-				alsa.support32Bit = false;
-				pulse.enable = false;
-			};
-		};
-	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
+	}."${release}" or (throw "Release is not implemented: ${release}")
 
 	{
 		security.rtkit.enable = false; # To Get Real-Time priority for Audio

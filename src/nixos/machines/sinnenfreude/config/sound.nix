@@ -4,6 +4,7 @@
 
 let
 	inherit (lib) mkIf mkMerge;
+	inherit (lib.trivial) release;
 in mkMerge [
 	{
 		"24.05" = {
@@ -19,8 +20,8 @@ in mkMerge [
 			};
 		};
 
-		# Option 'sound' has been removed
-		"${lib.trivial.release}" = {
+		# Option `sound` was removed in 24.11
+		"${lib.optionalString (lib.elem release [ "24.11" "25.05" "25.11" ]) release}" = {
 			hardware.pulseaudio.enable = false; # Whether to use pulseaudio, requires to be turned off if pipewire is used
 			services.pipewire.enable = true; # Whether to use pipewire
 
@@ -31,7 +32,7 @@ in mkMerge [
 				pulse.enable = true; # Integrate pulseaudio in pipewire
 			};
 		};
-	}."${lib.trivial.release}"
+	}."${release}" or (throw "Release not implemented: ${release}")
 
 	{
 		security.rtkit.enable = true; # Allow real-time scheduling priority to user

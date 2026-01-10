@@ -1,9 +1,9 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 
 # USB Guard Management of TWINKCENTRAL
 
 let
-	inherit (lib) mkMerge mkForce mkDefault mkIf;
+	inherit (lib) mkForce mkIf;
 in mkIf config.services.usbguard.dbus.enable {
 	# Rule Management
 		# FIXME(Krey): This needs a management for privacy as I don't want to publish the serial numbers of the devices

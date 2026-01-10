@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, lib, ... }:
 
 #! # Power Management of TUPAC
 #!
@@ -20,8 +20,32 @@
 # cat /sys/class/nvme/nvme0/power/runtime_status reports unsupported, unsure how to enable
 
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) mkIf mkMerge optionalString elem;
+	inherit (lib.trivial) release;
 in mkIf config.powerManagement.enable (mkMerge [
+	{
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = {
+			services.logind = {
+				powerKey = "suspend-then-hibernate";
+				powerKeyLongPress = "poweroff";
+			};
+		};
+
+		"25.11" = {
+			services.logind.settings.Login = {
+				HandlePowerKey = "suspend-then-hibernate";
+				HandlePowerKeyLongPress = "poweroff";
+				HandleLidSwitch = "suspend-then-hibernate";
+				HandleLidSwitchExternalPower = "suspend";
+			};
+		};
+	}."${release}"
+
+	{
+		powerManagement.powertop.enable = true;
+		systemd.sleep.extraConfig = "HibernateDelaySec=30s";
+	}
+
 	# TLP Management
 	(mkIf (config.services.tlp.enable == true) {
 		services.tlp.settings = {

@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ self, config, lib, ... }:
 
 # Used to outsource nix's build requirements across available systems in the network, on slow devices such as tablets and battery limited devices such as drones this is essential to configure otherwise nix will drain battery and resources from them
 #
@@ -14,7 +14,7 @@ in mkIf config.nix.distributedBuilds {
 
 	# Import the SSH Keys for the builder account
 	age.secrets.tupac-builder-ssh-ed25519-private = {
-		file = ../secrets/tupac-builder-ssh-ed25519-private.age;
+		file = "${self.outPath}/src/nixos/machines/tupac/secrets/tupac-builder-ssh-ed25519-private.age";
 
 		owner = "builder";
 		group = "builder";

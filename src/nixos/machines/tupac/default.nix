@@ -7,9 +7,22 @@
 		imports = [
 			self.nixosModules.default
 
+			{
+				networking.hostName = "tupac";
+
+				# NOTE(Krey): Experimenting..
+					time.timeZone = "Europe/Vienna"; # Set Timezone
+
+				# Necessary Evil :(
+					hardware.enableRedistributableFirmware = true;
+					hardware.cpu.intel.updateMicrocode = true;
+
+				nixpkgs.hostPlatform = "x86_64-linux";
+			}
+
 			# Users
 			self.nixosModules.users-kreyren
-			self.homeManagerModules."kreyren@tupac"
+			# self.homeManagerModules."kreyren@tupac"
 			self.nixosModules.users-kira
 			self.homeManagerModules."kira@tupac"
 
@@ -27,9 +40,7 @@
 			./config/power-management.nix
 			./config/printing.nix
 			./config/security.nix
-			./config/setup.nix
 			./config/sound.nix
-			./config/suspend-then-hibernate.nix
 			./config/vm-build.nix
 
 			./services/binfmt.nix

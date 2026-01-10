@@ -16,7 +16,7 @@ We are using:
 * [mission-control](https://github.com/Platonic-Systems/mission-control) as a Frontend for this repository
 * [lanzaboote](https://github.com/nix-community/lanzaboote) for Declarative Secure Boot
 * [nixos-generators](https://github.com/nix-community/nixos-generators) to Generate Filesystem Images
-* [Release-independent Modules](https://github.com/Arcanyx-org/NiXium/blob/central/README.md#release-independent-modules) to ensure compatibility across different releases for flexibility
+* [Release-independent Modules](https://github.com/Arcanyx-org/NiXium/blob/central/README.md#release-independent-modules) to ensure compatibility across different releases for flexibility and as a downtime management for the insufficient quality assurance by nixpkgs upstream upon a new version release
 
 ## Directory layout
 
@@ -171,14 +171,15 @@ We are providing [flake-parts](https://github.com/hercules-ci/flake-parts) integ
 ```nix
 { config, lib, ... }:
 
-# Module that implements suspend-then-hibernate for SINNENFREUDE
+# Simplified module that handles Power Management for SINNENFREUDE machine
 
 let
-	inherit (lib) mkIf mkMerge;
-	release = "${lib.trivial.release}";
+	inherit (lib) elem optionalString mkMerge;
+	inherit (lib.trivial) release;
 in mkIf config.powerManagement.enable (mkMerge [
+
 	{
-		"${lib.optionalString (lib.elem release [ "24.11" "24.05" "25.05" ]) release}" = {
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = { # Release-gate for 24.05, 24.11 and 25.05
 			services.logind = {
 				powerKey = "suspend-then-hibernate";
 				powerKeyLongPress = "poweroff";
@@ -189,18 +190,18 @@ in mkIf config.powerManagement.enable (mkMerge [
 			services.logind.settings.Login = {
 				HandlePowerKey = "suspend-then-hibernate";
 				HandlePowerKeyLongPress = "poweroff";
-				HandleLidSwitch = "suspend-then-hibernate";
-				HandleLidSwitchExternalPower = "suspend";
 			};
 		};
 	}."${release}"
 
 	{
-		powerManagement.powertop.enable = true;
+		# Apply to any release
 		systemd.sleep.extraConfig = "HibernateDelaySec=30s";
 	}
 ])
 ```
+
+Full Example: https://github.com/Arcanyx-org/NiXium/blob/experimental/src/nixos/machines/sinnenfreude/config/power-management.nix
 
 ### Donate - Finance
 

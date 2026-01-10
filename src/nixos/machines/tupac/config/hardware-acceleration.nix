@@ -2,7 +2,10 @@
 
 # Hardware acceleration for TUPAC system
 
-{
+let
+	inherit (lib) elem optionalString;
+	inherit (lib.trivial) release;
+in {
 	"24.05" = {
 		# The option was renamed on `hardware.graphics` in NixOS 24.11+
 		hardware.opengl = {
@@ -16,7 +19,7 @@
 		hardware.graphics.enable = true;
 		hardware.graphics.enable32Bit = true;
 	};
-	"25.05" = {
+	"${optionalString (elem release [ "25.05" "25.11" ]) release}" = {
 		hardware.graphics = {
 			enable = true;
 			extraPackages = with pkgs; [
@@ -45,5 +48,5 @@
 
 		environment.sessionVariables = { LIBVA_DRIVER_NAME = "iHD"; }; # Optionally, set the environment variable
 	};
-}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
+}."${release}" or (throw "Release is not implemented: ${release}")
 
