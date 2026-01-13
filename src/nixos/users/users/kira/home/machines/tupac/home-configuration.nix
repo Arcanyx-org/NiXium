@@ -167,7 +167,7 @@ in {
 		# pkgs.mednafen # Sega Saturn (Many others supported)
 		# pkgs.mednaffe # GTK-based frontend for mednafen emulator
 
-    # pkgs.xemu # Xbox
+		# pkgs.xemu # Xbox
 
 		# Video
 		# pkgs.stremio # Media Server Client

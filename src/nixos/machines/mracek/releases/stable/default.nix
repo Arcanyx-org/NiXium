@@ -30,7 +30,7 @@ in {
 					# services.gitea.enable = true;
 					services.monero.enable = true;
 					# services.murmur.enable = false;
-					services.nextcloud.enable = true;
+					services.nextcloud.enable = false;
 					# services.navidrome.enable = false;
 					services.openssh.enable = true;
 					services.tor.enable = true;

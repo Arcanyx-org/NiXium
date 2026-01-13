@@ -1,6 +1,5 @@
 {
 	imports = [
-		./flexy
 		./ignucius
 		./lengo
 		./morph

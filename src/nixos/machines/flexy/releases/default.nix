@@ -1,9 +1,0 @@
-{ ... }:
-
-{
-	imports = [
-		./master
-		./stable
-		./unstable
-	];
-}
