@@ -12,7 +12,7 @@
 			./services/distributedBuilds.nix
 			./services/gitea.nix
 			./services/monero.nix
-			./services/murmur.nix
+			./services/murmur/murmur.nix
 			./services/navidrome.nix
 			./services/openssh.nix
 			./services/tor.nix
