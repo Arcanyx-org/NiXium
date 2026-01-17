@@ -39,7 +39,7 @@ in {
 				(intel-vaapi-driver.override { enableHybridCodec = true; })
 				# intel-ocl
 				# intel-compute-runtime
-				intel-graphics-compiler
+				# intel-graphics-compiler
 			];
 		};
 
