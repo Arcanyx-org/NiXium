@@ -296,13 +296,13 @@ in {
 			# Proxy Management
 				# SECURITY(Krey): This should at least use our-provided VPN
 				Proxy = {
-					Mode = mkDefault "system"; # none | system | manual | autoDetect | autoConfig;
+					Mode = mkDefault "manual"; # none | system | manual | autoDetect | autoConfig;
 					Locked = true;
 					# HTTPProxy = hostname;
 					# UseHTTPProxyForAllProtocols = true;
 					# SSLProxy = hostname;
 					# FTPProxy = hostname;
-					# SOCKSProxy = "127.0.0.1:9050"; # Tor
+					SOCKSProxy = mkDefault "127.0.0.1:9050"; # Tor
 					# SOCKSVersion = 5; # 4 | 5
 					#Passthrough = <local>;
 					# AutoConfigURL = "file://${config.home.homeDirectory}/.config/proxy.pac";
