@@ -19,10 +19,8 @@ in {
 				nixosModules.services
 				nixosModules.system
 
-				nixosModules.machine-flexy
 				# nixosModules.machine-ignucius
 				nixosModules.machine-lengo
-				# nixosModules.machine-morph
 				nixosModules.machine-mracek
 				nixosModules.machine-sinnenfreude
 				# nixosModules.machine-tupac

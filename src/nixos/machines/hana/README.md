@@ -9,7 +9,7 @@ Role: Experimental Chromebook device for development
 ## Bootloader Build
 
 ```console
-$ nix-build --argstr device lenovo-hana -A outputs.default
+$ nix-build --system aarch64-linux --argstr device lenovo-hana -A outputs.default
 ```
 
 Utilizing the Arcanyx's fork of mobile-nixos in google-hana branch

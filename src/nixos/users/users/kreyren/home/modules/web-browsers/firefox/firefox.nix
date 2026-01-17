@@ -104,13 +104,6 @@ in mkIf config.programs.firefox.enable {
 					installation_mode = "force_installed";
 				};
 			};
-
-			Proxy = {
-				Mode = "autoConfig"; # none | system | manual | autoDetect | autoConfig;
-				AutoConfigURL = "file://${config.home.homeDirectory}/.config/proxy.pac";
-				# AutoLogin = true;
-				UseProxyForDNS = true;
-			};
 		};
 	};
 }
