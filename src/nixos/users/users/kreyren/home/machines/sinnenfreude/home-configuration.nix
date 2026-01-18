@@ -49,7 +49,22 @@ in {
 			# FIXME-QA(Krey): Enable this on QT-based desktop environments
 				# pkgs.nheko # QT-based Matrix Client
 
-			pkgs.goofcord
+			(pkgs.goofcord.overrideAttrs (super: {
+				# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+				postInstall = (super.postInstall or "") + ''
+					mv "$out/bin/goofcord" "$out/bin/.goofcord-wrapped" # Rename the old binary
+
+					# Suffix with proxy server
+					cat > "$out/bin/goofcord" <<-SCRIPT
+						#!${pkgs.busybox}/bin/sh
+						script_dir=\$(dirname "\$(readlink -f "\$0")")
+						exec "\$script_dir/.goofcord-wrapped" --proxy-server=socks5h://127.0.0.1:25344 "\$@"
+					SCRIPT
+
+					# Ensure that it's executable
+					chmod +x "$out/bin/goofcord"
+				'';
+			}))
 			# (pkgs.dissent.overrideAttrs (super: {
 			# 	# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
 			# 	nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];

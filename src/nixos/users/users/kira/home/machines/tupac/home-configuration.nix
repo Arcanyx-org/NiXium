@@ -42,8 +42,7 @@ in {
 
 	home.packages = [
 		pkgs.fractal
-		pkgs.goofcord
-		(pkgs.geary.overrideAttrs (super: {
+		(pkgs.goofcord.overrideAttrs (super: {
 			# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
 			postInstall = (super.postInstall or "") + ''
 				mv "$out/bin/goofcord" "$out/bin/.goofcord-wrapped" # Rename the old binary
