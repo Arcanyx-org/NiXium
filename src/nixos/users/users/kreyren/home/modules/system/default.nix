@@ -8,7 +8,7 @@ in {
 		homeManagerModules.system-gtk-kreyren
 		homeManagerModules.system-impermanence-kreyren
 		homeManagerModules.system-nix-kreyren
-		homeManagerModules.system-pac-kreyren
+		# homeManagerModules.system-pac-kreyren
 	];
 
 	imports = [

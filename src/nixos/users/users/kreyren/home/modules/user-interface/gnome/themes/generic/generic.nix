@@ -6,7 +6,8 @@
 
 
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) mkIf optionalString elem mkMerge;
+	inherit (lib.trivial) release;
 in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 	# Common Configuration across multiple GNOME releases
 		{
@@ -53,14 +54,8 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 				# This extension has been implemented in GNOME starting Nixpkgs >=24.11
 				dconf.settings."org/gnome/shell".enabled-extensions = [ "custom-accent-colors@demiskp" ]; # Enable custom accent color
 			};
-			"24.11" = {
+			"${optionalString (elem release [ "24.11" "25.05" "25.11" ]) release}" = {
 				dconf.settings."org/gnome/desktop/interface".accent-color = "purple"; # Set Accent Color
 			};
-			"25.05" = {
-				dconf.settings."org/gnome/desktop/interface".accent-color = "purple"; # Set Accent Color
-			}; # No Changes Needed
-			"25.11" = {
-				dconf.settings."org/gnome/desktop/interface".accent-color = "purple"; # Set Accent Color
-			}; # No Changes Needed
-		}.${lib.trivial.release} or (throw "Release '${lib.trivial.release}' is not implemented")
+		}.${release} or (throw "Release '${release}' is not implemented")
 ])
