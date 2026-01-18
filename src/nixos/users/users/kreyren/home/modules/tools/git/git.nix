@@ -26,6 +26,8 @@
 			};
 		};
 
+		settings.safe.directory = "/nix/persist/NiXium"; # Consider NiXium Directory Safe
+
 		# TODO(Krey): Pending Management
 		# SECURITY(Krey): Contains email password!
 		# extraConfig = {
