@@ -211,6 +211,12 @@ in mkMerge ([
 				services.tor.settings."%include" = [ config.age.secrets."b48-paper-printer-mapAddress".path ];
 
 			# Add to CUPS
+				# Discovery is done via the opened UDP port 5353
+				services.avahi = {
+					enable = true; # Enable the mDNS Reported to allow the local machines to advertise its presence and services
+					nssmdns4 = true; # Enable Name Service Switch plug-in for IPv4
+				};
+
 				hardware.printers = {
 					ensurePrinters = [
 						{
@@ -219,7 +225,7 @@ in mkMerge ([
 							description = "Base48 Printer";
 							location = "The Base48 Hackerspace";
 							# deviceUri = "ipp://paper.base48.cz/ipp"; # Tor MapAddressed URL
-							deviceUri = "ipp://10.48.0.134/ipp";
+							deviceUri = "ipp://10.48.0.134:631/ipp";
 							model = "everywhere";
 							ppdOptions = {
 								PageSize = "A4";

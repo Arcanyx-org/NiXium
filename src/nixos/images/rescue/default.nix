@@ -31,7 +31,15 @@ in {
 
 					services.getty.greetingLine = ''<<< Welcome To The NiXium Rescue >>>'';
 
-					networking.wireless.networks."FreeNet" = { }; # Connect to FreeNet if the system doesn't have access to the internet by itself
+					# networking.wireless.networks."FreeNet" = { }; # Connect to FreeNet if the system doesn't have access to the internet by itself
+
+					hardware.enableRedistributableFirmware = true;
+
+					networking.wireless.enable = true;
+					networking.wireless.networks."Base48-5" = {
+						ssid = "Base48-5";
+						psk = "";
+					};
 
 					system.stateVersion = lib.versions.majorMinor lib.version; # Silence the state version warning
 				}
@@ -41,6 +49,7 @@ in {
 					users.users.root.openssh.authorizedKeys.keys = [
 						"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
 					];
+					users.users.root.password = "000000";
 				}
 			];
 			format = "iso";

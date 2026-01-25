@@ -29,6 +29,7 @@ in {
 				programs.noisetorch.enable = true;
 
 				# Desktop Environment
+				# services.xserver.enable = true;
 				services.displayManager.gdm.enable = true;
 				services.desktopManager.gnome.enable = true;
 					programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
@@ -42,7 +43,7 @@ in {
 					services.usbguard.dbus.enable = false;
 				services.smartd.enable = true;
 				services.clamav.daemon.enable = true;
-				services.printing.enable = false;
+				services.printing.enable = true;
 				# services.rustdesk-server.enable = true;
 				# 	services.rustdesk-server.openFirewall = tru
 				services.usbmuxd.enable = true;

@@ -7,6 +7,7 @@
 
 let
 	inherit (lib) mkIf;
+	inherit (builtins) concatStringsSep;
 in mkIf config.programs.vim.enable {
 	programs.vim = {
 		settings = {
@@ -31,7 +32,7 @@ in mkIf config.programs.vim.enable {
 			# ruler = true; # Always Show Cursor Positio
 			# visualbell = true; # Flash the screen instead of beeping on errors
 		};
-		extraConfig = builtins.concatStringsSep "\n" [
+		extraConfig = concatStringsSep "\n" [
 			"set encoding=utf-8"
 			"set fileencoding=utf-8"
 			"set ffs=unix"
