@@ -100,7 +100,10 @@ in {
 
 		# Engineering
 		pkgs.blender
-		pkgs.freecad
+		# Nixpkgs broke file chooser, this is a temporary workaround (https://github.com/NixOS/nixpkgs/issues/467783#issuecomment-3621306981)
+		(pkgs.freecad.overrideAttrs (old: {
+      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ];
+    }))
 		pkgs.gimp
 		# pkgs.kicad-small
 
