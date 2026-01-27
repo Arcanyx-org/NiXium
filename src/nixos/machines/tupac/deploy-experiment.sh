@@ -3,7 +3,7 @@
 # Experiment
 
 targetIP="10.48.0.234"
-targetFlake="github:Arcanyx-org/NiXium/experimental#nixos-tupac-stable"
+targetFlake="github:Arcanyx-org/NiXium/2f4958726a9224546e64a469d820577ee8461edf#nixos-tupac-stable"
 
 set -e # Exit on false return
 

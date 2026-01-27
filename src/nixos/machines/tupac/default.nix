@@ -22,7 +22,7 @@
 
 			# Users
 			self.nixosModules.users-kreyren
-			# self.homeManagerModules."kreyren@tupac"
+			self.homeManagerModules."kreyren@tupac"
 			self.nixosModules.users-kira
 			self.homeManagerModules."kira@tupac"
 
