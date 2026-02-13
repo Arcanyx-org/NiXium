@@ -63,23 +63,50 @@ in {
 					chmod +x "$out/bin/goofcord"
 				'';
 			}))
+			# (pkgs.dissent.overrideAttrs (super: {
+			# 	# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+			# 	nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
+			# 	postInstall = (super.postInstall or "") + ''
+			# 		mv "$out/bin/dissent" "$out/bin/.dissent-wrapped" # Rename the old binary
+
+			# 		# Wrap in short script that prefixes the command with `torsocks`
+			# 		cat > "$out/bin/dissent" <<-SCRIPT
+			# 			#!${pkgs.busybox}/bin/sh
+			# 			script_dir=\$(dirname "\$(readlink -f "\$0")")
+			# 			exec torsocks "\$script_dir/.dissent-wrapped" "\$@"
+			# 		SCRIPT
+
+			# 		# Ensure that it's executable
+			# 		chmod +x "$out/bin/dissent"
+			# 	'';
+			# }))
+
 			(pkgs.dissent.overrideAttrs (super: {
-				# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
-				nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
-				postInstall = (super.postInstall or "") + ''
-					mv "$out/bin/dissent" "$out/bin/.dissent-wrapped" # Rename the old binary
+				nativeBuildInputs = (super.nativeBuildInputs or []) ++ [ pkgs.proxychains-ng ];
 
-					# Wrap in short script that prefixes the command with `torsocks`
-					cat > "$out/bin/dissent" <<-SCRIPT
-						#!${pkgs.busybox}/bin/sh
-						script_dir=\$(dirname "\$(readlink -f "\$0")")
-						exec torsocks "\$script_dir/.dissent-wrapped" "\$@"
-					SCRIPT
+				postInstall = (super.postInstall or "") + builtins.concatStringsSep "\n" [
+					''mv "$out/bin/dissent" "$out/bin/.dissent-wrapped"''
 
-					# Ensure that it's executable
-					chmod +x "$out/bin/dissent"
-				'';
+					''cat > "$out/bin/proxychains.conf" <<-CONF''
+						''strict_chain''
+						''proxy_dns''
+						''remote_dns_subnet 224''
+						''tcp_read_time_out 15000''
+						''tcp_connect_time_out 8000''
+						''[ProxyList]''
+						# FIXME-SECURITY(Krey): Ideally we want to keep the ports as private and rotate them, but this is very minor security issue
+						''socks5 127.0.0.1 25344''
+					''CONF''
+
+					''cat > "$out/bin/dissent" <<-SCRIPT''
+						''#!${pkgs.busybox}/bin/sh''
+						''exec proxychains4 -f "$out/bin/proxychains.conf" "$out/bin/.dissent-wrapped" "\$@"''
+					''SCRIPT''
+
+					''chmod +x "$out/bin/dissent"''
+				];
 			}))
+
 
 			# Temporary management of Post-Quantum Safety until matrix manages it, see https://github.com/matrix-org/matrix-spec/issues/975 for details
 			unstable.simplex-chat-desktop
@@ -144,8 +171,11 @@ in {
     pkgs.checkra1n
     pkgs.libusbmuxd
 
+		# Secrets
+			# pkgs.keepassxc
+			pkgs.gnome-secrets
+
 		# Utility
-		pkgs.keepassxc
 		pkgs.localsend
 		pkgs.yt-dlp
 		pkgs.android-tools

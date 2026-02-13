@@ -45,6 +45,14 @@
 			./services/openssh.nix
 			./services/tor.nix
 
+			# Systems
+				# self.nixosModules.machine-ignucius
+				self.nixosModules.machine-lengo
+				self.nixosModules.machine-mracek
+				self.nixosModules.machine-sinnenfreude
+				# self.nixosModules.machine-tupac
+				self.nixosModules.machine-twinkcentral
+
 			# Extras
 			self.nixosModules.infra-base48
 		];

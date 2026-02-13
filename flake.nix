@@ -17,6 +17,8 @@
 			nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
 			nixpkgs-23_11.url = "github:nixos/nixpkgs/nixos-23.11";
 			nixpkgs-23_05.url = "github:nixos/nixpkgs/nixos-23.05";
+			nixpkgs-22_11.url = "github:nixos/nixpkgs/nixos-22.11";
+			nixpkgs-22_05.url = "github:nixos/nixpkgs/nixos-22.05";
 
 			nixpkgs-kreyren.url = "github:kreyren/nixpkgs/central";
 			# nixpkgs-alpaca.url = "github:Gliczy/nixpkgs/alpaca-7.0.0";
@@ -254,7 +256,7 @@
 						inputs.nixpkgs.legacyPackages.${system}.fira-code # For liquratures in code editors
 
 						# Benchmarks
-						inputs.nixpkgs.legacyPackages.${system}.linuxPackages.perf
+						inputs.nixpkgs.legacyPackages.${system}.perf
 
 						# Utilities
 						inputs.nixpkgs.legacyPackages.${system}.git # Working with the codebase
@@ -270,6 +272,8 @@
 						inputs.nixpkgs.legacyPackages.${system}.pkg-config
 
 						inputs.nixpkgs.legacyPackages.${system}.ungoogled-chromium # Web browser used in the integrated developer environment for interacting with the outside resources
+
+						inputs.nixpkgs.legacyPackages.${system}.opencode
 					];
 					inputsFrom = [
 						config.mission-control.devShell

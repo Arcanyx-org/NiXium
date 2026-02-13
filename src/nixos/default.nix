@@ -19,13 +19,6 @@ in {
 				nixosModules.services
 				nixosModules.system
 
-				# nixosModules.machine-ignucius
-				nixosModules.machine-lengo
-				nixosModules.machine-mracek
-				nixosModules.machine-sinnenfreude
-				# nixosModules.machine-tupac
-				nixosModules.machine-twinkcentral
-
 				# {
 				# 	sops.defaultSopsFile = ./.sops.yaml;
 				# }

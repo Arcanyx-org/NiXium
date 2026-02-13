@@ -354,4 +354,49 @@ This can easily safe you few Gigabytes if you don't have set maximum number of g
 
 Credit: [Samuel Sung](https://codeberg.org/samuelsung)
 
+### Find Missing libraries in Packages
+
+If you have issue openning a binary, because it requires a missing library like:
+
+```console
+~/.../SP_Flash_Tool_v5.2228_Linux $ ./flash_tool.sh
+/home/kreyren/Downloads/krypton/SP_Flash_Tool_v5.2228_Linux/./flash_tool: error while loading shared libraries: libXrender.so.1: cannot open shared object file: No such file or directory
+```
+
+Then you can search for the missing file via mic92's `nix-index-database` which will output the packages that contain it:
+
+```console
+$ nix run github:mic92/nix-index-database libXrender.so.1
+pyfa.out                                         52,368 x /nix/store/5hy1gmf3i357fwjrjbx3grn7ymgn7pg4-pyfa-2.65.0/share/pyfa/app/libXrender.so.1
+libxrender.out                                        0 s /nix/store/dgjd3hf8ny62vbjg10w64x4jwm7cv81k-libxrender-0.9.12/lib/libXrender.so.1
+libxrender.out                                   52,368 x /nix/store/dgjd3hf8ny62vbjg10w64x4jwm7cv81k-libxrender-0.9.12/lib/libXrender.so.1.3.0
+```
+
+For you to then provide this library:
+
+```console
+$ nix shell nixpkgs#libxrender --command ./flash_tool.sh
+```
+
+To avoid doing this dance per projects that are not optimized for Nix-like environment you can also include the compatibility directly via `shell.nix` :
+
+```nix
+{ pkgs ? import <nixpkgs> { config.allowUnfree = true; } }:
+
+let
+  fhs = pkgs.buildFHSEnv {
+    name = "sp-flash-tool-fhs";
+    targetPkgs = pkgs: with pkgs; [
+      libXrender
+    ];
+    runScript = "bash";
+  };
+in
+  fhs.env
+```
+
+To then just `cd` to the directory and do `nix-shell`
+
+---
+
 *Feel Free To Add Your Tips*

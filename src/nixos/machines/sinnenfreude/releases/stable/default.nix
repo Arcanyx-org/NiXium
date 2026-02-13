@@ -21,7 +21,7 @@ in {
 				boot.impermanence.enable = true; # Impermanence
 				boot.plymouth.enable = true; # Eye Candy Boot Animation
 
-				nix.distributedBuilds = true; # Perform distributed builds
+				nix.distributedBuilds = false; # Do Not Perform distributed builds
 
 				programs.adb.enable = true; # Android Debug Bridge
 				programs.appimage.enable = true; # Enable compatibility layer for appimages
@@ -43,7 +43,7 @@ in {
 					services.usbguard.dbus.enable = false;
 				services.smartd.enable = true;
 				services.clamav.daemon.enable = true;
-				services.printing.enable = true;
+				services.printing.enable = false;
 				# services.rustdesk-server.enable = true;
 				# 	services.rustdesk-server.openFirewall = tru
 				services.usbmuxd.enable = true;
