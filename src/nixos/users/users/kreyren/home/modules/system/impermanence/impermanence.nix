@@ -3,7 +3,6 @@
 let
 	inherit (lib) mkIf;
 in {
-	# FIXME-QA(Krey): Should only be used for home-manager NixOS Module, not expected to work in standalone setup!
 	home.persistence."/nix/persist/users/kreyren" = mkIf config.home.impermanence.enable {
 		directories = [
 			"Desktop"
@@ -43,9 +42,6 @@ in {
 
 			# FIXME-QA(Krey): Should only be applied if gnome keyring is used
 			".local/share/keyrings"
-
-			# FIXME-QA(Krey): Should only be applied if direnv is used
-			".local/share/direnv"
 
 			# FIXME-QA(Krey): Should only be applied if fractal is installed
 			".local/share/fractal"
@@ -96,7 +92,8 @@ in {
 			# FIXME-PURITY(Krey): This should be managed declaratively
 			".config/monitors.xml"
 			(mkIf config.programs.nix-index.enable ".cache/nix-index/files")
-			(mkIf nixosConfig.services.xserver.desktopManager.gnome.enable ".local/share/gnome-shell/application_state") # GNOME Well-Being Usage Data
+			# FIXME-REL(Krey): This option was renamed in 25.11 from services.xserver.desktopManager.gnome and needs compatibility patch here
+			(mkIf nixosConfig.services.desktopManager.gnome.enable ".local/share/gnome-shell/application_state") # GNOME Well-Being Usage Data
 		];
 
 		allowOther = true; # FIXME-DOCS(Krey): What is this used for?

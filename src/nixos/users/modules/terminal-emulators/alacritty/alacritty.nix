@@ -1,16 +1,24 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
-# Common Configuration of Alacritty
+# Global Home Configuration of Alacritty
 
 let
-	inherit (lib) mkDefault;
-in {
-	programs.alacritty = {
-		settings = {
-			# FIXME-QA(Krey): This was changed in 24.11 on terminal.shell from shell, needs adjustments for release-independence
-			terminal.shell = {
-				program = mkDefault "${pkgs.bashInteractive}/bin/bash";
+	inherit (lib) elem optionalString mkDefault mkIf mkMerge;
+	inherit (lib.trivial) release;
+in mkIf config.programs.alacritty.enable (mkMerge [
+	{
+		"24.05" = {
+			programs.alacritty.settings = {
+				terminal.shell = {
+					program = mkDefault "${pkgs.bashInteractive}/bin/bash";
+				};
 			};
 		};
-	};
-}
+
+		"${optionalString (elem release [ "24.11" "25.05" "25.11" ]) release}" = {
+			programs.alacritty.settings = {
+				shell.program = mkDefault "${pkgs.bashInteractive}/bin/bash";
+			};
+		};
+	}."${release}"
+])

@@ -124,6 +124,12 @@ This repository claims the "NX" as it's Custom Top Level Domain ("cTLD") and kin
 
 ## Contributions
 
+### How to get started
+
+Beware that this is a hardened codebase with strict checks in place, so before contributing big changes make sure to first start with a small contribution by searching through the codebase for a "tagged" code explained below and submit a merge request that fixes something minor to familiarize yourself with how the process works.
+
+Never submit new features unless there is a tracking for it and you are assigned. This avoids implementation chaos and makes sure that the features are implemented up to the expected standard and scrutany.
+
 ### Key words for use to Indicate Requirement Levels
 
 This repository uses [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) keywords for indication of the requirement revels.
@@ -168,7 +174,7 @@ Notes to the implementation:
 
 ### Release-independent Modules
 
-We are providing [flake-parts](https://github.com/hercules-ci/flake-parts) integration for our modules which are designed to evaluate on any implemented releases through our abuse of `attrsets` to implement the de-facto case/switch statement as "release-gate" as compared to the traditional `mkIf` or `if` this doesn't evaluate the statement's body which would otherwise result in build failure.
+We are providing [flake-parts](https://github.com/hercules-ci/flake-parts) integration for our modules which are designed to evaluate on any implemented releases through our abuse of `attrsets` to implement the de-facto case/switch statement as "release-gate" as compared to the traditional `mkIf` or `if` **this does NOT(!) evaluate the statement's body which would otherwise result in build failure.**
 
 
 ```nix
@@ -205,6 +211,106 @@ in mkIf config.powerManagement.enable (mkMerge [
 ```
 
 Full Example: https://github.com/Arcanyx-org/NiXium/blob/experimental/src/nixos/machines/sinnenfreude/config/power-management.nix
+
+There is an edge-case in a scenario where the option which we use for feature-gate changes which is then expected to be managed like so to maintain backwards compatibility:
+
+```nix
+{ lib, pkgs, nixosConfig,... }:
+
+# Global User Management of Packages on GNOME
+
+# FIXME-QA(Krey): This file has a unique situation as in 25.11 the option `services.xserver.desktopManager.gnome.enable` was renamed to `services.desktopManager.enable` which we use as feature-gate to trigger the version-gate which had to been moved to the version-gate's body which make the code look kinda(?) messy, yet maintains the backwards compatibility, tbd if this can be improved
+
+let
+	inherit (lib) elem optionalString mkIf mkMerge;
+	inherit (lib.trivial) release;
+in mkMerge [
+	{
+		"23.11" = {
+			home.packages = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable [
+				pkgs.gnome.dconf-editor
+				pkgs.pinentry-gnome # Needed for inputting passwords
+
+        pkgs.xdg-desktop-portal-gnome
+			  pkgs.xdg-desktop-portal
+			];
+		};
+
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+			home.packages = [
+				pkgs.dconf-editor
+				pkgs.pinentry-gnome3 # Needed for inputting passwords
+
+        pkgs.xdg-desktop-portal-gnome
+			  pkgs.xdg-desktop-portal
+			];
+		};
+
+		"25.11" = mkIf nixosConfig.services.desktopManager.gnome.enable {
+			home.packages = [
+        pkgs.dconf-editor
+				pkgs.pinentry-gnome3 # Needed for inputting passwords
+
+        pkgs.xdg-desktop-portal-gnome
+			  pkgs.xdg-desktop-portal
+			];
+		};
+	}."${release}"
+]
+```
+
+Though experiment was conducted to see how well this management scales in an edge case to make modules that trigger based on specific detected gnome version with feature-gate:
+
+```nix
+let
+	inherit (lib) elem optionalString mkIf mkMerge;
+	inherit (lib.trivial) release;
+in mkMerge [
+	{
+		"${optionalString (elem release [ "23.05" "23.11" "24.05" "24.11" ]) release}" = let
+				gnomeVersion = pkgs.gnome.gnome-shell.version;
+			in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
+			{
+				"${optionalString (elem gnomeVersion [ "42.4" "43.2" "44.2" "45.5" "46.2" ]) gnomeVersion}" = {
+					home.packages = [ pkgs.gnomeExtensions.custom-accent-colors ]; # Install the extension
+
+					dconf.settings = {
+						"org/gnome/shell/extensions/custom-accent-colors" = {
+							accent-color = "purple";
+							theme-flatpak = true; # Use for flatpak
+							theme-gtk3 = true; # Use for GTK3
+							theme-shell = true; # Use for shell
+						};
+
+						# Set the extension as a user-theme as it's designed this way to work
+						"org/gnome/shell/extensions/user-theme" = {
+							name = "Custom-Accent-Colors";
+						};
+					};
+				};
+				"47.2" = {
+					# Deprecated with GNOM v47+
+				};
+			}."${gnomeVersion}"
+		]);
+		"${optionalString (elem release [ "25.05" "25.11" ]) release}" = let
+				gnomeVersion = pkgs.gnome-shell.version;
+			in mkIf nixosConfig.services.desktopManager.gnome.enable (mkMerge [
+			{
+				"${optionalString (elem gnomeVersion [ "48.2" "49.2" ]) gnomeVersion}" = {
+					# Deprecated with GNOM v47+
+				};
+			}."${gnomeVersion}"
+		]);
+	}."${release}"
+]
+```
+
+Such management of modules should only be considered for a scenario where release provides multiple versions of derivation that we are trying to manage, while acknowledging that there doesn't seem to be a dynamic-way to get the string value of currently used package version without triggering infinite recursion (presented scenario) which even if there was one is still discouraged as nix language doesn't have a sane way to force not-evaluation of logical bodies excluding the presented abuse of `attrsets` which would otherwise trigger syntax error due to per-release changes, but would otherwise be the projected perfect solution.
+
+Side note: If this was an in-release scenario that doesn't expect compatibility for other releases it could be easily reduced to few lines, but we are trying to achieve **release-independance(!)** in a way that doesn't make unique complicated logic per each module, so if you want to try to fix this issue then think outside of the release scope as well.
+
+Side note #2: Release-independance by using git's branching is considered as too unmaintainable, restricting and less flexible.
 
 ### Donate - Finance
 
@@ -378,7 +484,33 @@ For you to then provide this library:
 $ nix shell nixpkgs#libxrender --command ./flash_tool.sh
 ```
 
-To avoid doing this dance per projects that are not optimized for Nix-like environment you can also include the compatibility directly via `shell.nix` :
+To avoid doing this dance per projects that are not optimized for Nix-like environment using **flakes**:
+
+```nix
+{
+	description = "FHS environment for SP Flash Tool";
+
+	inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+	outputs = { self, nixpkgs }:
+		let
+			system = "x86_64-linux"; # adjust to your architecture
+			pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+			fhs = pkgs.buildFHSEnv {
+				name = "sp-flash-tool-fhs";
+				targetPkgs = pkgs: with pkgs; [
+					libXrender
+				];
+				runScript = "bash";
+			};
+		in
+		{
+			devShells.${system}.default = fhs.env;
+		};
+}
+```
+
+to able to use `nix develop` or classical deployment via `shell.nix` :
 
 ```nix
 { pkgs ? import <nixpkgs> { config.allowUnfree = true; } }:

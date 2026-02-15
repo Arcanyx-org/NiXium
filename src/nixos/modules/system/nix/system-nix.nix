@@ -34,6 +34,7 @@ in {
 			# world = { flake = self.inputs.self; };
 		};
 		settings = {
+			abort-on-warn = true; # -Werror
 			# Since 24.05+ this also needs to be set by the invidual users for their user-based nix daemons to not throw annoying errors asking to use the `--extra-experimental-features`
 			experimental-features = "nix-command flakes";
 			auto-optimise-store = true;

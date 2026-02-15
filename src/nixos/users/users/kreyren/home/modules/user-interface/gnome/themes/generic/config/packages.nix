@@ -1,27 +1,19 @@
-{ config, lib, pkgs, nixosConfig,... }:
+{ lib, pkgs, nixosConfig,... }:
 
 # Management of needed packages for Krey's Generic GNOME Theme
 
 let
-	inherit (lib) mkIf mkMerge;
-in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
+	inherit (lib) elem optionalString mkIf mkMerge;
+	inherit (lib.trivial) release;
+in mkMerge [
 	{
-		"24.05" = {
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
 			home.packages = [];
 		};
-		# FIXME-QA(Krey): Duplicate Code
-		"24.11" = {
+		"25.11" = mkIf nixosConfig.services.desktopManager.gnome.enable {
 			home.packages = [];
 		};
-		# FIXME-QA(Krey): Duplicate Code
-		"25.05" = {
-			home.packages = [];
-		};
-		# FIXME-QA(Krey): Duplicate Code
-		"25.11" = {
-			home.packages = [];
-		};
-	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
+	}."${release}"
 
 	{
 		# FIXME(Krey): Move this to the extension management
@@ -39,4 +31,4 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 				pkgs.gnomeExtensions.space-bar
 		];
 	}
-])
+]

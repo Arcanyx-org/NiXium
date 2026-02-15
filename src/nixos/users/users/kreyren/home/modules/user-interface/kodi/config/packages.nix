@@ -1,31 +1,16 @@
-{ config, lib, pkgs, nixosConfig,... }:
+{ lib, nixosConfig,... }:
 
 # Kreyren's management of KODI-related packages that are needed to make GNOME to run well
 
-# FIXME-DOCS(Krey): This file is getting complicated, document what packages are needed for what version and what reason
-
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) elem optionalString mkIf mkMerge;
+	inherit (lib.trivial) release;
 in mkIf nixosConfig.services.xserver.desktopManager.kodi.enable (mkMerge [
 	{
-		"23.11" = {
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" "25.11" ]) release}" = {
 			home.packages = [];
 		};
-		"24.05" = {
-			home.packages = [];
-		};
-		"24.11" = {
-			home.packages = [];
-		};
-		# FIXME-QA(Krey): Duplicate Code
-		"25.05" = {
-			home.packages = [];
-		};
-		# FIXME-QA(Krey): Duplicate Code
-		"25.11" = {
-			home.packages = [];
-		};
-	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
+	}."${release}"
 
 	{
 		home.packages = [];

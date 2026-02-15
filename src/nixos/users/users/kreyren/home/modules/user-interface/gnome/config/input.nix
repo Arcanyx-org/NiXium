@@ -5,11 +5,13 @@
 # TODO(Krey): Implement Weeb Mode
 
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) elem optionalString mkIf mkMerge;
+	inherit (lib.trivial) release;
+
 	inherit (lib.hm.gvariant) mkTuple;
-in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
-	# Common Configuration across multiple GNOME releases
-		{
+in mkMerge [
+	{
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
 			dconf.settings = {
 				# Keyboard Input Adjustments
 					"org/gnome/desktop/input-sources" = {
@@ -21,5 +23,19 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 						xkb-options = [ "terminate:ctrl_alt_bksp" ];
 					};
 			};
-		}
-])
+		};
+		"25.11" = mkIf nixosConfig.services.desktopManager.gnome.enable {
+			dconf.settings = {
+				# Keyboard Input Adjustments
+					"org/gnome/desktop/input-sources" = {
+						shob-all-sources = true;
+						sources = [
+							(mkTuple [ "xkb" "us" ]) # Standard US Keyboard
+							(mkTuple [ "xkb" "cz+qwerty" ]) # Standard Czech Keyboard
+						];
+						xkb-options = [ "terminate:ctrl_alt_bksp" ];
+					};
+			};
+		};
+	}."${release}"
+]

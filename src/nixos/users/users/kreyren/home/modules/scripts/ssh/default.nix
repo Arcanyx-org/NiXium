@@ -9,6 +9,7 @@ in {
 		homeManagerModules.scripts-ssh-morph-kreyren
 		homeManagerModules.scripts-ssh-mracek-kreyren
 		homeManagerModules.scripts-ssh-sinnenfreude-kreyren
+		homeManagerModules.scripts-ssh-tupac-kreyren
 	];
 
 	imports = [
@@ -17,5 +18,6 @@ in {
 		./morph
 		./mracek
 		./sinnenfreude
+		./tupac
 	];
 }

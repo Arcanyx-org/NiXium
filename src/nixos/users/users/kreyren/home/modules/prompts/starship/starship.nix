@@ -1,5 +1,7 @@
 { config, pkgs, lib, ... }:
 
+# Credit: The nerdfonts.override was suggested by https://github.com/TanvirOnGH/nix-config/blob/nix%2Bhome-manager/desktop/customization/font.nix#L4-L39
+
 let
 	inherit (lib) elem optionalString mkIf mkMerge;
 	inherit (lib.trivial) release;
@@ -8,22 +10,20 @@ in mkIf config.programs.starship.enable (mkMerge [
 		"24.11" = {
 			home.packages = [
 				# Add the fonts that we are using in the shell
-				# FIXME-OPTIMIZE(Krey): This package takes a lot of resources to build and significant amount of resources for few (~5 font characters), we should just include the invidual symbols instead to speed up the evaluation
-				# This override was recommended, because nerdfonts might have issues with rendering -- https://github.com/TanvirOnGH/nix-config/blob/nix%2Bhome-manager/desktop/customization/font.nix#L4-L39
 				(pkgs.nerdfonts.override { fonts = [ "Noto" "FiraCode"]; }) # Add NerdFont's Noto and FiraCode
 			];
 		};
 		"${optionalString (elem release [ "25.05" "25.11" ]) release}" = {
 			home.packages = [
 				# Add the fonts that we are using in the shell
-				# FIXME-OPTIMIZE(Krey): This package takes a lot of resources to build and significant amount of resources for few (~5 font characters), we should just include the invidual symbols instead to speed up the evaluation
 				# This override was recommended, because nerdfonts might have issues with rendering -- https://github.com/TanvirOnGH/nix-config/blob/nix%2Bhome-manager/desktop/customization/font.nix#L4-L39
 				# (pkgs.nerdfonts.override { fonts = [ "Noto" "FiraCode"]; }) # Add NerdFont's Noto and FiraCode
 				pkgs.nerd-fonts.noto
 				pkgs.nerd-fonts.fira-code
 			];
 		};
-	}."${release}" or (throw "Release not implemented: ${release}")
+	}."${release}"
+
 	{
 		programs.starship = {
 			settings = {

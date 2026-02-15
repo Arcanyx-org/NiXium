@@ -3,7 +3,7 @@
 # Global Management of Impermanence
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) mkDefault mkIf;
 in mkIf config.boot.impermanence.enable {
 	environment.persistence."/nix/persist/system" = {
 		hideMounts = true;
@@ -43,7 +43,6 @@ in mkIf config.boot.impermanence.enable {
 		boot.initrd.systemd.suppressedUnits = [ "systemd-machine-id-commit.service" ];
 		systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
 
-
 	# The configuration will deploy the user directories owned by root:root which will cause the user's home manager to fail deployment due to permission denied error, so we need to change the ownership before home-manager setup
 		# Plan A
 		# system.activationScripts.change-ownership-persist-users = ''chown root:users /nix/persist/users''; # Set Permission Of the Persistent Users Directory
@@ -60,4 +59,7 @@ in mkIf config.boot.impermanence.enable {
 
 	# Needed for impermanence in home-manager
 	programs.fuse.userAllowOther = true;
+
+	# Impermanence does not have state
+	system.stateVersion = mkDefault config.system.nixos.release;
 }

@@ -5,37 +5,24 @@
 # FIXME-DOCS(Krey): This file is getting complicated, document what packages are needed for what version and what reason
 
 let
-	inherit (lib) mkIf mkMerge;
-	inherit (builtins) toString;
+	inherit (lib) elem optionalString mkIf mkMerge;
+	inherit (lib.trivial) release;
+	inherit (builtins) concatStringsSep toString;
 in mkIf nixosConfig.services.xserver.desktopManager.kodi.enable (mkMerge [
 	{
-		# FIXME-QA(Krey): Duplicate Code
-		"23.11" = {
-			home.packages = [];
+		"${optionalString (elem release [ "23.11" "24.05" "24.11" "25.05" "25.11" ]) release}" = {
 		};
-		"24.05" = {
-			home.packages = [];
-		};
-		"24.11" = {
-			home.packages = [];
-		};
-		"25.05" = {
-			home.packages = [];
-		};
-		"25.11" = {
-			home.packages = [];
-		};
-	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
+	}."${release}"
 
 	{
 		programs.kodi.enable = true;
 		# WORKAROUND(Krey): Trying to set this via `programs.kodi.addonSettings` causes issues as the skin seems to explicitly require the type declaration
 			home.file.kodi-entuary = {
 				target = ".kodi/userdata/addon_data/skin.estuary/settings.xml";
-				text = builtins.concatStringsSep "\n" [
-					"<settings>"
-						"<setting id=\"touchmode\" type=\"bool\">true</setting>"
-					"</settings>"
+				text = concatStringsSep "\n" [
+					''<settings>''
+						''<setting id=\"touchmode\" type=\"bool\">true</setting>''
+					''</settings>''
 				];
 			};
 		programs.kodi.addonSettings = {

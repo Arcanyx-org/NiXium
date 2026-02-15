@@ -11,7 +11,6 @@ in mkIf config.programs.vscode.enable (mkMerge [
 				extensions = with pkgs.vscode-extensions; [
 					editorconfig.editorconfig
 					mkhl.direnv
-					jnoortheen.nix-ide
 					oderwat.indent-rainbow
 				];
 				userSettings = {
@@ -42,7 +41,6 @@ in mkIf config.programs.vscode.enable (mkMerge [
 					extensions = with pkgs.vscode-extensions; [
 						editorconfig.editorconfig
 						mkhl.direnv
-						jnoortheen.nix-ide
 						oderwat.indent-rainbow
 					];
 					userSettings = {
@@ -72,5 +70,5 @@ in mkIf config.programs.vscode.enable (mkMerge [
 				};
 			};
 		};
-	}."${release}" or (throw "Release not implemented: ${release}")
+	}."${release}"
 ])

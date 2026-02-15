@@ -31,23 +31,23 @@ in {
 
 				programs.adb.enable = true;
 				programs.gamemode.enable = true;
-					programs.gamemode.enableRenice = true;
-					programs.gamemode.settings = {
-						general = {
-							renice = 10;
-						};
+					# programs.gamemode.enableRenice = true;
+					# programs.gamemode.settings = {
+					# 	general = {
+					# 		renice = 10;
+					# 	};
 
-						# Warning: GPU optimisations have the potential to damage hardware
-						gpu = {
-							apply_gpu_optimisations = "accept-responsibility";
-							gpu_device = 1;
-						};
+					# 	# Warning: GPU optimisations have the potential to damage hardware
+					# 	gpu = {
+					# 		apply_gpu_optimisations = "accept-responsibility";
+					# 		gpu_device = 1;
+					# 	};
 
-						# custom = {
-						# 	start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
-						# 	end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
-						# };
-					};
+					# 	# custom = {
+					# 	# 	start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
+					# 	# 	end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
+					# 	# };
+					# };
 				programs.steam.enable = true;
 				programs.noisetorch.enable = true; # Microphone filtering
 				programs.nix-ld.enable = true;
@@ -125,7 +125,7 @@ in {
 				services.displayManager.gdm.enable = true;
 				services.desktopManager.gnome.enable = true;
 					programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
-					services.xserver.displayManager.gdm.autoSuspend = false;
+					services.displayManager.gdm.autoSuspend = false;
 					# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has CONSTANT issues
 
 				# Power Management

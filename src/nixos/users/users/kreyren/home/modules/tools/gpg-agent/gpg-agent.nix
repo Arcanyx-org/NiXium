@@ -1,5 +1,7 @@
 { config, lib, ... }:
 
+# User kreyren's configuration of GPG
+
 let
 	inherit (lib) mkIf;
 in mkIf config.services.gpg-agent.enable {

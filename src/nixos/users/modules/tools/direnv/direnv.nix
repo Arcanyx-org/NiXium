@@ -1,10 +1,9 @@
 { config, lib, ... }:
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) mkDefault mkIf;
 in mkIf config.programs.direnv.enable {
 	programs.direnv = {
-		# Always use nix-direnv with direnv
-		nix-direnv.enable = true;
+		nix-direnv.enable = mkDefault true; # Always use nix-direnv with direnv
 	};
 }
