@@ -1,9 +1,9 @@
-{ inputs, inputs', lib, self, config, ... }:
+{ inputs, lib, self, ... }:
 
 # Declaration for STABLE release of NixOS for TUPAC
 
 let
-	inherit (lib) mkForce mkIf;
+	inherit (lib) mkForce;
 in {
 	flake.nixosConfigurations."nixos-tupac-stable" = inputs.nixpkgs.lib.nixosSystem {
 		system = "x86_64-linux";
@@ -120,6 +120,10 @@ in {
 				# 	#analogioOffset = -50;
 				# };
 				services.wivrn.enable = true;
+
+				# Miracast
+					networking.firewall.allowedTCPPorts = [7236 7250];
+					networking.firewall.allowedUDPPorts = [7236 5353];
 
 				# Desktop Environment
 				services.displayManager.gdm.enable = true;

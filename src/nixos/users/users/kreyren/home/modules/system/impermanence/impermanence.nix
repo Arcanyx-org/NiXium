@@ -94,6 +94,9 @@ in {
 			(mkIf config.programs.nix-index.enable ".cache/nix-index/files")
 			# FIXME-REL(Krey): This option was renamed in 25.11 from services.xserver.desktopManager.gnome and needs compatibility patch here
 			(mkIf nixosConfig.services.desktopManager.gnome.enable ".local/share/gnome-shell/application_state") # GNOME Well-Being Usage Data
+
+			# FIXME(Krey): This should only be turned on when flare is installed
+			".local/share/flare/db.sqlite"
 		];
 
 		allowOther = true; # FIXME-DOCS(Krey): What is this used for?

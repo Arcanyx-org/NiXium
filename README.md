@@ -529,6 +529,72 @@ in
 
 To then just `cd` to the directory and do `nix-shell`
 
+### Wrapping packages the right way
+
+The NixOS-recommended way to wrap packages is to use `overrideAttrs`:
+
+```nix
+(pkgs.dissent.overrideAttrs (super: {
+	nativeBuildInputs = (super.nativeBuildInputs or []) ++ [ pkgs.proxychains-ng ];
+
+	postInstall = (super.postInstall or "") + builtins.concatStringsSep "\n" [
+		''mv "$out/bin/dissent" "$out/bin/.dissent-wrapped"''
+
+		''cat > "$out/bin/proxychains.conf" <<-CONF''
+			''strict_chain''
+			''proxy_dns''
+			''remote_dns_subnet 224''
+			''tcp_read_time_out 15000''
+			''tcp_connect_time_out 8000''
+			''[ProxyList]''
+			# FIXME-SECURITY(Krey): Ideally we want to keep the ports as private and rotate them, but this is very minor security issue
+			''socks5 127.0.0.1 25344''
+		''CONF''
+
+		''cat > "$out/bin/dissent" <<-SCRIPT''
+			''#!${pkgs.busybox}/bin/sh''
+			''exec proxychains4 -f "$out/bin/proxychains.conf" "$out/bin/.dissent-wrapped" "\$@"''
+		''SCRIPT''
+
+		''chmod +x "$out/bin/dissent"''
+	];
+}))
+```
+
+Which is not optimal as it will trigger rebuild of the package, instead consider using `writeShellApplication`:
+
+```nix
+(pkgs.writeShellApplication {
+	name = "dissent";
+
+	runtimeEnv = {
+		ALL_PROXY = "socks5://127.0.0.1:25344";
+		HTTPS_PROXY = "socks5://127.0.0.1:25344";
+		HTTP_PROXY = "socks5://127.0.0.1:25344";
+	};
+
+	runtimeInputs = [
+		pkgs.dissent
+		pkgs.proxychains-ng
+	];
+
+	text =
+		let
+			proxyConf = pkgs.writeText "proxychains.conf" (builtins.concatStringsSep "\n" [
+				''strict_chain''
+				''proxy_dns''
+				''tcp_read_time_out 15000''
+				''tcp_connect_time_out 8000''
+
+				''[ProxyList]''
+				''socks5 127.0.0.1 25344''
+			]);
+		in ''exec proxychains4 -f ${proxyConf} dissent "$@"'';
+})
+```
+
+Which will wrap the package as a shell application which avoids the rebuild and is therefor more resource efficient.
+
 ---
 
 *Feel Free To Add Your Tips*

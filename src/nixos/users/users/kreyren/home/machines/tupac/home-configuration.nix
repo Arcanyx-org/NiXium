@@ -2,6 +2,7 @@
 
 let
 	inherit (lib) mkIf;
+	inherit (builtins) concatStringsSep;
 in {
 	gtk.enable = true;
 
@@ -43,31 +44,50 @@ in {
 	home.packages = [
 		pkgs.fractal
 		pkgs.goofcord
-		(pkgs.dissent.overrideAttrs (super: {
-			# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
-			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
-			postInstall = (super.postInstall or "") + ''
-				mv "$out/bin/dissent" "$out/bin/.dissent-wrapped" # Rename the old binary
 
-				# Wrap in short script that prefixes the command with `torsocks`
-				cat > "$out/bin/dissent" <<-SCRIPT
-					#!${pkgs.busybox}/bin/sh
-					script_dir=\$(dirname "\$(readlink -f "\$0")")
-					exec torsocks "\$script_dir/.dissent-wrapped" "\$@"
-				SCRIPT
+		pkgs.discord
 
-				# Ensure that it's executable
-				chmod +x "$out/bin/dissent"
-			'';
-		}))
+		(pkgs.writeShellApplication {
+			name = "dissent";
+
+			runtimeInputs = [
+				pkgs.dissent
+				pkgs.proxychains-ng
+			];
+
+			runtimeEnv = {
+				# Force Clear Go resolver for LD_PRELOAD to resolve DNS requests
+				GODEBUG = "netdns=go";
+				LD_PRELOAD = "${pkgs.proxychains-ng}/lib/libproxychains4.so";
+				PROXYCHAINS_CONF_FILE = "${pkgs.writeText "proxychains.conf" (concatStringsSep "\n" [
+					''strict_chain''
+
+					''proxy_dns''
+					''proxy_dns_addr 127.0.0.1''
+					''proxy_dns_port 9053'' # Tor DNS
+
+					# Change from 224.x (multicast) on 127.x to prevnt 'Network unreachable' by go dialer
+					''remote_dns_subnet 127''
+
+					''tcp_read_time_out 15000''
+					''tcp_connect_time_out 8000''
+
+					''[ProxyList]''
+					''socks5 127.0.0.1 9050''
+					''socks5 127.0.0.1 25344''
+				])}";
+			};
+
+			text = ''dissent "$@"'';
+		})
+
 		unstable.simplex-chat-desktop
-		unstable.signal-desktop
+		pkgs.flare-signal
 		pkgs.hexchat
 
 		# Slicers
 		pkgs.prusa-slicer
-		# FIXME-QA(Krey): Broken on current stable, move back when fixed .. and on unstable bcs libsoup2
-			# unstable.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
+		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
 		aagl.anime-game-launcher # An Anime Game
@@ -103,7 +123,8 @@ in {
     pkgs.libusbmuxd
 
 		# Utility
-		pkgs.keepassxc
+		# pkgs.keepassxc
+		pkgs.gnome-secrets
 		pkgs.yt-dlp
 		pkgs.android-tools
 		pkgs.picocom # Interface for Serial Console devices

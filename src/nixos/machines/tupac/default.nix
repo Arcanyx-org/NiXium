@@ -1,4 +1,4 @@
-{ self, inputs, ... }:
+{ self, inputs, lib, pkgs, ... }:
 
 # Flake management of TUPAC system
 
@@ -23,7 +23,7 @@
 			# Users
 			self.nixosModules.users-kreyren
 			self.homeManagerModules."kreyren@tupac"
-			# self.nixosModules.users-kira
+			self.nixosModules.users-kira
 			# self.homeManagerModules."kira@tupac"
 
 			# Files
@@ -50,9 +50,10 @@
 			./services/sunshine.nix
 			./services/tor.nix
 			./services/wivrn.nix
+			./services/odoo.nix
 
 			# Extras
-			self.nixosModules.infra-base48
+			# self.nixosModules.infra-base48
 		];
 	};
 

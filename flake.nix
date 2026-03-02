@@ -198,18 +198,10 @@
 				inputs.nixpkgs.follows = "nixpkgs-master";
 			};
 
-		nixos-generators = {
-			url = "github:nix-community/nixos-generators";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
-		nixos-generators-unstable = {
-			url = "github:nix-community/nixos-generators";
-			inputs.nixpkgs.follows = "nixpkgs-unstable";
-		};
-		nixos-generators-master = {
-			url = "github:nix-community/nixos-generators";
-			inputs.nixpkgs.follows = "nixpkgs-master";
-		};
+			nix-vscode-extensions = {
+				url = "github:nix-community/nix-vscode-extensions";
+				inputs.nixpkgs.follows = "nixpkgs";
+			};
 	};
 
 	outputs = inputs @ { self, ... }:
@@ -262,8 +254,6 @@
 						inputs.nixpkgs.legacyPackages.${system}.git # Working with the codebase
 						inputs.nixpkgs.legacyPackages.${system}.nano # Editor to work with the codebase in cli
 						inputs.nixpkgs.legacyPackages.${system}.openssl
-
-						inputs.nixos-generators.packages.${system}.nixos-generate
 
 						inputs.disko.packages.${system}.disko-install
 						inputs.disko.packages.${system}.disko

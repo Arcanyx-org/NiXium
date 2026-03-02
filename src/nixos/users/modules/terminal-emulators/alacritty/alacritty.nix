@@ -9,7 +9,7 @@ in mkIf config.programs.alacritty.enable (mkMerge [
 	{
 		"24.05" = {
 			programs.alacritty.settings = {
-				terminal.shell = {
+				shell.program = {
 					program = mkDefault "${pkgs.bashInteractive}/bin/bash";
 				};
 			};
@@ -17,7 +17,7 @@ in mkIf config.programs.alacritty.enable (mkMerge [
 
 		"${optionalString (elem release [ "24.11" "25.05" "25.11" ]) release}" = {
 			programs.alacritty.settings = {
-				shell.program = mkDefault "${pkgs.bashInteractive}/bin/bash";
+				terminal.shell = mkDefault "${pkgs.bashInteractive}/bin/bash";
 			};
 		};
 	}."${release}"
