@@ -1,7 +1,11 @@
-{ ... }:
+{
+	... }:
 
 # The TREE Task
 
+let
+	inherit (builtins) readFile;
+in
 {
 	perSystem = { pkgs, ... }: {
 		mission-control.scripts = {
@@ -14,8 +18,7 @@
 
 					runtimeInputs = [];
 
-					# FIXME(Krey): This should use flake-root to set absolute path
-					text = builtins.readFile ./tasks-tree.sh;
+					text = readFile ./tasks-tree.sh;
 				};
 			};
 		};

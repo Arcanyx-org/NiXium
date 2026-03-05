@@ -20,3 +20,6 @@
 [submodule "vendor/mobile-nixos"]
 	path = vendor/mobile-nixos
 	url = git@github.com:Arcanyx-org/mobile-nixos.git
+[submodule "vendor/mission-control"]
+	path = vendor/mission-control
+	url = https://github.com/Platonic-Systems/mission-control

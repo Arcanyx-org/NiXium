@@ -119,7 +119,7 @@ in {
 				# 	#uncoreOffset = -50;
 				# 	#analogioOffset = -50;
 				# };
-				services.wivrn.enable = true;
+				services.wivrn.enable = false;
 
 				# Miracast
 					networking.firewall.allowedTCPPorts = [7236 7250];

@@ -1,3 +1,3 @@
 {
-	imports = [ ./verify ];
+	imports = [ ./verify ./shellcheck ];
 }

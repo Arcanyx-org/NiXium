@@ -263,7 +263,7 @@
 
 						inputs.nixpkgs.legacyPackages.${system}.ungoogled-chromium # Web browser used in the integrated developer environment for interacting with the outside resources
 
-						inputs.nixpkgs.legacyPackages.${system}.opencode
+						inputs.nixpkgs-unstable.legacyPackages.${system}.opencode
 					];
 					inputsFrom = [
 						config.mission-control.devShell

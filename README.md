@@ -1,24 +1,22 @@
-This is an experimental branch where experiments are conducted prior to their submission to the central branch, it is provided for transparency.
-
----
-
 # NiXium (N/X)
 
-Transparent Nix-based Open-Source Infrastructure as Code (OSS IaaC) Management Solution for Multiple Systems and Domains designed to be a reliable tool for mission-critical tasks in paranoid and high-security environment.
+Transparent Nix-based Open-Source Infrastructure as Code (OSS IaaC) for mission-critical tasks in paranoid, high-security environments. All configurations are declarative and version-controlled.
 
-We are using:
+> **This is the experimental branch** - experiments conducted here prior to submission to central branch.
 
-* [disko](https://github.com/nix-community/disko) for Declarative Filesystem Management
-* [impermanence](https://github.com/nix-community/impermanence) to Enforce Declarative Setup
-* [flake-parts](https://github.com/hercules-ci/flake-parts) for Nix Flake Management
-* [home-manager](https://github.com/nix-community/home-manager) for User Configuration
-* [ragenix](https://github.com/yaxitech/ragenix) for Managing of Secrets
-* [mission-control](https://github.com/Platonic-Systems/mission-control) as a Frontend for this repository
-* [lanzaboote](https://github.com/nix-community/lanzaboote) for Declarative Secure Boot
-* [nixos-generators](https://github.com/nix-community/nixos-generators) to Generate Filesystem Images
-* [Release-independent Modules](https://github.com/Arcanyx-org/NiXium/blob/central/README.md#release-independent-modules) to ensure compatibility across different releases for flexibility and as a downtime management for the insufficient quality assurance by nixpkgs upstream upon a new version release
+- [disko](https://github.com/nix-community/disko) — Declarative Filesystem Management
+- [impermanence](https://github.com/nix-community/impermanence) — Enforce Declarative Setup
+- [flake-parts](https://github.com/hercules-ci/flake-parts) — Nix Flake Management
+- [home-manager](https://github.com/nix-community/home-manager) — User Configuration
+- [ragenix](https://github.com/yaxitech/ragenix) — Secrets Management
+- [mission-control](https://github.com/Platonic-Systems/mission-control) — Task Runner
+- [lanzaboote](https://github.com/nix-community/lanzaboote) — Declarative Secure Boot
+- [nixos-generators](https://github.com/nix-community/nixos-generators) — Filesystem Images
+- [Release-independent Modules](#release-independent-modules) — Cross-release compatibility
 
-## Directory layout
+## Directory Structure
+
+Run `, tree` to generate this structure:
 
 ├── **config** -- Project Configuration<br/>
 ├── **lib** -- Project-Oriented Libraries<br/>
@@ -32,13 +30,12 @@ We are using:
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **releases** -- Management across releases for the invidual machine<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **secrets** -- Machine-invidual secrets<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **services** -- Machine managed services<br/>
-&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **releases** -- Management across releases for the invidual machine<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **modules** -- NixOS-related Modules<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **programs** -- NixOS-related Programs Adjustments<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **security** -- NixOS-related Security Management<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **services** -- NixOS-related Service Adjustments<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **system** -- NixOS-related System Management<br/>
-&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **impermenance** -- NixOS-related management of impermanence<br/>
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **impermenance** -- NixOS-related management of impermanence<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **overlays** -- Overlay Management<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **packages** -- Changes to individual packages repository-wide<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **users** -- Management of Users in NixOS Distribution<br/>
@@ -47,391 +44,240 @@ We are using:
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **kreyren** -- Management of Kreyren User<br/>
 &nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **home** -- User Kreyren's Home Management<br/>
 ├── **tasks** -- Routines to work with the project<br/>
-&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **docs** -- Tasks related to the project documentation<br/>
-&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **tree** -- Task used to generate this file hierarchy output<br/>
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **shellcheck** -- Run shellcheck on all shell scripts in the repository<br/>
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **docs** -- Tasks related to the project documentation<br/>
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **tree** -- Task used to generate this file hierarchy output<br/>
 ├── **vendor** -- 3rd party repos used in this projects<br/>
 
-*This file hierarchy output is generated using the `tree` task that processes directories with the `.about` file containing short description about the purpose of the directory*
+---
 
-## Provided Services
+## Services (Provided to Community)
 
-All of our services are provided primarely through onion routing, for ease of use we recommend that you configure [MapAddress](https://manpages.org/tor) so that you can use easily memorable URLs instead of the long and cryptic Onion URLs.
+All services via Tor onion routing. Configure [MapAddress](https://manpages.org/tor) for memorable URLs (e.g., `monero.nx`).
 
-Without MapAddress: somewhereInTheDarks45h5f8h76sd7f98h7sd9h6sg876hsl.org<br/>
-With MapAddress: cool-service.nx
-
-### [Monero Node](https://www.getmonero.org/resources/moneropedia/node.html)
-
-We provide a private [Monero Node](https://www.getmonero.org/resources/moneropedia/node.html) for all viewers of this repository to process your [Monero](https://en.wikipedia.org/wiki/Monero) transactions through our transparent infrastructure:
+### Monero Node
 
 ```
-Recommended MapAddress: monero.nx
 Hostname: jj6qehtyrfvvi4gtwttpg2qyaukqzxwaoxvak534nidlnnelmqtlm3qd.onion
 Port: 18081
 Username: Monerochan
 Password: iL0VEMoNeRoChan<3
-
-Providing system: mracek.systems.nx
-Configurtion: https://github.com/Arcanyx-org/NiXium/blob/central/src/nixos/machines/mracek/services/monero.nix
 ```
 
-The node is set up to communicate with the outside world exclusively via Tor-only including it's synchronization with the blockchain for added security and privacy.
+> **Security:** Transactions may be deanonymized if using insecure OS, misconfigured Tor, shared nodes (lose Dandelion++), identifiable fee rates, or KYC exchanges. Post-quantum risk exists until FCMP++/Carrot is implemented.
 
-#### Beware of deanonymization methods using probabilistic attacks
+<details>
+<summary><strong>Security Details (click to expand)</strong></summary>
 
-Please be aware of the probabilistic attack demonstrated by [chainlysis](https://www.chainalysis.com) that can successfully deanonymize the transactions and identities of monero users if:
+**Deanonymization Risks:**
+- Insecure OS with proprietary components
+- Not using Tor or misconfigured
+- Not running your own node (lose Dandelion++ benefits)
+- Changing default fee rate in identifiable ways
+- Using KYC exchanges
 
-0. You use an insecure Operating System with proprietary code components.
-1. You do not use Tor or have it configured incorrectly.
-2. If you do not run your own node then you won't get the benefit of [Dandelion++](https://web.getmonero.org/2020/04/18/dandelion-implemented.html) which is assumed to significantly reduce the effectiveness of the probabilistic attacks.
-3. you are changing the default fee rate and ensuring that your used wallet doesn't change this in an indentifiable way.
-4. Use exchange services that require [Know Your Customer](https://en.wikipedia.org/wiki/Know_your_customer) identification e.g. photo of Citizen ID Card <ins>or share data with threat actors</ins>.
+**Post-Quantum Threat:** Transactions likely harvested for "Harvest Now, Decrypt Later". Monero vulnerable until FCMP++/Carrot is implemented.
 
 References:
-* Original Leaked presentation: http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/monero-chain.mp4
-* Detailed explanation on: http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/post/6de54b143e669e368af6
+- [Monerochain presentation](http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/monero-chain.mp4)
+- [Detailed analysis](http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/post/6de54b143e669e368af6)
+</details>
 
-For those reasons we currently do not recommend stack wallet until the following issue is addressed: https://github.com/cypherstack/stack_wallet/issues/1066
-
-To manage the risk of rogue exchange services, consider using [Haveno](https://haveno.exchange).
-
-#### Post-Quantum Threat
-
-All encrypted transactions on Monero are most likely being harvested by threat actors in a technique called [Harvest Now, Decrypt Later](https://en.wikipedia.org/wiki/Harvest_now,_decrypt_later) which stores the encrypted data until a breakthrough in technology is discovered that enables them to be decrypted.
-
-Monero is currently vulnerable to this threat until the [FCMP++](https://www.reddit.com/r/Monero/comments/1fxee4h/explained_moneros_fcmp_explained_for_beginners)/[Carrot](https://github.com/jeffro256/carrot/blob/master/carrot.md) functionality is implemented.
-
-* https://github.com/monero-project/research-lab/issues/131#issuecomment-2613839657
-
-### [Vikunja](https://vikunja.io)
-
-The open-source to-do app, access is provided upon special request.
+### Vikunja (Internal Todo)
 
 ```
-Recommended MapAddress: vikunja.nx
 Hostname: u65cyt3tdc66u7ciin55atl5sattytx3rjzzrzhlfdfc2t7pqbhyd6qd.onion
 Port: 80
-
-Providing system: mracek.systems.nx
-Configurtion: https://github.com/Arcanyx-org/NiXium/blob/central/src/nixos/machines/mracek/services/vikunja.nix
 ```
 
-This service is mostly used internally to organize private projects. We recommend you to use the [Vikunja Cloud Services](https://vikunja.cloud) instead to support the upstream developers if you are not in position to self-host it.
+Access upon request. Consider [Vikunja Cloud](https://vikunja.cloud) to support upstream.
 
-## Claim of "NX" Custom Top Level Domain
+---
 
-This repository claims the "NX" as it's Custom Top Level Domain ("cTLD") and kindly asks all DNS providers and Network Solutions to acknowledge it, we don't recognize the Internet Corporation for Assigned Names and Numbers ("ICANN") as authority due to their monopolistic position on assignments of Top Level Domains and their unreasonable high fees for cTLDs to attempt to decentralize this assignment.
+## Contributing
 
-## Contributions
+### Getting Started
 
-### How to get started
+This is a hardened codebase with strict checks. Start with small contributions fixing "tagged code" to learn the process.
 
-Beware that this is a hardened codebase with strict checks in place, so before contributing big changes make sure to first start with a small contribution by searching through the codebase for a "tagged" code explained below and submit a merge request that fixes something minor to familiarize yourself with how the process works.
+**Never submit new features without issue tracking and assignment.**
 
-Never submit new features unless there is a tracking for it and you are assigned. This avoids implementation chaos and makes sure that the features are implemented up to the expected standard and scrutany.
+```sh
+# Install direnv for automatic environment loading
+# Then:
+cd /path/to/NiXium
+, <task-name>    # direnv auto-loads (recommended)
 
-### Key words for use to Indicate Requirement Levels
+# Examples:
+, verify    # Verify system configuration
+, codium    # Open in VSCodium
+, tree      # Show directory structure
+```
 
-This repository uses [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) keywords for indication of the requirement revels.
+Without direnv: `nix develop` then `, <task-name>`
 
-Please familiarize yourself with this short standard prior to contributing to the repository: https://soundcloud.com/ericwbailey/rfc-2119
+### RFC 2119 Keywords
 
-### Generic Changes
-
-All changes need to be discussed in a form of an issue to be approved for merge with the exception of "Tagged Code" which is always up for grabs.
+This repository uses [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) keywords: MUST, SHOULD, MAY. See [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) for definitions.
 
 ### Tagged Code
 
-Tagged Code is code that has a "tag" over it:
-
 ```nix
-# FIXME-QA(Krey): Make it possible to accept list of strings for better readability without the `toString`
-# FIXME-QA(Krey): Figure out how to get a list of unsigned integers into a string `${toString config.services.tor.settings.SOCKSPort}` in `proxy` and `tx-proxy` for Tor port
-# FIXME-UPSTREAM(Krey): These options should be added to NixOS Module for better maintanability
+# FIXME-QA(Krey): Make it possible to accept list of strings
+# FIXME-UPSTREAM(Krey): These options should be added to NixOS Module
 services.monero.extraConfig = toString [
-  "prune-blockchain=1" # Use the pruned blockchain to save space
-  "proxy=127.0.0.1:9050" # Use Tor Proxy to access the internet
-  ...
+  "prune-blockchain=1"
+  "proxy=127.0.0.1:9050"
 ];
 ```
 
-Which is the self-review which the developer adds in a scenario where they were unable to address the issue in a reasonable amount of time during their development which doesn't block merge. Those are often cosmetic, maintainability and readability issues. If you use the repository-provided vscodium, then you will get a configured extension to find these easily or you can run:
+| Tag | Meaning |
+|-----|---------|
+| `FIXME:` | General fixme |
+| `FIXME-QA:` | Quality assurance |
+| `FIXME-SECURITY:` | Security issue |
+| `FIXME-UPSTREAM:` | Fix upstream |
+| `TODO:` | Task for author |
+| `DOCS:` | Documentation needed |
+| `HACK:` | Workaround |
+| `REVIEW:` | Needs review |
+| `DNM:` | Do Not Merge (blocks merge) |
+| `DNC:` | Do Not Contribute |
+| `DNR:` | Do Not Release |
+| `NOTE:` | Important note |
+| `PURITY:` | Impure operation |
 
-```console
-$ grep -A 10 -rP "(FIXME|DOCS|)((\\-.*|)\\(.*\\))" /path/to/this/repository
+Search for starter issues:
+```sh
+grep -rP "(FIXME|TODO|DOCS|HACK|REVIEW|DNM|DNC|DNR)((\-.*|)\(.*\)):" .
 ```
 
-To get them printed in your terminal.
+**Leave some trivial tagged items for humans as starter issues.**
 
-### Peer-Review The Code
+---
 
-The used programming, scripting and frameworking languages are separated into invidual files and all follow coding standardization, any peer-review is always very appreciated.
+## Implementation Notes
 
-Notes to the implementation:
+### Nix Language
 
-* **POSIX Shell Script:** The environment and libraries are managed by the Nix Daemon so they do not include shebang and bash options as those are supplemented by Nix, all these files should include notice at the first line about this management (please report this to us if it's not present). Additionally Nix runs these files through a very strict [shellcheck](https://www.shellcheck.net) where any unhandled failure or warning will terminate evaluation with detailed info about the isuse prior to executing the script.
-* **Nix Language:** Is the sole exception that does not follow the standard coding practices provided by upstream as they are considered not sensible and introduce too many security issues that are not fixable at the current NixOS Foundation Administration chaired by Eelco Dolstra for us to be in the process of writting an alternative one. [NixOS/nixpkgs/133088](https://github.com/NixOS/nixpkgs/issues/133088) [NixOS/nixpkgs/133089](https://github.com/NixOS/nixpkgs/issues/133089) [NixOS/nixpkgs/243089](https://github.com/NixOS/nixpkgs/pull/241360) [NixOS/nixpkgs/254625](https://github.com/NixOS/nixpkgs/issues/254625) [NixOS/nixpkgs/296013](https://github.com/NixOS/nixpkgs/issues/296013) [NixOS/nixpkgs/296013](https://github.com/NixOS/nixpkgs/pull/324693)
+We write Nix differently from upstream due to security concerns (see [nixpkgs#133088](https://github.com/NixOS/nixpkgs/issues/133088) and related issues).
 
-### Release-independent Modules
-
-We are providing [flake-parts](https://github.com/hercules-ci/flake-parts) integration for our modules which are designed to evaluate on any implemented releases through our abuse of `attrsets` to implement the de-facto case/switch statement as "release-gate" as compared to the traditional `mkIf` or `if` **this does NOT(!) evaluate the statement's body which would otherwise result in build failure.**
-
+**Indentation:** Tabs, not spaces.
 
 ```nix
-{ config, lib, ... }:
+let
+	inherit (builtins) readFile;
+in {
+	perSystem = { pkgs, ... }: {
+		mission-control.scripts = {
+			"build" = {
+				exec = pkgs.writeShellApplication {
+					name = "build-script";
+					text = readFile ./script.sh;
+				};
+			};
+		};
+	};
+}
+```
 
-# Simplified module that handles Power Management for SINNENFREUDE machine
+Use `let inherit (builtins) readFile; in` at top level.
 
+### Shell Scripts
+
+We prefer POSIX-compliant scripts (ksh93 preferred) over bash for portability and reduced attack surface.
+
+**Requirements:**
+- Include `# shellcheck shell=sh # POSIX` at first line for complex scripts
+- Use `pkgs.writeShellApplication` — avoids package rebuilds when changing scripts
+- All shellcheck warnings are errors
+- Mark impure operations with `# PURITY`
+
+**Why POSIX/ksh:**
+- Works on any Unix-like system
+- Easier to reason about security
+- No bash-specific features needed for our use cases
+
+### Release-Independent Modules
+
+Support multiple NixOS releases using attrsets as case/switch. This is different from `mkIf` or `if` — it **does NOT evaluate** the body for non-matching releases (prevents build failures).
+
+```nix
 let
 	inherit (lib) elem optionalString mkMerge;
 	inherit (lib.trivial) release;
-in mkIf config.powerManagement.enable (mkMerge [
-
+in mkMerge [
 	{
-		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = { # Release-gate for 24.05, 24.11 and 25.05
-			services.logind = {
-				powerKey = "suspend-then-hibernate";
-				powerKeyLongPress = "poweroff";
-			};
-		};
-
-		"25.11" = {
-			services.logind.settings.Login = {
-				HandlePowerKey = "suspend-then-hibernate";
-				HandlePowerKeyLongPress = "poweroff";
-			};
-		};
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = { /* ... */ };
+		"25.11" = { /* ... */ };
 	}."${release}"
-
-	{
-		# Apply to any release
-		systemd.sleep.extraConfig = "HibernateDelaySec=30s";
-	}
-])
+]
 ```
 
-Full Example: https://github.com/Arcanyx-org/NiXium/blob/experimental/src/nixos/machines/sinnenfreude/config/power-management.nix
+<details>
+<summary><strong>Edge Case: Feature-Gate Changes Between Releases</strong></summary>
 
-There is an edge-case in a scenario where the option which we use for feature-gate changes which is then expected to be managed like so to maintain backwards compatibility:
+When an option used for feature-gating changes between releases, maintain backwards compatibility:
 
 ```nix
-{ lib, pkgs, nixosConfig,... }:
-
-# Global User Management of Packages on GNOME
-
-# FIXME-QA(Krey): This file has a unique situation as in 25.11 the option `services.xserver.desktopManager.gnome.enable` was renamed to `services.desktopManager.enable` which we use as feature-gate to trigger the version-gate which had to been moved to the version-gate's body which make the code look kinda(?) messy, yet maintains the backwards compatibility, tbd if this can be improved
-
 let
 	inherit (lib) elem optionalString mkIf mkMerge;
 	inherit (lib.trivial) release;
 in mkMerge [
 	{
-		"23.11" = {
-			home.packages = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable [
-				pkgs.gnome.dconf-editor
-				pkgs.pinentry-gnome # Needed for inputting passwords
-
-        pkgs.xdg-desktop-portal-gnome
-			  pkgs.xdg-desktop-portal
-			];
+		# Old option name
+		"23.11" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+			home.packages = [ pkgs.gnome.dconf-editor ];
 		};
 
-		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
-			home.packages = [
-				pkgs.dconf-editor
-				pkgs.pinentry-gnome3 # Needed for inputting passwords
-
-        pkgs.xdg-desktop-portal-gnome
-			  pkgs.xdg-desktop-portal
-			];
-		};
-
+		# New option name (25.11+)
 		"25.11" = mkIf nixosConfig.services.desktopManager.gnome.enable {
-			home.packages = [
-        pkgs.dconf-editor
-				pkgs.pinentry-gnome3 # Needed for inputting passwords
-
-        pkgs.xdg-desktop-portal-gnome
-			  pkgs.xdg-desktop-portal
-			];
+			home.packages = [ pkgs.dconf-editor ];
 		};
 	}."${release}"
 ]
 ```
 
-Though experiment was conducted to see how well this management scales in an edge case to make modules that trigger based on specific detected gnome version with feature-gate:
+Full example: https://github.com/Arcanyx-org/NiXium/blob/experimental/src/nixos/machines/sinnenfreude/config/power-management.nix
+</details>
 
-```nix
-let
-	inherit (lib) elem optionalString mkIf mkMerge;
-	inherit (lib.trivial) release;
-in mkMerge [
-	{
-		"${optionalString (elem release [ "23.05" "23.11" "24.05" "24.11" ]) release}" = let
-				gnomeVersion = pkgs.gnome.gnome-shell.version;
-			in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
-			{
-				"${optionalString (elem gnomeVersion [ "42.4" "43.2" "44.2" "45.5" "46.2" ]) gnomeVersion}" = {
-					home.packages = [ pkgs.gnomeExtensions.custom-accent-colors ]; # Install the extension
+---
 
-					dconf.settings = {
-						"org/gnome/shell/extensions/custom-accent-colors" = {
-							accent-color = "purple";
-							theme-flatpak = true; # Use for flatpak
-							theme-gtk3 = true; # Use for GTK3
-							theme-shell = true; # Use for shell
-						};
+## Security Philosophy
 
-						# Set the extension as a user-theme as it's designed this way to work
-						"org/gnome/shell/extensions/user-theme" = {
-							name = "Custom-Accent-Colors";
-						};
-					};
-				};
-				"47.2" = {
-					# Deprecated with GNOM v47+
-				};
-			}."${gnomeVersion}"
-		]);
-		"${optionalString (elem release [ "25.05" "25.11" ]) release}" = let
-				gnomeVersion = pkgs.gnome-shell.version;
-			in mkIf nixosConfig.services.desktopManager.gnome.enable (mkMerge [
-			{
-				"${optionalString (elem gnomeVersion [ "48.2" "49.2" ]) gnomeVersion}" = {
-					# Deprecated with GNOM v47+
-				};
-			}."${gnomeVersion}"
-		]);
-	}."${release}"
-]
-```
+### Zero-Trust
 
-Such management of modules should only be considered for a scenario where release provides multiple versions of derivation that we are trying to manage, while acknowledging that there doesn't seem to be a dynamic-way to get the string value of currently used package version without triggering infinite recursion (presented scenario) which even if there was one is still discouraged as nix language doesn't have a sane way to force not-evaluation of logical bodies excluding the presented abuse of `attrsets` which would otherwise trigger syntax error due to per-release changes, but would otherwise be the projected perfect solution.
+**All blobs are malware until proven otherwise.**
 
-Side note: If this was an in-release scenario that doesn't expect compatibility for other releases it could be easily reduced to few lines, but we are trying to achieve **release-independance(!)** in a way that doesn't make unique complicated logic per each module, so if you want to try to fix this issue then think outside of the release scope as well.
+XZ Backdoor (CVE-2024-3094):
+- Discovered in March 2024 in xz-utils 5.6.0/5.6.1
+- New maintainer "Jia Tan" joined 2 years prior
+- Inserted via testing blob during build time ("goldilocks phase")
+- Discovered via microbenchmarking by German developer
 
-Side note #2: Release-independance by using git's branching is considered as too unmaintainable, restricting and less flexible.
+<details>
+<summary><strong>Defense Strategy</strong></summary>
 
-### Donate - Finance
+- Verify ALL dependencies (and their dependencies)
+- Recreate critical blobs ourselves
+- Use DNM tag for security issues
+- Static checks only as additional info
+- **Microbenchmarking required** for significant changes
+</details>
 
-For financial aid to help us maintain the system and continue provide the public services we accept Monero, refer to https://github.com/Kreyren#donate for details.
+### Post-Quantum
 
-### Donate - Hardware
+- Assume quantum computers may exist in secret
+- Harvest Now, Decrypt Later attacks are active
+- Rotate secrets on irregular basis
 
-Maintaining a secure infrastructure is a challenging task to do in an independent and reliable way, for that we ask for your help in sourcing the hardware to aid us in being able to provide the needed processing resources for our workflow.
+---
 
-If you want to donate Hardware then contact [@Kreyren](https://github.com/Kreyren) or make a new issue, preferably in the central europe area.
+## Claim of "NX" Custom TLD
 
-#### Apple M1~M4 Pro/Max/Ultra
+We claim "NX" as cTLD. We don't recognize ICANN's authority due to monopolistic position and unreasonable fees.
 
-We mainly want the chips from these devices to put them on OSHW hardware so even devices that suffered a fatal hardware failure are very appreciated.
-
-#### Snapdragon 845
-
-Devices with Snapdragon 845 such as OnePlus 6, Xiaomi Mi 8, Xiaomi POCO F1, etc.. have linux mainline support and can be salvaged for single board computers or personal devices for the infrastructure members or to refurbish them and provide them with pre-installed linux distribution for the general public.
-
-#### [Xiaomi POCO X3 Pro (xiaomi-vayu)](https://wiki.postmarketos.org/wiki/Xiaomi_POCO_X3_Pro_(xiaomi-vayu))
-
-Next-Gen Mobile device with projected decent linux mainline support which often suffers a hardware failure due to insufficient cooling that melts the solder on internal electronics to render them disfuncitonal to be a point of interest for development.
-
-#### Snapdragon X Elite
-
-Point of interest device for development. - Potential for use in thin clients
-
-#### Snapdragon XR2
-
-Point of Interest device for VR/AR development.
-
-#### Intel Z690-A/Z790-P
-
-Point of interest for x86 coreboot and hardening development as on-demand alternative to arm.
-
-#### AMD Phoenix
-
-Devices with AMD Phoenix architecture are projected to have Proof-of-Concept code for [OpenSIL](https://github.com/openSIL/openSIL) to be used for development and research so that our infrastructure has the option of smooth transition if needed.
-
-#### Broken Hardware
-
-We are almost always accepting any functional or broken hardware (notebooks, phones, PCs, etc..) to either refurbish for resell or add to our infrastructure.
-
-# References
-
-## Manuals
-
-* [home-manager's options](https://nix-community.github.io/home-manager/options.html)
-
-## Guides
-
-* [NixOS Flakes Wiki](https://nixos.wiki/wiki/Flakes)
-* [Nix Flakes, Part 3: Managing NixOS systems - Eelco Dolstra](https://www.tweag.io/blog/2020-07-31-nixos-flakes/)
-* [NixOS Configuration with Flakes - jordanisaacs](https://jdisaacs.com/series/nixos-desktop/)
-* [The working programmer’s guide to setting up Haskell projects - jonascarpay](https://jonascarpay.com/posts/2021-01-28-haskell-project-template.html)
-* [Shell Scripts with Nix - Jon Sangster](https://ertt.ca/nix/shell-scripts/)
-* [OpenSSH security and hardening - Linux Audit](https://linux-audit.com/audit-and-harden-your-ssh-configuration)
-* [sshd_config - How to configure the OpenSSH server - www.ssh.com](https://www.ssh.com/academy/ssh/sshd_config)
-* [openssh - mozilla](https://infosec.mozilla.org/guidelines/openssh.html)
-* [Arch security wiki](https://wiki.archlinux.org/title/security)
-* [Arch openssh wiki](https://wiki.archlinux.org/title/OpenSSH)
-* [Ask for a password in POSIX-compliant shell? - stackexchange](https://unix.stackexchange.com/questions/222974/ask-for-a-password-in-posix-compliant-shell)
-* [Shell Stlye Guide - google](https://google.github.io/styleguide/shellguide.html)
-* [Parameter Expansion - The Open Group Base Specifications Issue](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02)
-* [Here Documents](https://linux.die.net/abs-guide/here-docs.html)
-* [getopt, getopts or manual parsing - what to use when I want to support both short and long options?](https://unix.stackexchange.com/questions/62950/getopt-getopts-or-manual-parsing-what-to-use-when-i-want-to-support-both-shor)
-* [How to autorebase MRs in GitLab CI - Marcin Wosinek](https://how-to.dev/how-to-autorebase-mrs-in-gitlab-ci)
-* https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/
-* [Paranoid NixOS Setup - Christine Dodrill](https://xeiaso.net/blog/paranoid-nixos-2021-07-18)
-
-*Feel Free To Contribute Relevant Topics*
-
-## NixOS Configs
-
-Collection of NixOS configurations that you might find useful as a reference for your configuration:
-
-* https://github.com/Mic92/dotfiles
-* https://github.com/jordanisaacs/dotfiles
-* https://github.com/jordanisaacs/dwm-flake
-* https://github.com/gvolpe/nix-config
-* https://github.com/divnix/digga
-* https://github.com/mitchellh/nixos-config
-* https://codeberg.org/matthew/nixdot
-* https://github.com/terlar/nix-config
-* https://github.com/qbit/xin
-* https://github.com/mrjones2014/dotfiles
-* https://git.sr.ht/~x4d6165/nix-configuration
-* https://github.com/TLATER/dotfiles
-* https://gitlab.com/engmark/root
-* https://codeberg.org/samuelsung/nixos-config (flake-parts)
-* https://github.com/srid/nixos-config (flake-parts)
-* https://github.com/Mic92/dotfiles (flake-parts)
-* https://github.com/chvp/nixos-config
-* https://github.com/NickCao/flakes (agenix)
-* https://github.com/ocfox/den (agenix)
-* https://github.com/Clansty/flake (flakes + deploy-rs)
-* https://github.com/fufexan/dotfiles (flakes + agenix + flake-parts + home-manager)
-* https://github.com/gvolpe/nix-config
-* https://github.com/cole-h/nixos-config (flakes + agenix)
-* https://github.com/moni-dz/nix-config (flakes + flake-parts + agenix + home-manager + darwin)
-* https://github.com/vkleen/machines
-* https://github.com/wimpysworld/nix-config
-* https://github.com/gvolpe/nix-config
-
-*Feel Free To Add Yours*
-
-Relevant References through GitHub Querries:
-
-* https://github.com/topics/nixos-configuration -- for other public nixos configurations
-* https://github.com/search?q=flake.homeManagerModules&type=code -- home-manager references
-* https://github.com/search?q=flake-parts+path%3Aflake.nix&type=code&p=3 -- GitHub repositories which use flake-parts
-
-## Relevant Projects
-
-* [flake-compat](https://github.com/edolstra/flake-compat)
-* [sops-nix](https://github.com/Mic92/sops-nix)
-* [NixOS hardware repo](https://github.com/NixOS/nixos-hardware)
-* [update-flake-lock](https://github.com/DeterminateSystems/update-flake-lock)
-* [arkenfox's user.js](https://github.com/arkenfox/user.js)
-* [de956's browser-privacy](https://github.com/de956/browser-privacy)
-* https://github.com/redcode-labs/RedNixOS
+---
 
 ## Krey Nix Tips
 
@@ -462,20 +308,19 @@ Credit: [Samuel Sung](https://codeberg.org/samuelsung)
 
 ### Find Missing libraries in Packages
 
-If you have issue openning a binary, because it requires a missing library like:
+If you have issue opening a binary, because it requires a missing library like:
 
 ```console
 ~/.../SP_Flash_Tool_v5.2228_Linux $ ./flash_tool.sh
-/home/kreyren/Downloads/krypton/SP_Flash_Tool_v5.2228_Linux/./flash_tool: error while loading shared libraries: libXrender.so.1: cannot open shared object file: No such file or directory
+error while loading shared libraries: libXrender.so.1: cannot open shared object file: No such file or directory
 ```
 
 Then you can search for the missing file via mic92's `nix-index-database` which will output the packages that contain it:
 
 ```console
 $ nix run github:mic92/nix-index-database libXrender.so.1
-pyfa.out                                         52,368 x /nix/store/5hy1gmf3i357fwjrjbx3grn7ymgn7pg4-pyfa-2.65.0/share/pyfa/app/libXrender.so.1
-libxrender.out                                        0 s /nix/store/dgjd3hf8ny62vbjg10w64x4jwm7cv81k-libxrender-0.9.12/lib/libXrender.so.1
-libxrender.out                                   52,368 x /nix/store/dgjd3hf8ny62vbjg10w64x4jwm7cv81k-libxrender-0.9.12/lib/libXrender.so.1.3.0
+pyfa.out   52,368 x /nix/store/...-pyfa-2.65.0/share/pyfa/app/libXrender.so.1
+libxrender.out  0 s /nix/store/...-libxrender-0.9.12/lib/libXrender.so.1
 ```
 
 For you to then provide this library:
@@ -484,50 +329,29 @@ For you to then provide this library:
 $ nix shell nixpkgs#libxrender --command ./flash_tool.sh
 ```
 
-To avoid doing this dance per projects that are not optimized for Nix-like environment using **flakes**:
+To avoid doing this dance per project, use flakes with FHS environment:
 
 ```nix
 {
 	description = "FHS environment for SP Flash Tool";
-
 	inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
 	outputs = { self, nixpkgs }:
 		let
-			system = "x86_64-linux"; # adjust to your architecture
+			system = "x86_64-linux";
 			pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
 			fhs = pkgs.buildFHSEnv {
 				name = "sp-flash-tool-fhs";
-				targetPkgs = pkgs: with pkgs; [
-					libXrender
-				];
+				targetPkgs = pkgs: with pkgs; [ libXrender ];
 				runScript = "bash";
 			};
-		in
-		{
+		in {
 			devShells.${system}.default = fhs.env;
 		};
 }
 ```
 
-to able to use `nix develop` or classical deployment via `shell.nix` :
-
-```nix
-{ pkgs ? import <nixpkgs> { config.allowUnfree = true; } }:
-
-let
-  fhs = pkgs.buildFHSEnv {
-    name = "sp-flash-tool-fhs";
-    targetPkgs = pkgs: with pkgs; [
-      libXrender
-    ];
-    runScript = "bash";
-  };
-in
-  fhs.env
-```
-
-To then just `cd` to the directory and do `nix-shell`
+Then just `cd` to the directory and run `nix develop`.
 
 ### Wrapping packages the right way
 
@@ -539,62 +363,76 @@ The NixOS-recommended way to wrap packages is to use `overrideAttrs`:
 
 	postInstall = (super.postInstall or "") + builtins.concatStringsSep "\n" [
 		''mv "$out/bin/dissent" "$out/bin/.dissent-wrapped"''
-
-		''cat > "$out/bin/proxychains.conf" <<-CONF''
-			''strict_chain''
-			''proxy_dns''
-			''remote_dns_subnet 224''
-			''tcp_read_time_out 15000''
-			''tcp_connect_time_out 8000''
-			''[ProxyList]''
-			# FIXME-SECURITY(Krey): Ideally we want to keep the ports as private and rotate them, but this is very minor security issue
-			''socks5 127.0.0.1 25344''
-		''CONF''
-
 		''cat > "$out/bin/dissent" <<-SCRIPT''
 			''#!${pkgs.busybox}/bin/sh''
-			''exec proxychains4 -f "$out/bin/proxychains.conf" "$out/bin/.dissent-wrapped" "\$@"''
+			''exec proxychains4 "$out/bin/.dissent-wrapped" "$@"''
 		''SCRIPT''
-
 		''chmod +x "$out/bin/dissent"''
 	];
 }))
 ```
 
-Which is not optimal as it will trigger rebuild of the package, instead consider using `writeShellApplication`:
+Which is not optimal as it will trigger a rebuild of the package. Instead, consider using `writeShellApplication`:
 
 ```nix
-(pkgs.writeShellApplication {
+pkgs.writeShellApplication {
 	name = "dissent";
 
 	runtimeEnv = {
 		ALL_PROXY = "socks5://127.0.0.1:25344";
 		HTTPS_PROXY = "socks5://127.0.0.1:25344";
-		HTTP_PROXY = "socks5://127.0.0.1:25344";
 	};
 
-	runtimeInputs = [
-		pkgs.dissent
-		pkgs.proxychains-ng
-	];
+	runtimeInputs = [ pkgs.dissent pkgs.proxychains-ng ];
 
-	text =
-		let
-			proxyConf = pkgs.writeText "proxychains.conf" (builtins.concatStringsSep "\n" [
-				''strict_chain''
-				''proxy_dns''
-				''tcp_read_time_out 15000''
-				''tcp_connect_time_out 8000''
-
-				''[ProxyList]''
-				''socks5 127.0.0.1 25344''
-			]);
-		in ''exec proxychains4 -f ${proxyConf} dissent "$@"'';
-})
+	text = ''exec proxychains4 dissent "$@"'';
+}
 ```
 
-Which will wrap the package as a shell application which avoids the rebuild and is therefor more resource efficient.
+This wraps the package as a shell application which avoids the rebuild and is therefore more resource efficient.
 
 ---
 
-*Feel Free To Add Your Tips*
+## References
+
+### Manuals
+- [home-manager options](https://nix-community.github.io/home-manager/options.html)
+
+### Guides
+- [NixOS Flakes Wiki](https://nixos.wiki/wiki/Flakes)
+- [Shell Scripts with Nix](https://ertt.ca/nix/shell-scripts/)
+- [Paranoid NixOS Setup](https://xeiaso.net/blog/paranoid-nixos-2021-07-18)
+- [Nix Flakes, Part 3: Managing NixOS systems](https://www.tweag.io/blog/2020-07-31-nixos-flakes/)
+- [NixOS Configuration with Flakes](https://jdisaacs.com/series/nixos-desktop/)
+- [Shell Style Guide - Google](https://google.github.io/styleguide/shellguide.html)
+- [POSIX Parameter Expansion](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02)
+
+### Security
+- [OpenSSH security and hardening - Linux Audit](https://linux-audit.com/audit-and-harden-your-ssh-configuration)
+- [sshd_config - How to configure OpenSSH](https://www.ssh.com/academy/ssh/sshd_config)
+- [Mozilla OpenSSH guidelines](https://infosec.mozilla.org/guidelines/openssh.html)
+- [Arch security wiki](https://wiki.archlinux.org/title/security)
+
+### External NixOS Configs
+
+<details>
+<summary><strong>Click to expand</strong></summary>
+
+- [Mic92's dotfiles](https://github.com/Mic92/dotfiles)
+- [jordanisaacs's dotfiles](https://github.com/jordanisaacs/dotfiles)
+- [fufexan/dotfiles](https://github.com/fufexan/dotfiles)
+- [gvolpe/nix-config](https://github.com/gvolpe/nix-config)
+- [divnix/digga](https://github.com/divnix/digga)
+- [cole-h/nixos-config](https://github.com/cole-h/nixos-config)
+- [Mic92/nixos-hardware](https://github.com/NixOS/nixos-hardware)
+
+See source for more.
+</details>
+
+---
+
+For detailed discussion context, see [DISCUSSION.md](DISCUSSION.md).
+
+---
+
+*Read [AGENTS.md](AGENTS.md) for agent guidance. Maintain README.md and DISCUSSION.md as you work.*
