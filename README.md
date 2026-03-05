@@ -14,6 +14,10 @@ Transparent Nix-based Open-Source Infrastructure as Code (OSS IaaC) for mission-
 - [nixos-generators](https://github.com/nix-community/nixos-generators) — Filesystem Images
 - [Release-independent Modules](#release-independent-modules) — Cross-release compatibility
 
+## Standards
+
+All Nix code must follow the [Nx Language Standard](docs/nx/standard.md).
+
 ## Directory Structure
 
 Run `, tree` to generate this structure:

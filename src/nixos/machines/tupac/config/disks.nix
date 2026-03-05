@@ -21,9 +21,12 @@
 let
 	inherit (lib) mkMerge;
 
-	diskoDevice = "/dev/disk/by-id/nvme-SOLIDIGM_SSDPFKNU010TZ_BTEH24220RNQ1P0B"; # NVME SSD
+	diskoDevice = "/dev/disk/by-id/nvme-SOLIDIGM_SSDPFKNU010TZ_BTEH24220RNQ1P0B";
 	keyDevice = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
 	swapSize = "60G";
+
+	# Reference: https://www.youtube.com/watch?v=oe4X5x1P-3w
+	setUUID = "0118-9998-8199-9119-7253" + "000000000";
 in {
 	config = mkMerge [
 		{
@@ -119,6 +122,7 @@ in {
 										extraFormatArgs = [
 											"--use-random" # use true random data from /dev/random, will block until enough entropy is available
 											"--label=CRYPT_NIX"
+											"--uuid=${setUUID}" # IT Crowd Easter Egg: "0118 999 881 999 119 725 3"
 										];
 
 										extraOpenArgs = [
@@ -169,6 +173,7 @@ in {
 										extraFormatArgs = [
 											"--use-random" # use true random data from /dev/random, will block until enough entropy is available
 											"--label=CRYPT_SWAP"
+											"--uuid=${setUUID}" # IT Crowd Easter Egg: "0118 999 881 999 119 725 3"
 										];
 
 										extraOpenArgs = [
