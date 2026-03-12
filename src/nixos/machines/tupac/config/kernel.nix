@@ -8,7 +8,15 @@ in {
 	# boot.kernelPackages = pkgs.linuxPackages_xanmod;
 	boot.kernelPackages = pkgs.linuxPackages;
 
+	boot.extraModprobeConfig = ''
+		options i915 enable_guc=0
+	'';
+
 	boot.kernelParams = [
+		# Disable split lock detection to avoid warnings
+		# This CPU feature can cause #AC faults on misaligned memory access
+		"split_lock_detect=off"
+
 		# SECURITY(Krey): Used to manage CPU Vulnerabilities
 		# "tsx=auto" # Let Linux Developers determine if the mitigation is needed
 		# "tsx_async_abort=full,nosmt" # Enforce Full Mitigation if the management is needed
@@ -22,9 +30,11 @@ in {
 
 		# FIXME(Krey): Intel AX201 Bluetooth firmware incompatibility with kernel MGMT interface
 		# Causes "Bad flag given (0x1) vs supported (0x0)" error
-		# btintel.force_bdaddr=1 forces using the BDADDR from firmware
-		# Related: https://bugzilla.kernel.org/show_bug.cgi?id=217023
-		"btintel.force_bdaddr=1"
+		# NOTE: btintel.force_bdaddr=1 and btmtk.force_reset=1 are NOT supported by current kernel
+		# See: https://bugzilla.kernel.org/show_bug.cgi?id=217023
+		# "btintel.force_bdaddr=1" # NOT SUPPORTED - ignored by kernel
+		# "btmtk.force_reset=1" # NOT SUPPORTED - ignored by kernel
+		"btusb.reset=1"
 	];
 
 	# SECURITY(Krey): Has vulnerable CPU so this has to be managed

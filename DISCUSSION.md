@@ -2,7 +2,28 @@
 
 This file contains evolving discussion notes from development conversations between humans and AI agents. Agents should review this file for context before starting new discussions.
 
-Last updated: 2025-03-02
+Last updated: 2026-03-06
+
+---
+
+## Current System Status
+
+### tupac (Monster Tulpar T5 V23.2)
+
+**Status:** Deployed and verified
+
+- Split lock detection: FIXED ✓ (`split_lock_detect=off`)
+- i915 VBT warning: NOT FIXED (BIOS bug, requires vendor update)
+- Bluetooth "Bad flag": NOT FIXED (kernel params are ignored)
+- Wireless WEXT: NOT FIXED
+
+**To continue working on tupac:**
+1. Remove invalid kernel params: `btintel.force_bdaddr=1`, `btmtk.force_reset=1`
+2. Fix Bluetooth issue (find correct parameters)
+3. Fix Wireless WEXT (debug wpa_supplicant)
+4. Request BIOS update from Monster/Tulpar
+
+See `src/nixos/machines/tupac/DISCUSSION.md` for detailed issue tracking.
 
 ---
 

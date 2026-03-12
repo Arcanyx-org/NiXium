@@ -145,7 +145,15 @@ in {
 		pkgs.moonlight-qt
 		pkgs.libreoffice
 		pkgs.gnome-decoder
-		unstable.hydralauncher
+
+		(pkgs.writeShellApplication {
+			name = "hydralauncher";
+
+			runtimeInputs = [ pkgs.hydralauncher ];
+
+			text = ''hydralauncher --proxy-server "" "$@"'';
+		})
+
 		#unstable.nexusmods-app
 		pkgs.flashrom
 		# (unstable.alpaca.override { ollama = pkgs.ollama-cuda; })

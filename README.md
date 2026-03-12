@@ -1,3 +1,8 @@
+# RED ALERT: Claude AI Agent proven to be able to find unknown zero days in the code which is publicly available: https://www.youtube.com/watch?v=-ndTTdOW_i4 ALL SERVICES ARE NOW TAKEN DOWN
+
+### NIXIUM IS IN CRISIS RECOVERY MODE.
+
+
 # NiXium (N/X)
 
 Transparent Nix-based Open-Source Infrastructure as Code (OSS IaaC) for mission-critical tasks in paranoid, high-security environments. All configurations are declarative and version-controlled.
@@ -439,4 +444,4 @@ For detailed discussion context, see [DISCUSSION.md](DISCUSSION.md).
 
 ---
 
-*Read [AGENTS.md](AGENTS.md) for agent guidance. Maintain README.md and DISCUSSION.md as you work.*
+*Read [DISCUSSION.md](DISCUSSION.md) for context and [AGENTS.md](AGENTS.md) for agent guidance. Maintain README.md and DISCUSSION.md as you work.*

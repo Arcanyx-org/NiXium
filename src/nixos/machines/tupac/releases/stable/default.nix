@@ -48,6 +48,17 @@ in {
 					# 	# 	end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
 					# 	# };
 					# };
+				programs.gamescope.enable = true;
+					programs.gamescope.capSysNice = true;
+					programs.gamescope.args = [
+						"--prefer-vk-device"
+						"10de:28a0"
+						"--backend"
+						"sdl"
+					];
+
+				services.seatd.enable = true;
+				services.seatd.user = "kreyren";
 				programs.steam.enable = true;
 				programs.noisetorch.enable = true; # Microphone filtering
 				programs.nix-ld.enable = true;

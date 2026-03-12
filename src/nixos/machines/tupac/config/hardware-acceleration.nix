@@ -46,7 +46,11 @@ in {
 		# https://nixos.org/manual/nixos/stable/#sec-x11--graphics-cards-intel
 		services.xserver.videoDrivers = [ "modesetting" ];
 
-		environment.sessionVariables = { LIBVA_DRIVER_NAME = "iHD"; }; # Optionally, set the environment variable
+		environment.sessionVariables = {
+			LIBVA_DRIVER_NAME = "iHD";
+			NVIDIA_VK_DEVICE = "1";
+			VK_DEVICE_SELECT = "nvidia";
+		};
 	};
 }."${release}" or (throw "Release is not implemented: ${release}")
 

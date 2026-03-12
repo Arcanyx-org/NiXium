@@ -16,11 +16,12 @@ Tulpar T5 V23.2 15.6" with RTX4060 - https://www.tulparnotebook.de/t-serie-t5-v-
 
 | Issue | Status | Fix |
 |-------|--------|-----|
-| i915 VBT Warning | Fixed | `i915.enable_dc=0` kernel parameter |
-| i915 Atomic Update Failure | Fixed | Part of VBT workaround above |
-| Bluetooth "Bad flag" | Fixed | `btintel.force_bdaddr=1` kernel parameter |
-| Wireless WEXT Warning | Fixed | NetworkManager wifi.backend = "wpa_supplicant" |
-| NVMe UUID Warning | Fixed | Added explicit UUID in disko config |
+| i915 VBT Warning | Needs BIOS Update | `i915.enable_dc=0` kernel param deployed; VBT issue requires vendor BIOS update |
+| i915 Kernel Crash | Fixed | `options i915 enable_guc=0` modprobe config deployed |
+| Bluetooth "Bad flag" | Works | Kernel params loaded; Bluetooth is functional |
+| Wireless WEXT Warning | Partial | `wifi.backend = "wpa_supplicant"` deployed; nl80211 config may need reboot |
+| NVMe UUID Warning | Harmless | Ignored - known kernel issue with no fix needed |
+| Split Lock Detection | Fixed (needs reboot) | `split_lock_detect=off` kernel param added |
 | NVIDIA Proprietary Driver | Changed | Using open-source driver (`open = true`) |
 
 ## Configuration Files

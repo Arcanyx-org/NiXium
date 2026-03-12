@@ -5,8 +5,8 @@
 let
 	inherit (lib) mkIf;
 in {
-	# NiXium dependency needed to manage systems
-	environment.systemPackages = [ pkgs.git ]; # Install Git On All Systems
+	# Enable Git module (required for config to work)
+	programs.git.enable = true;
 
 	programs.git.config.init.defaultBranch = "central"; # Set Arcanyx's default branch preference
 

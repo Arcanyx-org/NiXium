@@ -37,11 +37,11 @@ in {
 		hardware.nvidia = {
 			modesetting.enable = true;
 
-			powerManagement.finegrained = false;
+			powerManagement.finegrained = true;
 
 			open = true;
 
-			nvidiaSettings = false;
+			nvidiaSettings = true;
 
 			prime = {
 				sync.enable = false;
@@ -55,7 +55,7 @@ in {
 				nvidiaBusId = "PCI:0:2:0";
 			};
 
-			package = config.boot.kernelPackages.nvidiaPackages.stable;
+			package = config.boot.kernelPackages.nvidiaPackages.production;
 		};
 
 		services.xserver.videoDrivers = [ "nvidia" ];

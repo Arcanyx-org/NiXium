@@ -20,8 +20,13 @@ in {
 		wifi.backend = "wpa_supplicant";
 	};
 
+	networking.wireless.extraConfig = ''
+		driver=nl80211
+	'';
+
 	hardware.wirelessRegulatoryDatabase = true;
-		boot.extraModprobeConfig = ''options cfg80211 ieee80211_regdom="CZ"'';
+
+	boot.extraModprobeConfig = ''options cfg80211 ieee80211_regdom="CZ"'';
 
 	networking.firewall.allowedTCPPorts = [
 		# FIXME-QA(Krey): Make sure to apply these only if the relevant app is used

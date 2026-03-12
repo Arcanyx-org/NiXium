@@ -22,15 +22,18 @@ in {
 
 				boot.plymouth.enable = false;
 
-				nix.distributedBuilds = true; # Perform distributed builds
+				# RED_ALERT(Krey): Management for AI Agent efficient enough at finding zero days available to public use
+				nix.distributedBuilds = false; # Perform distributed builds
 
 				powerManagement.enable = true;
 
 				# Services
 					# services.gitea.enable = true;
-					services.monero.enable = true;
+					# RED_ALERT(Krey): Management for AI Agent efficient enough at finding zero days available to public use
+					services.monero.enable = false;
 					# services.murmur.enable = false;
-					services.nextcloud.enable = true;
+					# RED_ALERT(Krey): Management for AI Agent efficient enough at finding zero days available to public use
+					services.nextcloud.enable = false;
 					# services.navidrome.enable = false;
 					services.openssh.enable = true;
 					services.tor.enable = true;
