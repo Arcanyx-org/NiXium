@@ -31,7 +31,6 @@
 			./config/bootloader.nix
 			./config/disks.nix
 			./config/firmware.nix
-			./config/gaming.nix
 			./config/hardware-acceleration.nix
 			./config/initrd.nix
 			./config/kernel.nix

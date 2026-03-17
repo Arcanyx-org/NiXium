@@ -6,6 +6,7 @@ in {
 	flake.homeManagerModules.default = {
 		imports = [
 			homeManagerModules.editors
+			homeManagerModules.programs
 			homeManagerModules.services
 			homeManagerModules.system
 			homeManagerModules.terminal-emulators

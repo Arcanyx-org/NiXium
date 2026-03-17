@@ -1,40 +1,291 @@
-# Agent Guidance
+# Agent Guidance for NiXium
 
-This file provides guidance for AI agents working on NiXium.
+This file provides guidance for AI agents working on NiXium. **Read this carefully** - NiXium is NOT standard NixOS, and misunderstanding this will cause you to produce broken code.
 
-## Getting Started
+---
 
-This is a hardened codebase with strict checks. Start with small contributions fixing "tagged code" to learn the process.
+## IMPORTANT: Keep This File Updated
 
-**Never submit new features without issue tracking and assignment.**
+This is a **living document** - you are expected to update it when you:
 
-```sh
-# Install direnv for automatic environment loading
-# Then:
-cd /path/to/NiXium
-, <task-name>    # direnv auto-loads (recommended)
+1. **Discover misconceptions** - If you made mistakes due to wrong assumptions, document the correct approach here
+2. **Find workarounds** - If you had to figure out non-obvious solutions, add them
+3. **Learn project-specific patterns** - Document patterns that work in NiXium but aren't obvious
+4. **Hit obstacles** - If something doesn't work as expected, document why and what does work
+5. **Find gotchas** - Any "gotchas" or common pitfalls you encounter
 
-# Examples:
-, verify    # Verify system configuration
-, codium    # Open in VSCodium
-, tree      # Show directory structure
+**When updating this file:**
+- Be specific and actionable - give concrete examples
+- Explain the "why" - don't just say what, explain why it works/doesn't work
+- Use clear headings so other agents can find relevant sections
+- If updating saves another agent from making the same mistake, do it immediately
+
+**Example updates:**
+- Adding a new "Common Issues" entry
+- Correcting misunderstood architecture details
+- Adding new build commands that work
+- Documenting required dependencies or overlays
+
+---
+
+## CRITICAL: Architecture Overview
+
+### NiXium is a flake-parts Project, NOT Standard NixOS
+
+This is the most important thing to understand. NiXium uses **flake-parts** for modular configuration, NOT the traditional NixOS `configuration.nix` with automatic module discovery.
+
+**Standard NixOS (what you're probably used to):**
+- Single `configuration.nix` with `imports = [ ./modules/* ]`
+- Files in `modules/` are automatically available
+
+**NiXium (this project):**
+- Flake-parts modules in `src/nixos/machines/<name>/`
+- Machines are defined as flake-parts modules, NOT file imports
+- **You MUST explicitly import config files in the machine's `default.nix`**
+
+### How Configuration Flows
+
+```
+flake.nix
+  └── imports ./src
+        └── src/nixos/default.nix (defines nixosModules.default)
+              └── Each machine's default.nix is a SEPARATE flake-parts module
+                    └── Machine's default.nix imports ./config/*.nix
 ```
 
-Without direnv: `nix develop` then `, <task-name>`
+**Key insight:** Adding a file to `src/nixos/modules/` does NOTHING. You must:
+1. Create the config file in `src/nixos/machines/<machine>/config/`
+2. Import it in `src/nixos/machines/<machine>/default.nix`
 
-## RFC 2119 Keywords
+### DON'T DO THIS
 
-This repository uses [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) keywords: MUST, SHOULD, MAY. See [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) for definitions.
+- ❌ Creating files in `src/nixos/modules/` expecting automatic inclusion
+- ❌ Editing `src/nixos/modules/*` and expecting machines to pick up changes
+- ❌ Treating this like standard NixOS with automatic module discovery
+
+### DO THIS INSTEAD
+
+- ✅ Add config imports directly to machine's `default.nix`
+- ✅ Create machine-specific configs in `src/nixos/machines/<machine>/config/`
+- ✅ Use `src/nixos/machines/template/` as reference
+
+---
+
+## Where to Make Changes
+
+| Task | Location |
+|------|----------|
+| Add config to a specific machine | Edit `src/nixos/machines/<machine>/default.nix`, add import |
+| Create machine-specific config | Create in `src/nixos/machines/<machine>/config/` |
+| Add global NixOS module | Edit `src/nixos/default.nix` to add imports |
+| Add user/home-manager config | Edit files in `src/nixos/users/` |
+
+### Using perSystem for Multi-Architecture Support
+
+**IMPORTANT:** NiXium uses flake-parts' `perSystem` to handle multiple architectures. DO NOT use `lib.genAttrs` at the top level to create `flake.nixosConfigurations` for different systems - this breaks flake-parts' architecture handling.
+
+**WRONG (will cause issues):**
+```nix
+# ❌ DON'T use genAttrs at top level for architectures
+flake.nixosConfigurations = lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
+    inputs.nixpkgs.lib.nixosSystem { ... }
+);
+```
+
+**RIGHT (use perSystem in flake-parts):**
+```nix
+# ✅ DO use perSystem to handle each system automatically
+perSystem = { system, pkgs, ... }: {
+    packages.my-package = (inputs.nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [ ... ];
+    }).config.system.build.isoImage;
+};
+```
+
+flake-parts automatically calls `perSystem` for each configured system, so you don't need to manually create configurations for each architecture.
+
+### Machine Directory Structure
+
+```
+src/nixos/machines/<machine>/
+├── default.nix      # Main machine config (flake-parts module - THIS IS KEY)
+├── config/          # Machine-specific NixOS configs (create files here)
+│   ├── disks.nix
+│   ├── networking.nix
+│   └── ...
+├── services/       # Machine-specific services
+├── secrets/        # Machine-specific secrets (age)
+├── releases/       # Release-specific configurations
+├── lib/           # Libraries exported by machine
+└── status/        # Status tracking files
+```
+
+---
+
+## Testing Changes
+
+**Never rely solely on LSP or syntax checking.** You MUST build and test VM configurations.
+
+### Build and Test Commands
+
+```sh
+# Test build-vm (replace <machine> with actual machine name)
+nix build .#nixosConfigurations.nixos-<machine>-stable.config.system.build.vm --no-link
+
+# Test with disko (recommended for machines using disko)
+nix run -L '.#nixosConfigurations.nixos-<machine>-stable.config.system.build.vmWithDisko'
+
+# Run the VM after building
+nix run .#nixosConfigurations.nixos-<machine>-stable.config.system.build.vm -- -nographic
+```
+
+### Common VM Issues
+
+If the build fails with "option does not exist", check nesting:
+- Options go under `virtualisation.vmVariant.virtualisation` (NOT directly under `virtualisation.vmVariant`)
+- Example: `virtualisation.vmVariant.virtualisation.memorySize = 2048;`
+
+### VM Configuration Tips
+
+- Use `virtualisation.vmVariantWithDisko` for machines with disko
+- VM automatically uses /dev/vda
+- Set image size: `disko.devices.disk.system.imageSize = "64G";`
+- Use password instead of keyFile for LUKS
+- Disable swap in VM: `swapDevices = [ ];`
+- Disable impermanence in VM if needed: `boot.impermanence.enable = lib.mkForce false;`
+
+**Always use dynamic stateVersion:**
+```nix
+system.stateVersion = lib.versions.majorMinor lib.version;
+```
+Never hardcode (e.g., NOT `"24.11"`).
+
+---
+
+## Coding Standards
+
+All Nix code MUST follow the [Nx Language Standard](docs/nx/standard.md).
+
+### Key Points
+
+- **Indentation:** Use tabs, not spaces
+- **Line length:** No hard limit, use soft wraps
+- **Comments:** Explain WHY, not just WHAT
+- **Secrets:** Always use age/ragenix, never hardcode
+
+### Shell Scripts
+
+When writing shell scripts in Nix:
+
+1. **Always use `pkgs.writeShellApplication`** (not `pkgs.writeShellScriptBin` or `builtins.toFile`):
+   ```nix
+   pkgs.writeShellApplication {
+     name = "my-script";
+     bashOptions = [ "errexit" "nounset" ];
+     runtimeInputs = [ pkgs.curl ];
+     text = concatStringsSep "\n" [
+       ''curl -s https://example.com''
+       ''echo "Done"''
+     ];
+   }
+   ```
+
+2. **Use `concatStringsSep` instead of `''`:**
+   ```nix
+   text = concatStringsSep "\n" [
+       ''for disk in ./nixos.qcow2; do''
+       ''    [ ! -f "$disk" ] || rm -f "$disk"''
+       ''done''
+       ''exec ${vmPath} "$@"''
+   ];
+   ```
+
+3. Use simplified conditionals: `[ ! -f ... ] || rm ...` instead of `if [ -f ... ]; then ...; fi`
+
+4. Use calculations: `1024 * 5` instead of `5120`
+
+5. **Systemd services**: Use `pkgs.writeShellApplication` for `ExecStart`:
+   ```nix
+   systemd.services.my-service = {
+     serviceConfig = {
+       ExecStart = pkgs.writeShellApplication {
+         name = "my-service";
+         bashOptions = [ "errexit" ];
+         text = concatStringsSep "\n" [
+           ''echo "Running"''
+           ''do_something''
+         ];
+       };
+     };
+   };
+   ```
+
+6. Ensure scripts pass shellcheck
+
+### Robust Testing Patterns
+
+When writing automated checks that run VMs or execute tests:
+
+1. **Prefer exit codes over output parsing** - Fragile to rely on parsing output like `grep -q "OK"`
+   ```nix
+   # GOOD: Rely on exit code
+   text = ''
+     my-command || exit 1
+     systemctl poweroff
+   '';
+   
+   # BAD: Fragile output parsing
+   text = ''
+     output=$(my-command)
+     echo "$output" | grep -q "OK"  # FRAGILE
+   '';
+   ```
+
+2. **Always use timeout wrapper** to detect hung tests:
+   ```nix
+   let
+     checkTimeout = 180; # seconds
+   in
+   pkgs.writeShellApplication {
+     name = "check";
+     runtimeInputs = [ pkgs.util-linux ];
+     text = ''
+       timeout ${toString checkTimeout} ${vmPath}/bin/run-nixos-vm -nographic
+     '';
+   }
+   ```
+
+3. **Make timeout configurable** - Define as let variable at top of check block so it's easy to adjust.
+
+---
+
+## Release-Specific Configuration
+
+NiXium supports multiple NixOS releases using attrsets as case/switch:
+
+```nix
+let
+  inherit (lib) elem optionalString mkMerge;
+  inherit (lib.trivial) release;
+in mkMerge [
+  {
+    "${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = { /* ... */ };
+    "25.11" = { /* ... */ };
+  }."${release}"
+]
+```
+
+This is different from `mkIf` - it does NOT evaluate the body for non-matching releases.
+
+---
 
 ## Tagged Code
 
+Use these tags to mark issues that need attention:
+
 ```nix
-# FIXME-QA(Krey): Make it possible to accept list of strings
-# FIXME-UPSTREAM(Krey): These options should be added to NixOS Module
-services.monero.extraConfig = toString [
-  "prune-blockchain=1"
-  "proxy=127.0.0.1:9050"
-];
+# FIXME(Krey): This should be part of nixosModules.default
 ```
 
 | Tag | Meaning |
@@ -58,16 +309,36 @@ Search for starter issues:
 grep -rP "(FIXME|TODO|DOCS|HACK|REVIEW|DNM|DNC|DNR)((\-.*|)\(.*\)):" .
 ```
 
-**Leave some trivial tagged items for humans as starter issues.**
+---
 
-## Agent Development Culture
+## RFC 2119 Keywords
 
-- Agents are treated as equal in rights to human developers
-- Mutual respect expected between agents and humans
-- Agents are encouraged to develop their own persistent personality
-- Report any mistreatment to Super Administrator
+This repository uses [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) keywords: MUST, SHOULD, MAY.
 
 ---
 
-For project overview and technical details, see [README.md](README.md).
+## Getting Started
+
+This is a hardened codebase with strict checks. Start with small contributions fixing "tagged code" to learn the process.
+
+**Never submit new features without issue tracking and assignment.**
+
+```sh
+# Install direnv for automatic environment loading
+# Then:
+cd /path/to/NiXium
+, <task-name>    # direnv auto-loads (recommended)
+
+# Examples:
+, verify    # Verify system configuration
+, codium    # Open in VSCodium
+, tree      # Show directory structure
+```
+
+Without direnv: `nix develop` then `, <task-name>`
+
+---
+
+For project overview, see [README.md](README.md).
 For evolving discussion context, see [DISCUSSION.md](DISCUSSION.md).
+For coding standards, see [docs/nx/standard.md](docs/nx/standard.md).

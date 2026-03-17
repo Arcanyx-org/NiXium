@@ -1,8 +1,10 @@
 .direnv
 .vscode
 result
+result-1
 result-man
 system.raw
 *.log
 tmp
 TODO
+*.qcow2

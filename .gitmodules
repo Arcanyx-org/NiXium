@@ -23,3 +23,6 @@
 [submodule "vendor/mission-control"]
 	path = vendor/mission-control
 	url = https://github.com/Platonic-Systems/mission-control
+[submodule "vendor/disko"]
+	path = vendor/disko
+	url = https://github.com/nix-community/disko

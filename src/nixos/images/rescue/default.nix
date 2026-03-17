@@ -7,7 +7,7 @@ let
 	inherit (lib) mkForce;
 in {
 	perSystem = { system, pkgs, inputs', self', ... }: {
-		packages.nixos-rescueImage = inputs.nixos-generators.nixosGenerate {
+		packages.nixos-rescueImage = inputs.nixpkgs.lib.nixosSystem {
 			pkgs = import inputs.nixpkgs {
 				inherit system;
 				config.allowUnfree = true;

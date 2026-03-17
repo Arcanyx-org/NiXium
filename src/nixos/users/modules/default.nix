@@ -1,6 +1,7 @@
 {
 	imports = [
 		./editors
+		./programs
 		./services
 		./system
 		./terminal-emulators

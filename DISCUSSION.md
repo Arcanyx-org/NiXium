@@ -247,4 +247,60 @@ See `migration.TODO` for plans to eventually move from Nix to Guix or Scheme-bas
 
 ---
 
+## VM Testing Infrastructure (2026-03-14)
+
+### Goal
+
+Set up VM testing infrastructure for NiXium Tupac machine with:
+1. Working disko-based VM that mirrors real hardware (LUKS → plain btrfs/swap)
+2. Pulse check VM that boots, prints "OK", and powers off automatically for CI/CD
+
+### Constraints
+
+- Use native nixpkgs (not deprecated `nixos-generators`)
+- Use stable release (`nixos-tupac-stable`), not unstable
+- Want GUI by default, pulse check should run with `-nographic`
+- Avoid `NIXPKGS_ALLOW_UNFREE` - whitelist unfree packages explicitly
+- Use specialisations for VM variants instead of creating new NixOS options
+- Do NOT modify `disks.nix` - brainstorm alternatives first
+
+### Discoveries
+
+1. **`vmVariantWithDisko`** works for GUI VM - boots to login successfully
+2. **`nix run .#nixosConfigurations.nixos-tupac-stable.config.system.build.vmWithDisko`** works for GUI
+3. **hardware.graphics** needs special handling - stable has more options than unstable (package32, etc.)
+4. **The pulse check VM keeps getting stuck on LUKS swap** - hardware config has LUKS swap that tries to activate
+5. **vmVariantWithDisko** uses disko for disk, **vmVariant** uses tmpfs by default
+6. **Specialisations apply to `vmVariant`, not `vmVariantWithDisko`** - this is the core blocker
+
+### Approaches Considered
+
+1. **Specialisation** (attempted): Create `specialisation.pulseCheck.configuration` to override swap
+   - Problem: Specialisation only applies to `vmVariant`, not `vmVariantWithDisko`
+   - Result: Stuck on LUKS swap because hardware disko config is still applied
+
+2. **Separate vmVariantWithDisko config**: Add another variant with pulse check baked in
+   - Not tried yet
+
+3. **nixos-generators**: Use `nixosGenerators.qemu` to produce image directly
+   - Not tried yet
+
+4. **Module-based option**: Add `pulseCheck` option, set via specialisation
+   - Problem: Still needs specialisation to work with vmVariantWithDisko
+
+### Current Status
+
+- GUI VM (`vmVariantWithDisko`) works ✓
+- Pulse check VM: **NOT WORKING** - blocked on specialisation not applying to vmVariantWithDisko
+- Stub specialisation created in `specialisations.nix` for future experimentation
+
+### Next Steps
+
+Need to decide on approach to implement pulse check VM:
+1. Use separate VM config (different output name)
+2. Use nixos-generators to produce QEMU image with overrides
+3. Find another way to make specialisation work with vmVariantWithDisko
+
+---
+
 *This file evolves as discussions happen. Review before starting new work to avoid repeating topics.*

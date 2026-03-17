@@ -1,65 +1,61 @@
-{ config, lib, ...}:
-
-# Global Management of Impermanence
+{ config, lib, ... }:
 
 let
-	inherit (lib) mkDefault mkIf;
-in mkIf config.boot.impermanence.enable {
-	environment.persistence."/nix/persist/system" = {
-		hideMounts = true;
-		directories = [
-			"/var/log" # Logs
-			"/var/lib/bluetooth" # Keep bluetooth configs
+	inherit (builtins) attrNames map;
+	inherit (lib) mkIf mkMerge;
+in mkMerge [
+	# Default age identity for VM builds to satisfy ragenix assertion
+	# Will be overridden by impermanence config when enabled
+	{
+		age.identityPaths = [ ];
+	}
 
-			"/var/lib/systemd/coredump" # Dunno
+	# Full config when impermanence is enabled
+	(mkIf config.boot.impermanence.enable {
+		# Create user persist directories for all users with home-manager
+		# This ensures directories exist with correct ownership before home-manager runs
+		# Always enabled regardless of impermanence since it's needed for user directories
+		systemd.tmpfiles.rules =
+			let
+				userNames = attrNames config.home-manager.users;
+			in
+				map (username: let
+					user = config.users.users.${username};
+					uid = user.uid;
+					gid = if user.group != null then user.group else "users";
+				in
+					"d /nix/persist/users/${username} 0755 ${toString uid} ${gid}"
+				) userNames;
 
-			"/etc/NetworkManager/system-connections" # WiFi configs
+		# Impermanence-specific configuration
+		environment.persistence = {
+			"/nix/persist/system" = {
+				hideMounts = true;
+				directories = [
+					"/var/log"
+					"/var/lib/bluetooth"
+					"/var/lib/systemd/coredump"
+					"/etc/NetworkManager/system-connections"
+					{ directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "u=rwx,g=rx,o="; }
+					{ directory = "/var/lib/private"; user = "root"; group = "root"; mode = "u=rwx,g=,o="; }
+				] ++ lib.optional config.virtualisation.waydroid.enable "/var/lib/waydroid"
+					++ lib.optional config.services.fprintd.enable "/var/lib/fprint"
+					++ lib.optional config.services.ollama.enable "/var/lib/private/ollama";
+				files = [
+					"/etc/machine-id"
+					"/var/lib/systemd/random-seed"
+					"/etc/ssh/ssh_host_ed25519_key"
+				];
+			};
+		};
 
-			{ directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "u=rwx,g=rx,o="; }
-
-			{ directory = "/var/lib/private"; user = "root"; group = "root"; mode = "u=rwx,g=,o="; }
-
-			# FIXME(Krey): Move this to it's own module
-				(mkIf config.virtualisation.waydroid.enable "/var/lib/waydroid")
-
-			# FIXME(Krey): Move this to it's own module
-				(mkIf config.services.fprintd.enable "/var/lib/fprint")
-
-			# FIXME(Krey): Move this to it's own module
-				# (mkIf config.services.ollama.enable config.services.ollama.home)
-				(mkIf config.services.ollama.enable "/var/lib/private/ollama")
-		];
-		files = [
-			"/etc/machine-id" # Unique ID of the system
-			"/var/lib/systemd/random-seed"
-
-			# FIXME(Krey): Should have been in the OpenSSH module
-			"/etc/ssh/ssh_host_ed25519_key"
-		];
-	};
-
-	# TODO(Krey): Pending vendor re-management
-		# Hotfix for https://github.com/nix-community/impermanence/issues/229
 		boot.initrd.systemd.suppressedUnits = [ "systemd-machine-id-commit.service" ];
 		systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
 
-	# The configuration will deploy the user directories owned by root:root which will cause the user's home manager to fail deployment due to permission denied error, so we need to change the ownership before home-manager setup
-		# Plan A
-		# system.activationScripts.change-ownership-persist-users = ''chown root:users /nix/persist/users''; # Set Permission Of the Persistent Users Directory
+		age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ];
 
-		# Plan B
-			# systemd.tmpfiles.rules = [
-			# 	"d /persist/home/${username} 0700 ${username} users"
-			# 	# We need to explicitly set ownership on the home directory when using impermanence.
-			# 	# Otherwise, it will be owned as root, and home-manager will fail.
-			# 	"d /home/${username} 0700 ${username} users"
-			# ];
+		programs.fuse.userAllowOther = true;
 
-	age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Add impermenant path for keys
-
-	# Needed for impermanence in home-manager
-	programs.fuse.userAllowOther = true;
-
-	# Impermanence does not have state
-	system.stateVersion = mkDefault config.system.nixos.release;
-}
+		system.stateVersion = lib.versions.majorMinor lib.version;
+	})
+]
