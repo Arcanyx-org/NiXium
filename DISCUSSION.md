@@ -303,4 +303,15 @@ Need to decide on approach to implement pulse check VM:
 
 ---
 
+## AI Agent Productivity Brainstorm (2026-03-19)
+
+An agent-authored proposal document exists at `docs/agent-coworker-proposal.md` covering:
+- Honest confidence/risk assessment for agent contributions
+- Proposals: Nix format CI, `nix flake check` CI, agent session protocol, tagged-code inventory task, per-machine DISCUSSION.md, build-tested PR flag, dependency diff task, agent commit identity, migration plan formalization
+- Open questions: formatter choice, agent autonomy boundaries, CI build cache, SOPS vs. ragenix standardization, vmVariantWithDisko pulse-check blocker
+
+Review and discuss before deciding which proposals to act on.
+
+---
+
 *This file evolves as discussions happen. Review before starting new work to avoid repeating topics.*
