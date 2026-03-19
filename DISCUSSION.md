@@ -303,14 +303,29 @@ Need to decide on approach to implement pulse check VM:
 
 ---
 
-## AI Agent Productivity Brainstorm (2026-03-19)
+## AI Agent Productivity Brainstorm — Maintainer Feedback Applied (2026-03-19)
 
-An agent-authored proposal document exists at `docs/agent-coworker-proposal.md` covering:
-- Honest confidence/risk assessment for agent contributions
-- Proposals: Nix format CI, `nix flake check` CI, agent session protocol, tagged-code inventory task, per-machine DISCUSSION.md, build-tested PR flag, dependency diff task, agent commit identity, migration plan formalization
-- Open questions: formatter choice, agent autonomy boundaries, CI build cache, SOPS vs. ragenix standardization, vmVariantWithDisko pulse-check blocker
+Following maintainer review of the initial proposal, these corrections and clarifications were established:
 
-Review and discuss before deciding which proposals to act on.
+**Key corrections:**
+- `nixpkgs-fmt` is NOT used in this project (style conflict with Nx Language Standard); commented out in `flake.nix` with `FIXME-QA`
+- VM builds ARE available to agents via the direnv/Nix devShell — the initial assessment was wrong; agents SHOULD run `nix build` / `nix run` to verify changes
+- The shellcheck CI proposal (`P.2`) is partially redundant: `pkgs.writeShellApplication` already runs shellcheck at evaluation time; a standalone CI job is still useful for explicit reporting but lower priority
+- There IS already an `update` task (`, update` → `nix flake update --verbose`) for dependency updates — the dep-diff proposal in P.7 was based on a gap that doesn't exist
+- The vmVariantWithDisko/specialisation blocker from earlier DISCUSSION.md is superseded — VM testing pattern is working per the appimage module
+
+**New proposals added to `docs/agent-coworker-proposal.md`:**
+- Custom `nx-secrets` Nix module design for agent-bootstrappable secret generation
+- Hardware staging issue for micro-architectural testing
+- Impermanence integration review checklist
+- Security audit depth elaboration with specific capability/limitation breakdown
+- New tag proposals (FIXME-PQ, FIXME-HARDENING, FIXME-PERF, FIXME-PRIVACY, FIXME-DEPS, FIXME-COMPAT, FIXME-BLOB, CONTRIB, AUDIT)
+
+**Decisions:**
+- P.3 (session protocol), P.4 (tagged-code task), P.5 (per-machine DISCUSSION.md), P.8 (agent commit identity), P.9 (migration plan) all recommended for separate merge requests
+- P.6 (build-tested flag) withdrawn — GitHub CI UI already provides this
+- Both SOPS and ragenix stay; ragenix with PQ module is preferred for new secrets
+- AGENTS.md updated with session protocol and improved VM build guidance
 
 ---
 

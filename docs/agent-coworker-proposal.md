@@ -1,166 +1,133 @@
-# AI Agent Coworker: Productivity Proposal
+# AI Agent Coworker: Productivity Proposal (Revised)
 
-**Date:** 2026-03-19
-**Author:** GitHub Copilot Agent (this document)
+**Date:** 2026-03-19 (original), revised 2026-03-19 based on maintainer feedback
+**Author:** GitHub Copilot Agent
 **Purpose:** Honest assessment of agent productivity confidence in NiXium, and concrete proposals for what could be done differently to improve the human–agent collaboration workflow.
 
-This is a brainstorming document. Treat every proposal here as a conversation starter, not a final decision. The author welcomes pushback, corrections, and refinements.
+This is a brainstorming document. Treat every proposal here as a conversation starter, not a final decision. Proposals marked **[ACTIONED]** have been implemented in this PR or a linked branch.
 
 ---
 
-## 1. Confidence Assessment
+## 1. Confidence Assessment (Revised)
 
 ### Where I Am Confident
 
 | Area | Confidence | Notes |
 |------|-----------|-------|
-| Flake-parts module architecture | High | AGENTS.md explains this clearly; the pattern is consistent throughout the codebase |
+| Flake-parts module architecture | High | AGENTS.md explains this clearly; pattern is consistent throughout |
 | Machine config structure | High | Template machine and AGENTS.md leave little ambiguity |
-| Nix language syntax + lib usage | High | `lib.mkMerge`, `lib.mkIf`, `lib.trivial.release` patterns are well-established |
-| Shell script conventions | High | `pkgs.writeShellApplication`, POSIX sh, shellcheck pass are clear requirements |
-| Tagged code conventions | High | Tag taxonomy is documented and used consistently |
+| Nix language syntax + lib usage | High | `lib.mkMerge`, `lib.mkIf`, `lib.trivial.release` patterns well-established |
+| Shell script conventions | High | `pkgs.writeShellApplication`, POSIX sh, shellcheck pass are clear |
+| Tagged code conventions | High | Tag taxonomy documented and used consistently |
 | Documentation authoring | High | README.md, DISCUSSION.md, AGENTS.md give clear style signals |
-| Release-independent modules | Medium-High | Pattern is documented; risk of misapplying it without a build test |
+| Release-independent modules | Medium-High | Pattern documented; still needs a build test to validate |
+| VM builds | Medium | devShell provides all tools; the appimage module shows the exact pattern to follow |
 
 ### Where I Am Less Confident
 
 | Area | Confidence | Reason |
 |------|-----------|--------|
-| Secret management (ragenix / SOPS) | Medium | Keys are machine-specific and I cannot test decryption; mistakes here are high-impact |
-| VM build verification | Low | I cannot run `nix build` or `nix run` in this environment; any change to VM configs requires human verification |
-| Hardware-specific configurations | Low | Kernel params, disko layouts, and hardware quirks require real hardware or a working VM to validate |
-| Impermanence integration | Low | The interaction between impermanence, LUKS swap, and vmVariantWithDisko has known unresolved issues (see DISCUSSION.md) |
-| Security audit depth | Low | I can flag obvious problems but I am not a substitute for expert cryptographic review or microbenchmarking |
+| Secret management (ragenix / SOPS) | Medium | Keys are machine-specific and cannot be tested without actual hardware keys; mistakes here are high-impact |
+| Hardware-specific configurations | Low | Kernel params, disko layouts, and hardware quirks require real hardware or a validated VM; VM testing covers most cases but not micro-architectural changes |
+| Impermanence integration | Medium | Module exists and is implemented (`src/nixos/modules/system/impermenance/` — note: intentional typo matching actual dir name); needs re-verification that all machines use it correctly |
+| Security audit depth | Low-Medium | See elaboration below |
+
+### VM Build Clarification
+
+In the initial assessment I rated VM build verification as "Low" confidence because the agent environment did not appear to support running builds. This was **incorrect**. The project provides a complete devShell via direnv + Nix that includes all required tools. The appimage module (`src/nixos/modules/programs/appimage/default.nix`) demonstrates the proven VM testing pattern with pulse checks. Agents SHOULD use this pattern and SHOULD run `nix build` / `nix run` via the devShell for verification.
+
+The AGENTS.md has been updated with the correct VM build pattern.
 
 ### Honest Risk Assessment
 
-I will most reliably help with:
+**Agents will reliably help with:**
 - Documentation improvements and corrections
 - CI/CD workflow additions (new GitHub Actions jobs, mission-control tasks)
 - Refactoring well-understood config patterns
-- Resolving tagged code items that are self-contained (`FIXME-QA`, `FIXME-DOCS`, `FIXME-UPSTREAM`)
-- Reviewing shell scripts for shellcheck compliance and POSIX portability
+- Self-contained tagged code items (`FIXME-QA`, `FIXME-DOCS`, `FIXME-UPSTREAM`)
+- Shell scripts (shellcheck compliance, POSIX portability)
+- VM-based module testing following the appimage module pattern
 
-I SHOULD NOT be trusted to autonomously:
+**Agents SHOULD NOT autonomously:**
 - Make decisions about cryptographic algorithms or key rotation policy
-- Commit changes that touch secrets infrastructure without human review
-- Mark security-sensitive changes as ready-to-merge without explicit human sign-off
-- Accept that a VM build works without an actual build run
+- Touch secrets infrastructure without human review (every PR already goes through human review, but extra caution applies here)
+- Deploy to real hardware (VMs only)
+
+### Security Audit Depth: Elaboration
+
+The initial assessment was too vague. Here is a more honest breakdown:
+
+**What AI agents CAN do in security review:**
+- Static analysis of Nix expressions for common patterns (world-readable files, hardcoded credentials, excessive permissions)
+- Cross-referencing against known CVE databases and NVD for used packages
+- Reviewing firewall rules, SSH config, sudo/sudo-rs configuration for obvious misconfigurations
+- Checking that secrets use age/ragenix and are not readable world-wide
+- Verifying impermanence configuration covers expected paths
+- Flagging FIXME-SECURITY and DNM tags for human follow-up
+
+**What AI agents CANNOT reliably do:**
+- Microbenchmarking (cannot run real hardware tests to detect timing-channel attacks like the XZ detection method)
+- Post-quantum cryptographic correctness review (requires specialized domain expertise)
+- Side-channel analysis (requires hardware-level instrumentation)
+- Verify blob integrity without being able to rebuild the blob ourselves
+- Detect sophisticated supply-chain attacks embedded in transitive dependencies at source level
+
+**What is needed for a functional AI-agent security workflow:**
+1. A structured "security review checklist" per module type (machine config, service, secret)
+2. Access to a tool that can query the GitHub Advisory Database or NVD for all flake inputs
+3. A mission-control task that generates a dependency manifest per nixosConfiguration for review
+4. Clear policy on which FIXME-SECURITY items are agent-actionable vs. human-only
+5. Post-quantum module checklist once PQ support in age/ragenix matures
 
 ---
 
 ## 2. Proposals
 
-### P.1 — Add Nix Format Enforcement to CI
+### P.1 — Formatter Choice **[ACTIONED: nixpkgs-fmt commented out]**
 
-**Current state:** `nixpkgs-fmt` is in the devShell but no CI job enforces it.
+**Original proposal:** Add nixpkgs-fmt CI enforcement.
 
-**Proposed change:** Add a GitHub Actions workflow `nix-fmt-check.yaml` that runs `nixpkgs-fmt --check` on all changed `.nix` files in a pull request.
+**Maintainer feedback:** The project does NOT use nixpkgs-fmt. It enforces a custom style (Nx Language Standard, tabs) that conflicts with nixpkgs-fmt's output (spaces). nixpkgs-fmt was present in the devShell but should be commented out.
 
-**Why:** 691 tagged items and growing codebase means formatting drift is likely over time. A CI gate prevents style debates in reviews and keeps agents from introducing tabs-vs-spaces noise.
+**Action taken in this PR:** Commented out `nixpkgs-fmt` from the devShell and `formatter` output in `flake.nix` with a `FIXME-QA` tag explaining why.
 
-**Caveat (resolve before implementing):** `nixpkgs-fmt` uses spaces by default; the project uses tabs. Check whether `nixpkgs-fmt` respects `.editorconfig` or whether a different formatter (e.g. `alejandra` or `treefmt` with a tabs-aware config) is needed. This configuration question MUST be resolved before the CI check can be enforced — otherwise it will fail on all existing files.
+**Outstanding question:** The project still needs a formatter. Options:
+- `alejandra` — opinionated but makes Nix harder to read per maintainer
+- `treefmt` — configurable, could potentially support tabs
+- Custom formatter or lint rules
+- Document the current style explicitly enough that human/agent review enforces it
 
-**Concrete step:**
-```yaml
-# .github/workflows/nix-fmt-check.yaml
-name: Nix Format Check
-on:
-  pull_request:
-    types: [opened, reopened, ready_for_review]
-    paths: ['**.nix']
-  merge_group:
-jobs:
-  fmt-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: cachix/install-nix-action@v26
-        with:
-          install_url: https://nixos.org/nix/install
-      - name: Check Nix formatting
-        run: |
-          BASE="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
-          CHANGED=$(git diff --name-only "$BASE"...HEAD -- '*.nix' | tr '\n' ' ')
-          [ -z "$CHANGED" ] || nix develop --command bash -c "nixpkgs-fmt --check $CHANGED"
-```
+This is a separate discussion; a dedicated merge request is the right place.
 
 ---
 
-### P.2 — Add `nix flake check` to CI
+### P.2 — `nix flake check` and Shellcheck in CI
 
-**Current state:** Only shellcheck runs in CI. No structural validation of the flake.
+**Original proposal:** Add a `nix flake check --no-build` CI job.
 
-**Proposed change:** Add a CI job that runs `nix flake check --no-build` (syntax + module evaluation without triggering full builds).
+**Maintainer feedback clarification:**
+- `nix flake check` does NOT run shellcheck itself — shellcheck is baked into `pkgs.writeShellApplication` wrappers which run at derivation evaluation time. So shellcheck compliance IS already enforced as a side-effect of building.
+- The shellcheck task (`tasks/checks/shellcheck/`) is agent-generated and currently blocked (`exit 66` in the script, `DNM` tagged). It is not yet active.
+- A `nix flake check --no-build` job would still be useful for catching evaluation errors early in CI without waiting for a full build.
 
-**Why:** This catches missing imports, typos in option names, and module evaluation errors before they reach a deployment. It is fast because `--no-build` skips the derivation build phase.
-
-**Concrete step:**
-```yaml
-# .github/workflows/flake-check.yaml
-name: Nix Flake Check
-on:
-  pull_request:
-    types: [opened, reopened, ready_for_review]
-    paths: ['**.nix', 'flake.lock']
-  merge_group:
-jobs:
-  flake-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v26
-        with:
-          install_url: https://nixos.org/nix/install
-      - name: Check flake
-        run: nix flake check --no-build
-```
+**Recommendation:** Implement `nix flake check --no-build` as a CI job in a separate merge request. Note that this will catch shellcheck failures transitively when modules are evaluated.
 
 ---
 
-### P.3 — Session Protocol for Agents
+### P.3 — Session Protocol for Agents **[ACTIONED]**
 
-**Current state:** AGENTS.md describes architecture well but does not define a structured workflow for starting and closing a session.
-
-**Proposed change:** Add a "Session Protocol" section to AGENTS.md with a checklist agents MUST follow.
-
-**Why:** Agents start every session with no memory of prior sessions. Without a protocol they waste time (and context tokens) rediscovering the same things, or miss context that would prevent mistakes. A checklist makes the cost of skipping steps explicit.
-
-**Proposed checklist (draft):**
-
-```markdown
-## Session Protocol
-
-### Before Starting Work (MUST complete)
-
-- [ ] Read the latest DISCUSSION.md
-- [ ] Read AGENTS.md (this file)
-- [ ] If working on a specific machine: read `src/nixos/machines/<machine>/DISCUSSION.md` if it exists
-- [ ] Run `grep -rP "(DNM|REVIEW)((\-.*|)\(.*\)):" . --include="*.nix"` to check for open blockers
-- [ ] Review the PR description and any open review comments
-
-### Before Closing Session (MUST complete)
-
-- [ ] Update DISCUSSION.md with any new discoveries, decisions, or open issues
-- [ ] Run shellcheck on any changed `.sh` files
-- [ ] Run `nix-instantiate --parse` on any changed `.nix` files to catch syntax errors
-- [ ] Tag any unresolved issues with the appropriate tag and your identity
-- [ ] If you worked on a machine config: note whether the change was build-tested or not in the PR description
-```
+**Action taken in this PR:** Added a "Session Protocol" section to `AGENTS.md` with explicit MUST-complete checklists for session start and end, plus specific DISCUSSION.md update rules aimed at opencode.ai agents that have struggled with this.
 
 ---
 
-### P.4 — Automate Tagged Code Inventory
+### P.4 — Tagged Code Inventory Task
 
-**Current state:** There are 691 tagged items in `.nix` and `.sh` files. There is no automated view of them.
+**Status:** Recommended for a separate merge request.
 
-**Proposed change:** Add a mission-control task `, tagged-code` that generates a report of all tagged items, grouped by tag type and file, written to stdout or a temp file.
+**Proposal:** Add a `, tagged-code` mission-control task that lists all tagged items grouped by type and file, with line numbers.
 
-**Why:** 691 items is too many to track mentally. Agents picking "starter issues" need a machine-readable list. A task makes it easy to regenerate the list on demand without remembering the grep pattern. NOTE: the grep pattern below is the canonical one; if it ever changes, update both this task and AGENTS.md to stay in sync.
+This is a low-risk, high-value addition. The grep pattern already exists in AGENTS.md and README.md; the task just makes it a one-keystroke command.
 
-**Concrete step (Nix snippet):**
 ```nix
 "tagged-code" = {
   description = "List all tagged code items (FIXME, TODO, DOCS, etc.)";
@@ -168,6 +135,7 @@ jobs:
   exec = pkgs.writeShellApplication {
     name = "tasks-tagged-code";
     runtimeInputs = [ pkgs.gnugrep pkgs.coreutils ];
+    # NOTE: Keep this pattern in sync with the one documented in AGENTS.md
     text = ''
       grep -rn --include="*.nix" --include="*.sh" \
         -P "(FIXME|TODO|DOCS|HACK|REVIEW|DNM|DNC|DNR)((\-.*|)\(.*\)):" \
@@ -179,118 +147,205 @@ jobs:
 
 ---
 
-### P.5 — Consistent Per-Machine DISCUSSION.md
+### P.5 — Per-Machine DISCUSSION.md Template
 
-**Current state:** Only `tupac` has a machine-specific `DISCUSSION.md`. Other machines (hana, sinnenfreude, ignucius, lengo, mracek, twinkcentral) do not.
+**Status:** Recommended for a separate merge request.
 
-**Proposed change:** Add a minimal `DISCUSSION.md` template to `src/nixos/machines/template/` and add a note to AGENTS.md that agents SHOULD create `DISCUSSION.md` for any machine they work on if one does not exist.
-
-**Why:** Machine-specific context (hardware quirks, known issues, what was tried and failed) is exactly the kind of information that prevents agents from repeating mistakes. The tupac DISCUSSION.md saved significant time in the VM testing session. The pattern SHOULD be replicated.
+**Proposal:** Add a minimal `DISCUSSION.md` template to `src/nixos/machines/template/` so that any agent working on a new machine has a starting point. Only `tupac` currently has a machine-specific discussion file.
 
 ---
 
-### P.6 — Explicit Build-Tested vs. Not-Tested Flag in PRs
+### P.6 — Build-Tested Flag in PRs
 
-**Current state:** There is no standard way to communicate whether a Nix config change was validated by an actual build. Agents frequently cannot run builds (this environment has no Nix evaluator).
+**Maintainer feedback:** GitHub's CI/CD UI already provides this context via check status on each PR. The proposal as written is redundant.
 
-**Proposed change:** Define a standard PR tag or checklist item:
-
-```
-- [ ] Config changes build-tested with `nix build .#nixosConfigurations.<machine>-stable.config.system.build.vm --no-link`
-- [ ] Config changes NOT build-tested (human reviewer MUST run before merging)
-```
-
-**Why:** This makes the risk of untested changes explicit and puts the verification responsibility where it belongs (human reviewer), rather than leaving it implicit. It also helps future agents understand which parts of the history are verified.
+**Withdrawn.** The CI pipeline is the right place for this.
 
 ---
 
-### P.7 — Dependency Change Review Workflow
+### P.7 — Dependency Change Review
 
-**Current state:** `flake.lock` updates happen via `nix flake update`. There is no structured review process for what changed.
+**Maintainer feedback:** There is already an `update` task (`, update` → `nix flake update --verbose`) in `tasks/release/update/default.nix`. The initial proposal missed this.
 
-**Proposed change:** Add a mission-control task `, dep-diff` that shows a human-readable diff of `flake.lock` changes: which inputs changed, from which commit to which, with links to the upstream changelogs.
-
-**Why:** The XZ backdoor defense strategy explicitly requires verifying ALL dependency changes. Right now a `flake.lock` update is a black-box commit. A readable diff makes it possible to review what changed and apply the "all blobs are malware until proven otherwise" principle to updates.
-
-**Concrete step:**
-```nix
-"dep-diff" = {
-  description = "Show human-readable diff of flake.lock changes since last commit";
-  category = "Checks";
-  exec = pkgs.writeShellApplication {
-    name = "tasks-dep-diff";
-    runtimeInputs = [ pkgs.git pkgs.nix pkgs.jq ];
-    text = ''
-      git diff HEAD flake.lock | \
-        grep -E '^[+-].*"(url|rev)"' | \
-        sed 's/^+/  NEW: /' | \
-        sed 's/^-/  OLD: /'
-    '';
-  };
-};
-```
+**Corrected understanding:** The `update` task updates all flake inputs. The verbose output shows which inputs changed. A more useful addition would be a human-readable summary comparing the old and new `flake.lock` (old SHA → new SHA per input), but this is lower priority given the current infrastructure state.
 
 ---
 
 ### P.8 — Agent Identity in Commit Messages
 
-**Current state:** Agents commit with a generic identity. It is not clear from `git log` which commits were made by a human vs. an agent vs. which specific agent type.
+**Status:** Recommended for a separate merge request.
 
-**Proposed change:** Adopt a convention for agent commit messages:
-
-```
-feat(machine/tupac): add split-lock kernel param [agent: copilot]
-```
-
-Or use a Git trailer:
-```
-Agent: github-copilot
-Verified-Build: no
-```
-
-**Why:** Provenance tracking is important in a security-sensitive project. Knowing which commits came from an agent (and which agent) helps humans apply the appropriate level of scrutiny during review. It also helps post-hoc audits.
+**Maintainer note:** Good idea, but the implementation needs more thought. The right place to discuss the exact format (trailer? bracket suffix? git config?) is in a dedicated merge request.
 
 ---
 
-### P.9 — Clarify the `migration.TODO` Scope
+### P.9 — Migration Plan Formalization
 
-**Current state:** `migration.TODO` lists four items for "migrating to new management" but gives no timeline, ownership, or blocking conditions.
+**Status:** Recommended for a separate merge request, after the codebase stabilizes.
 
-**Proposed change:** Convert `migration.TODO` to a proper `docs/migration-plan.md` with:
-- Current state for each item
-- Blocking conditions (what must be true before this can start)
-- Acceptance criteria (how do we know it is done)
-- Owner (human or "open")
-
-**Why:** Agents will keep encountering these migration items and either ignore them (wasteful) or attempt them prematurely (risky). Clear ownership and blocking conditions tell an agent exactly what is and is not in scope.
+**Maintainer note:** The infrastructure is currently in crisis recovery / experimental branch mode. A formal migration plan document is appropriate once the codebase stabilizes.
 
 ---
 
-## 3. What I Would NOT Change
+## 3. Secret Management Module Proposal
 
-The following are things that work well and SHOULD NOT be changed without a compelling reason:
+**Background (from maintainer):** The current ragenix-based secret management requires existing infrastructure keys to work. This means agents and new contributors cannot generate secrets independently. The ideal solution is a custom Nix module that:
+1. Includes a command to generate secrets from scratch (so anyone — including agents — can bootstrap)
+2. Places secrets during deployment via a service (NOT via `readFile`, which would make them world-readable in the Nix store)
+3. Works as an alternative to or wrapper around ragenix
 
-- **flake-parts architecture** — the per-machine modularity scales well and AGENTS.md explains it clearly.
-- **Tagged code system** — the taxonomy is good. Adding more tags would increase confusion.
-- **POSIX shell preference** — reduces attack surface, good choice for this threat model.
-- **`pkgs.writeShellApplication` for scripts** — avoids rebuilds, passes shellcheck, correct approach.
-- **Release-independent modules via attrset** — the approach is non-obvious but correct (avoids evaluating non-matching release bodies).
-- **DISCUSSION.md as a living log** — this is the most valuable document for agent continuity. Keep it updated.
+The pattern for runtime secret placement is already demonstrated in the existing ragenix integration; see `src/nixos/machines/hana/config/disks.nix` for an example of `age.secrets.<name>.path` being passed to a service.
+
+### Problem with `readFile`
+
+Using `builtins.readFile` on a secret file in a Nix expression causes the secret to be copied into the world-readable Nix store. This is explicitly prohibited. The correct approach is:
+
+```nix
+# WRONG — copies secret into /nix/store (world-readable)
+environment.etc."my-service/config".text = builtins.readFile ./secret.age;
+
+# CORRECT — ragenix decrypts to a tmpfs path at runtime, only accessible to root
+age.secrets."my-service-config".file = ./secret.age;
+environment.etc."my-service/config".source = config.age.secrets."my-service-config".path;
+```
+
+### Proposed Design: `nx-secrets` Module
+
+A custom NixOS module `nixosModules.nx-secrets` that provides:
+
+```nix
+# Usage in a machine config:
+nx.secrets = {
+  enable = true;
+
+  # Declare secrets with their generator commands
+  secrets."machine-disk-password" = {
+    generator = "openssl rand -base64 32";  # Command to generate the secret
+    recipients = [ config.age.publicKeys.machine config.age.publicKeys.admin ];
+    targetPath = "/run/secrets/disk-password";  # Where to place it at runtime
+    permissions = "0400";
+    owner = "root";
+  };
+};
+```
+
+The module would provide:
+1. A mission-control task `, secrets-generate [secret-name]` that runs the generator command and encrypts the result with the declared recipients, producing a `.age` file
+2. A systemd service (activated at boot) that decrypts and places secrets at `targetPath` using an in-memory tmpfs — NOT the Nix store
+3. Integration with the existing `src/nixos/secrets.nix` pattern
+
+### Bootstrap Workflow for New Contributors/Agents
+
+```sh
+# 1. Generate a new age key for yourself
+age-keygen -o ~/.config/age/keys.txt
+
+# 2. Add your public key to secrets.nix recipients
+# 3. Run the generator for any secret you need
+, secrets-generate machine-disk-password
+
+# 4. Commit the .age file (encrypted, safe to commit)
+# 5. On deployment, the systemd service decrypts to tmpfs
+```
+
+### Security Properties
+
+- Secrets never appear in the Nix store
+- Generator commands are auditable (in the Nix expression)
+- Each secret has explicit recipient list (who can decrypt)
+- Runtime path is on tmpfs (cleared on reboot)
+- Compatible with existing ragenix infrastructure
+
+### Implementation Notes
+
+- Build on top of existing ragenix module (do not replace it initially)
+- The generator command approach mirrors what PostmarketOS does with device keys
+- Consider integration with the planned PQ module once available
+- Reference: impermanence module pattern for tmpfs-based secret placement
 
 ---
 
-## 4. Open Questions for Brainstorm
+## 4. Hardware Staging Proposal
 
-1. **Formatter choice:** Should the project adopt `alejandra` (opinionated, tabs-aware) instead of `nixpkgs-fmt`? Or configure `treefmt`? The current style uses tabs but `nixpkgs-fmt` prefers spaces.
+**Background (from maintainer):** VM testing covers most changes well. The gap is micro-architectural changes (kernel patches, CPU microcode, specific hardware bugs). Ideally: a physical copy of the hardware as a staging system with remote management, including ability to alter firmware on demand (similar to PostmarketOS's approach).
 
-2. **Agent autonomy boundaries:** What classes of changes can an agent commit and push without human review? Suggestion: documentation and `FIXME-QA` items only; anything touching secrets, kernel params, or disko requires human sign-off.
+### Proposed GitHub Issue Tracking
 
-3. **Build verification in CI:** Is there a Cachix cache or NixOS build farm available that would make per-machine `nix build` checks feasible in GitHub Actions? Without a cache, building NixOS configurations in CI is very slow.
+Create an issue in the repository with:
 
-4. **SOPS vs. ragenix long-term:** Both are used in the flake. Is the intent to standardize on one? This affects how agents should handle secrets in new configs.
+**Title:** `[INFRA] Hardware Staging System for Micro-Architectural Testing`
 
-5. **Impermanence + vmVariantWithDisko blocker (from DISCUSSION.md):** Has anyone investigated using `nixos-generators` or a `perSystem` output for a dedicated pulse-check VM instead of specialisations? This is likely the path of least resistance given the specialisation limitation.
+**Content:**
+- Goal: Duplicate hardware unit (same model as tupac or other critical machines) available for remote-controlled testing
+- Requirements: Remote power control, IPMI/BMC or equivalent, ability to reflash firmware
+- Precedent: PostmarketOS maintains test hardware with remote control
+- Acceptance criteria: Agents can trigger tests on real hardware via CI pipeline
+- Current workaround: VM testing covers most cases; hardware-specific changes require manual human testing
 
 ---
 
-*Review this document in the context of DISCUSSION.md and AGENTS.md. Proposals here are intended as conversation starters.*
+## 5. Impermanence Integration Review
+
+**Status:** Needs re-verification.
+
+The impermanence module exists at `src/nixos/modules/system/impermenance/system-impermenance.nix` and appears well-implemented:
+- Creates user persist directories via `systemd.tmpfiles.rules`
+- Configures `environment.persistence` for system directories
+- Sets `age.identityPaths` correctly
+- Handles `boot.impermanence.enable` flag
+
+**Items to verify per machine:**
+1. Does the machine's `default.nix` import the impermanence module?
+2. Is `boot.impermanence.enable = true` set in the machine's setup config?
+3. Are machine-specific persistent paths declared (databases, service state, etc.)?
+4. Is the SSH host key path included in `age.identityPaths`?
+
+**Typo note:** The module path is `impermenance` (not `impermanence`) — this is a pre-existing typo in the codebase. Do not rename it without a migration plan.
+
+---
+
+## 6. What Should NOT Change (Confirmed)
+
+The following are working well per maintainer confirmation:
+
+- **flake-parts architecture** — scales well, AGENTS.md explains it
+- **POSIX shell preference** — correct for threat model and portability
+- **`pkgs.writeShellApplication` for scripts** — avoids rebuilds, shellcheck baked in
+- **Release-independent modules via attrset** — avoids evaluating non-matching bodies
+- **ragenix with PQ module** — preferred for secrets (SOPS supported but ragenix primary)
+- **SOPS + ragenix both in flake** — keep both; the system should be modular for both
+- **DISCUSSION.md as a living log** — most valuable continuity document
+
+---
+
+## 7. New Tag Proposals
+
+The maintainer noted the tag system should grow to attract more specialized contributions. Proposed additions (to be discussed in separate merge requests):
+
+| Proposed Tag | Meaning |
+|-------------|---------|
+| `FIXME-PQ:` | Post-quantum cryptography upgrade needed |
+| `FIXME-HARDENING:` | Security hardening opportunity |
+| `FIXME-PERF:` | Performance issue (relates to microbenchmark requirement) |
+| `FIXME-PRIVACY:` | Privacy issue (data exposure, logging, telemetry) |
+| `FIXME-DEPS:` | Dependency needs review or upgrade |
+| `FIXME-COMPAT:` | Compatibility issue across releases or architectures |
+| `FIXME-BLOB:` | Binary blob that needs verification or recreation |
+| `CONTRIB:` | Good contribution opportunity for newcomers |
+| `AUDIT:` | Needs security audit |
+
+---
+
+## 8. Open Questions (Remaining)
+
+1. **Formatter:** `alejandra` makes Nix harder to read per maintainer; nixpkgs-fmt uses wrong style. Explore `treefmt` with custom rules, or document the current style precisely enough for enforcement. Separate merge request.
+
+2. **Cachix cache:** Currently offline due to infrastructure crisis. When restored, CI builds become feasible for per-machine verification.
+
+3. **SOPS vs. ragenix standardization:** Both supported; ragenix with PQ module is preferred for new secrets. Agents should use ragenix for all new secret declarations unless there is a specific reason for SOPS.
+
+4. **P.2 shellcheck CI:** The shellcheck task (`tasks/checks/shellcheck/`) has a `DNM` tag and `exit 66`. This needs to be resolved before shellcheck can run in CI as a standalone job. The `writeShellApplication` wrapper already runs shellcheck at evaluation time, which is the primary enforcement mechanism.
+
+---
+
+*Review this document alongside DISCUSSION.md and AGENTS.md. All proposals marked [ACTIONED] have been implemented in this branch.*

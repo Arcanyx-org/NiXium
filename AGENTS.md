@@ -4,6 +4,43 @@ This file provides guidance for AI agents working on NiXium. **Read this careful
 
 ---
 
+## Session Protocol
+
+Every session MUST begin and end with the steps below. This exists because agents lose all memory between sessions — without this protocol, time is wasted rediscovering the same context, and mistakes are repeated.
+
+### Before Starting Work (MUST complete)
+
+1. Read `DISCUSSION.md` in full — it is the single most valuable source of project context.
+2. Read `AGENTS.md` (this file) in full.
+3. If working on a specific machine, read `src/nixos/machines/<machine>/DISCUSSION.md` if it exists.
+4. Run `grep -rP "(DNM|REVIEW)((\-.*|)\(.*\)):" . --include="*.nix"` to check for open merge-blockers before touching anything.
+5. Review the PR description and any open review comments.
+
+### Before Closing Session (MUST complete)
+
+1. **Update `DISCUSSION.md`** — add a timestamped section (format: `## <Topic> (<YYYY-MM-DD>)`) summarizing:
+   - What you discovered or decided
+   - Any new open issues or blockers
+   - What was tested and how
+   - What was NOT tested and why
+2. Run shellcheck on any changed `.sh` files.
+3. Run `nix-instantiate --parse` on any changed `.nix` files to catch syntax errors.
+4. Tag any unresolved issues with the appropriate tag and your agent identity in parentheses.
+5. If you worked on a machine config, state in the PR description whether the change was build-tested.
+
+### DISCUSSION.md Update Rules (important for opencode.ai agents)
+
+Many agents fail to update DISCUSSION.md. These rules make the expectation explicit:
+
+- **ALWAYS** add an entry when you start working on a new topic, even if brief.
+- **ALWAYS** add an entry when you finish work, recording what was done and what remains.
+- **NEVER** skip this step because "the PR description is enough" — DISCUSSION.md persists across PRs and branches.
+- Write entries in past tense describing what happened, not future plans.
+- Use the section header format: `## <Topic> (<YYYY-MM-DD>)`
+- If you find existing entries that are outdated, add a correction below them rather than editing them (preserves history).
+
+---
+
 ## IMPORTANT: Keep This File Updated
 
 This is a **living document** - you are expected to update it when you:
@@ -125,7 +162,66 @@ src/nixos/machines/<machine>/
 
 ## Testing Changes
 
-**Never rely solely on LSP or syntax checking.** You MUST build and test VM configurations.
+**Never rely solely on LSP or syntax checking.** You MUST build and test VM configurations. The development environment includes all required tools — use them.
+
+### Dev Environment Setup
+
+The project uses direnv + Nix to provide a complete development environment. All tools needed to build and test are available in the devShell:
+
+```sh
+# With direnv (preferred — loads automatically on cd)
+cd /path/to/NiXium
+, verify    # Run verification checks
+
+# Without direnv
+nix develop
+, verify
+```
+
+If Nix is available in your environment, you can and SHOULD run VM builds to verify configuration changes. The devShell provides: `nix`, `ksh`, `bashInteractive`, `shellcheck`, `nil`, `age`, `ragenix`, `sops`, `git`, and all other needed tools.
+
+### VM Build Pattern (from appimage module)
+
+NiXium uses a proven VM testing pattern. For any new module, follow the pattern in `src/nixos/modules/programs/appimage/default.nix`:
+
+1. **GUI VM** — for interactive development (`virtualisation.vmVariant` with `graphics = true`)
+2. **Pulse check VM** — for CI (`graphics = false`, `boot.kernelParams = [ "console=ttyS0" ]`, systemd service that runs checks and powers off)
+3. **Negative test VM** — verify that failure cases actually fail
+
+```nix
+# Pulse check pattern (copy from appimage module):
+let
+  checkTimeout = 180;
+in {
+  checks.my-module-pulse = pkgs.writeShellApplication {
+    name = "check-my-module-pulse";
+    runtimeInputs = [ pkgs.util-linux pkgs.coreutils ];
+    text = concatStringsSep "\n" [
+      ''export NIX_DISK_IMAGE="/tmp/check-my-module-pulse.qcow2"''
+      ''[ ! -f "$NIX_DISK_IMAGE" ] || rm "$NIX_DISK_IMAGE"''
+      ''exec stdbuf -oL -eL timeout ${toString checkTimeout} "${<vmNixosSystem>.config.system.build.vm}/bin/run-nixos-vm" -nographic''
+    ];
+  };
+}
+```
+
+The systemd service inside the VM:
+```nix
+systemd.services.my-module-check = {
+  wantedBy = [ "multi-user.target" ];
+  serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
+  script = ''
+    {
+      # Run checks — exit 1 on failure
+      my-command || exit 1
+      echo "Check passed: OK"
+    } > /dev/ttyS0 2>&1
+    sync
+    sleep 1
+    systemctl poweroff
+  '';
+};
+```
 
 ### Build and Test Commands
 
@@ -136,8 +232,11 @@ nix build .#nixosConfigurations.nixos-<machine>-stable.config.system.build.vm --
 # Test with disko (recommended for machines using disko)
 nix run -L '.#nixosConfigurations.nixos-<machine>-stable.config.system.build.vmWithDisko'
 
-# Run the VM after building
+# Run the VM after building (headless)
 nix run .#nixosConfigurations.nixos-<machine>-stable.config.system.build.vm -- -nographic
+
+# Run a module check
+nix run .#checks.<system>.my-module-pulse
 ```
 
 ### Common VM Issues
