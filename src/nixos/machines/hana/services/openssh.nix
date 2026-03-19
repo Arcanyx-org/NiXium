@@ -20,7 +20,8 @@ in mkIf config.services.openssh.enable {
 	services.tor.relay.onionServices."openssh".map = mkIf config.services.tor.enable config.services.openssh.ports; # Provide hidden SSH
 
 	# Set the pubkey
-	# environment.etc."ssh/ssh_host_ed25519_key.pub".text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDhD5Fel4xaocToIQay3IkytHGaK93cDN52ww2Bw5Nj+ root@hana";
+	# FIXME-SECURITY(Krey): Wrong placeholder key (from ignucius) — uncomment and set correct hana SSH host public key (AAAAICZ2SsM9PkGXuiulbEFSRJhcs1Vq20L+4pr7DRRFxreb from secrets.nix)
+	# environment.etc."ssh/ssh_host_ed25519_key.pub".text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICZ2SsM9PkGXuiulbEFSRJhcs1Vq20L+4pr7DRRFxreb root@hana";
 
 	services.openssh.hostKeys = mkForce []; # Do not generate SSH keys
 

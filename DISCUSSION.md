@@ -329,4 +329,43 @@ Following maintainer review of the initial proposal, these corrections and clari
 
 ---
 
+## Impermanence Integration Audit (2026-03-19)
+
+Performed an audit of impermanence integration across all machines. Findings:
+
+### SSH Host Key Copy-Paste Errors Found and Fixed
+
+**ignucius/services/openssh.nix** — had wrong SSH host public key (`AAAAIDhD...` from another machine). Fixed to correct key (`AAAAIKWL...` from `secrets.nix`).
+
+**lengo/services/openssh.nix** — had severe copy-paste issues:
+- Header said "IGNUCIUS-specific" instead of "LENGO-specific"
+- Public key was `AAAAIDhD...@ignucius` instead of `AAAAIOVORJbik...@lengo`
+- Fixed both header and key.
+
+**hana/services/openssh.nix** — key was commented out but with the wrong value (`AAAAIDhD...`). Updated the commented-out value to the correct hana key (`AAAAICZ2Ss...`) with a `FIXME-SECURITY` tag to prompt someone to uncomment and activate it.
+
+**template/services/openssh.nix** — placeholder key from ignucius; tagged with `FIXME-SECURITY` to remind deployers to replace before use.
+
+**tupac/services/openssh.nix** — key in `environment.etc."ssh/ssh_host_ed25519_key.pub"` (`AAAAIEmYpmNk...`) does not match the `tupac-system` key in `secrets.nix` (`AAAAIEpbUbuX...`) or the `knownHosts` entry in the same file. Since tupac is deployed and verified, this may be intentional (key rotation) but needs reconciliation. Tagged with `FIXME-SECURITY`.
+
+### What Is Working Correctly
+
+- Global impermanence module (`src/nixos/modules/system/impermenance/system-impermenance.nix`) correctly handles: system directories, machine-id, random-seed, SSH host key persistence, and `age.identityPaths`
+- Global Tor module (`src/nixos/modules/services/tor/services-tor.nix`) correctly handles Tor data directory and onion_auth persistence
+- Per-machine `distributedBuilds.nix` services correctly persist builder SSH keys
+- mracek service-specific persistence (vikunja, nextcloud) uses `mkIf config.boot.impermanence.enable` correctly
+
+### Machines With Impermanence Enabled (Verified)
+
+All machines have `boot.impermanence.enable = true` in their stable release configs:
+- hana, ignucius, lengo: in `config/setup.nix`
+- mracek, sinnenfreude, tupac, twinkcentral: set inline in release `default.nix`
+
+### Outstanding Issues (Tagged)
+
+- `FIXME-SECURITY` in hana, template, tupac openssh.nix — need correct public keys
+- Template machine still has `nixpkgs.hostPlatform = "??????-linux"` — not deployable without proper platform
+
+---
+
 *This file evolves as discussions happen. Review before starting new work to avoid repeating topics.*
