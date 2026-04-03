@@ -342,3 +342,110 @@ Without direnv: `nix develop` then `, <task-name>`
 For project overview, see [README.md](README.md).
 For evolving discussion context, see [DISCUSSION.md](DISCUSSION.md).
 For coding standards, see [docs/nx/standard.md](docs/nx/standard.md).
+
+---
+
+## K1 Max 3D Printer (Creality)
+
+This section documents findings from porting Klipper to the Creality K1 Max printer.
+
+### Hardware Architecture
+
+| Component | Chip | Serial | Notes |
+|-----------|------|--------|-------|
+| Main MCU | GD32F303RET6 | /dev/ttyS7 | Stepper motors, heaters |
+| Nozzle MCU | GD32F303CBT6 | /dev/ttyS1 | Extruder, hotend fan, LED |
+| Leveling MCU | GD32E230F8P6 | /dev/ttyS9 | Auto-bed-leveling sensors |
+
+### Important Paths
+
+| Path | Description |
+|------|-------------|
+| `/usr/data/klipper/` | Klipper source (symlinked from `/usr/share/klipper`) |
+| `/usr/data/printer_data/config/` | Printer configuration |
+| `/usr/data/printer_data/logs/` | Klipper logs |
+| `/usr/share/klippy-env/` | Python virtual environment (MIPS build) |
+| `/opt/etc/init.d/` | Entware services (openssh) |
+| `/etc/init.d/` | System init scripts |
+
+### Service Scripts
+
+| Service | Init | Description |
+|---------|------|-------------|
+| Klipper | S55klipper_service | Main host software |
+| Klipper MCU | S57klipper_mcu | MCU communication |
+| Moonraker | S56moonraker_service | API server |
+| Dropbear | S50dropbear | SSH (port 22) |
+| OpenSSH | S45sshd (S40sshd) | SSH on port 2222 |
+| Nginx | S50nginx | Web server |
+
+### SSH Access
+
+- **Port 2222**: OpenSSH (Entware, starts at S45)
+- **Port 22**: Dropbear (default, starts at S50)
+- To auto-start OpenSSH: `ln -sf /opt/etc/init.d/S40sshd /etc/init.d/S45sshd`
+
+### Cross-Compilation for MIPS
+
+The K1 Max uses an Ingenic X1000 MIPS processor. Klipper's C extension (`c_helper.so`) must be compiled for MIPS:
+
+```nix
+# Example cross-compile setup
+pkgsCross.mips64r6-linux.pkgsStatic.gcc
+# or
+pkgs.buildPackages.gcc-mips-linux-gnu
+```
+
+### Known Proprietary Components
+
+| File | Architecture | Purpose |
+|------|---------------|---------|
+| `prtouch_v1_wrapper.cpython-38-mipsel-linux-gnu.so` | MIPS32 | Auto-bed-leveling v1 |
+| `prtouch_v2_wrapper.cpython-38-mipsel-linux-gnu.so` | MIPS32 | Auto-bed-leveling v2 |
+| `prtouch_v3_wrapper.cpython-38-mipsel-linux-gnu.so` | MIPS32 | Auto-bed-leveling v3 |
+| `mcu0_*.bin` | Binary | Main MCU firmware |
+| `noz0_*.bin` | Binary | Nozzle MCU firmware |
+| `bed0_*.bin` | Binary | Leveling MCU firmware |
+
+Source code requested from Creality under GPL-3.0.
+
+### K1 Max Modules (Pure Python - Usable)
+
+These modules work without proprietary wrappers:
+- `prtouch.py` - Auto bed leveling (uses hx711s)
+- `bl24c16f.py` - EEPROM for power loss recovery
+- `hx711s.py` - HX711 load cell sensor
+- `dirzctl.py` - Z-axis stepper control
+- `filter.py` - Signal filtering for probing
+
+### Happy Hare MMU Support
+
+MMU configuration from `~/Downloads/mmu-stuff/config/mmu/`:
+- QIDI Box MMU compatible
+- Pin mappings for K1 Max
+- Include in printer.cfg: `[include mmu.cfg]`
+
+### Klipper Version Detection
+
+```bash
+# Get printer model
+/usr/bin/get_sn_mac.sh model   # "CR-K1 Max"
+/usr/bin/get_sn_mac.sh board   # "CR4CU220812S12"
+/usr/bin/get_sn_mac.sh structure_version  # "0"
+```
+
+Config directories follow pattern: `{MODEL}_{BOARD}_{VARIANT}`
+
+### Troubleshooting
+
+**Klipper won't start after reboot**:
+1. Check `/usr/data/printer_data/logs/klippy.log`
+2. Verify c_helper.so exists: `ls /usr/share/klipper/klippy/chelper/c_helper.so`
+3. Check MCU connections: `ls /dev/ttyS*`
+
+**SSH not working after reboot**:
+1. Verify init link: `ls -la /etc/init.d/S45sshd`
+2. Check service: `/opt/etc/init.d/S40sshd status`
+
+**Moonraker API down**:
+- Reboot via: `curl -u root:PASSWORD -X POST http://PRINTER:7125/machine/reboot`

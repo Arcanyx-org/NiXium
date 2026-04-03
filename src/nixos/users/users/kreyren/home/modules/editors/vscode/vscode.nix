@@ -11,7 +11,7 @@ in mkIf config.programs.vscode.enable (mkMerge [
 				extensions = with pkgs.vscode-extensions; [
 					editorconfig.editorconfig
 					mkhl.direnv
-					oderwat.indent-rainbow
+					oderwat.indent-rainbow # Colorize indentation levels to aid navigation in deeply nested files
 				];
 				userSettings = {
 					# Zoom with mouse wheel
@@ -38,11 +38,11 @@ in mkIf config.programs.vscode.enable (mkMerge [
 			programs.vscode = {
 				package = pkgs.vscodium;
 				profiles.default = {
-					extensions = with pkgs.vscode-extensions; [
-						editorconfig.editorconfig
-						mkhl.direnv
-						oderwat.indent-rainbow
-					];
+				extensions = with pkgs.vscode-extensions; [
+					editorconfig.editorconfig
+					mkhl.direnv
+					oderwat.indent-rainbow # Colorize indentation levels to aid navigation in deeply nested files
+				];
 					userSettings = {
 						# Zoom with mouse wheel
 						"editor.mouseWheelZoom" = true;

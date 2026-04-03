@@ -163,7 +163,7 @@ in {
       nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ];
     }))
 		pkgs.gimp
-		pkgs.kicad
+		pkgs.kicad-small
 
 		# iOS Stuff
 		pkgs.libimobiledevice

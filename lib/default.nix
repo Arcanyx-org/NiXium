@@ -1,5 +1,6 @@
 {
 	imports = [
 		./homeManagerModules.nix
+		./mkVimConfig
 	];
 }

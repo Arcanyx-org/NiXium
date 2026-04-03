@@ -4,7 +4,7 @@
 	],
 
 	"settings": {
-		// Enable liguratures
+		// Enable ligatures for Fira Code (arrow operators, comparison chains, etc.)
 		"editor.fontLigatures": true,
 		"editor.fontFamily": "'Fira Code'",
 		"terminal.integrated.fontFamily": "'Fira Code'",
@@ -14,14 +14,20 @@
 			"*.es": "javascript"
 		},
 
+		// Render all invisible characters (spaces, tabs, EOL) so whitespace
+		// issues are spotted immediately without running a linter
 		"editor.renderWhitespace": "all",
+		// Large scrollback so long build/test output is not truncated in the terminal
 		"terminal.integrated.scrollback": 20000,
+		// Enable nil LSP for Nix files (syntax checking, go-to-definition, etc.)
 		"nix.enableLanguageServer": true,
 		"nix.serverPath": "nil",
 		"nix.serverSettings": {
 			// settings for 'nil' Language Server
 			"nil": {
 				"formatting": {
+					// Use nixpkgs-fmt as the canonical formatter so all contributors
+					// produce consistent output regardless of their local config
 					"command": ["nixpkgs-fmt"]
 				}
 			}
@@ -32,21 +38,31 @@
 			"EDITOR": "nano", // To open git things in codium
 		},
 
-		// Pair colorization
+		// Rainbow bracket pair colorization — colorize bracket pairs by nesting
+		// depth so deeply nested expressions are easier to parse at a glance.
+		// Uses VSCode's built-in engine (no extension required since VSCode 1.67).
+		// `bracketPairs: "active"` draws a guide only for the pair the cursor is
+		// inside, reducing visual noise while still giving orientation cues.
+		// `highlightActiveIndentation: false` avoids double-highlighting when
+		// indent-rainbow is also active.
 		"editor.bracketPairColorization.enabled": true,
 		"editor.guides.bracketPairs": "active",
 		"editor.guides.bracketPairsHorizontal": "active",
 		"editor.guides.highlightActiveIndentation": false,
 
-		// Gtt
+		// Auto-fetch keeps the remote tracking branches up to date in the background
 		"git.autofetch": true,
 
-		// Code-eol
+		// Code-eol — render end-of-line characters so CR/LF vs LF mismatches
+		// are immediately visible in the editor gutter
 		"code-eol.highlightExtraWhitespace": true,
 		"code-eol.newlineCharacter": "↵",
 		"code-eol.crlfCharacter": "↓",
 
-		// Task tree
+		// todo-tree — surface tagged comments (FIXME, TODO, DNM, …) in the
+		// sidebar so nothing gets lost in a large codebase.  The regex below
+		// matches the RFC-2119-style tags with optional sub-tags and author,
+		// e.g. `FIXME-SECURITY(Krey):`.
 		"todo-tree.general.tags": [
 			"FIXME",
 			"TODO",
@@ -123,6 +139,8 @@
 			}
 		},
 
+		// better-comments — color-code comment prefixes so critical annotations
+		// stand out from ordinary prose without requiring a separate tag system
 		"better-comments.tags": [
 			{
 			"tag": "!",
@@ -171,6 +189,8 @@
 			},
 		],
 
+		// dateTime.showSeconds — show seconds in the status-bar clock so
+		// timestamps in log output can be correlated precisely
 		"dateTime.showSeconds": true,
 
 		// GitLens

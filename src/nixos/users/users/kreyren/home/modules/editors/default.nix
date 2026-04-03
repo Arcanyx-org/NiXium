@@ -5,10 +5,12 @@ let
 in {
 	flake.homeManagerModules.editors-kreyren.imports = [
 		homeManagerModules.editors-vim-kreyren
+		homeManagerModules.editors-nvim-kreyren
 		homeManagerModules.editors-vscode-kreyren
 	];
 
 	imports = [
+		./nvim
 		./vim
 		./vscode
 	];

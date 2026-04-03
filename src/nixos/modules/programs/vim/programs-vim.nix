@@ -3,5 +3,5 @@
 # System vim configuration
 
 {
-	environment.systemPackages = [ pkgs.vim ]; # Install vim On All Systems
+	environment.systemPackages = [ pkgs.vim ];
 }

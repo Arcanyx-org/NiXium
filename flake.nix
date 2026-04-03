@@ -206,14 +206,14 @@
 
 	outputs = inputs @ { self, ... }:
 		inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-			imports = [
-				./src # Import Source Code
-				./lib # Implement libs
-				./tasks # Include Tasks
+				imports = [
+					./src # Import Source Code
+					./lib # Implement libs
+					./tasks # Include Tasks
 
-				inputs.flake-root.flakeModule
-				inputs.mission-control.flakeModule
-			];
+					inputs.flake-root.flakeModule
+					inputs.mission-control.flakeModule
+				];
 
 			# Set Supported Systems
 			systems = [

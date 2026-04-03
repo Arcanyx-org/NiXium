@@ -163,6 +163,99 @@ grep -rP "(FIXME|TODO|DOCS|HACK|REVIEW|DNM|DNC|DNR)((\-.*|)\(.*\)):" .
 
 **Leave some trivial tagged items for humans as starter issues.**
 
+### Build-Time Config Verification
+
+All configuration strings that are written by Nix and later executed or interpreted by a program MUST be verified during Nix evaluation — before they are built into a system closure, and long before they reach a running machine.
+
+The reasoning is the same as for type systems and linters: a broken configuration that is only discovered at runtime is a deployment failure. It may corrupt state, prevent a service from starting, or leave a machine in an inconsistent condition that requires manual intervention to recover. A broken configuration that fails at `nix build` time is caught safely, on the developer's machine, with a clear error message pointing at the exact line that is wrong. No deployment happens. No state is touched.
+
+This is not optional. Every configuration language that NiXium writes as a string into a program is subject to this rule.
+
+#### Shell Scripts — `pkgs.writeShellApplication`
+
+Shell scripts MUST be written using `pkgs.writeShellApplication` rather than `pkgs.writeShellScriptBin` or raw `builtins.toFile`. `writeShellApplication` runs shellcheck and a shell dry-run (`bash -n`) as part of the derivation's `checkPhase`. A script that does not pass shellcheck cannot be built. The binary does not enter the Nix store. It cannot be deployed.
+
+This is the established precedent in nixpkgs for build-time validation of shell code. Every shell script in NiXium follows it.
+
+```nix
+pkgs.writeShellApplication {
+	name = "my-script";
+	bashOptions = [ "errexit" "nounset" "pipefail" ];
+	runtimeInputs = [ pkgs.curl pkgs.jq ];
+	text = ''
+		curl -sf https://example.com | jq .
+	'';
+}
+```
+
+The `checkPhase` runs automatically. If shellcheck finds an issue, the build fails with the shellcheck output pointing at the offending line. Nothing is deployed.
+
+#### Vimscript Configs — `self.lib.mkVimConfig`
+
+Vimscript configurations passed to `programs.neovim.extraConfig` or `programs.vim.extraConfig` MUST be validated using `self.lib.mkVimConfig`. This is the vimscript equivalent of `writeShellApplication`: it runs nvim in headless batch mode (`nvim -V1 -es -u NONE`) against the configuration as a `runCommandLocal` derivation at evaluation time. A configuration that nvim rejects cannot be built. It does not enter the home-manager generation. It cannot be deployed.
+
+`mkVimConfig` is a curried function defined in `lib/mkVimConfig/` and exposed on `flake.lib`, reachable as `self.lib.mkVimConfig` from any home-manager module that receives `self` via `specialArgs`.
+
+```nix
+{ pkgs, self, ... }:
+
+let
+	inherit (builtins) concatStringsSep;
+	mkVimConfig = self.lib.mkVimConfig pkgs;
+in {
+	programs.neovim.extraConfig = mkVimConfig {
+		name = "my-nvim-config";
+		content = concatStringsSep "\n" [
+			"set noexpandtab"
+			"set tabstop=2"
+			"set shiftwidth=0"
+		];
+	};
+}
+```
+
+The `name` argument is used in error messages to identify which configuration failed. It should match the module or user it belongs to.
+
+`self` is passed to home-manager modules via `home-manager.extraSpecialArgs = { inherit self; }` in the machine's release configuration (or in a VM test's inline NixOS config). Any module that contributes vimscript needs this argument.
+
+**Checks performed:**
+
+| Check | Behaviour | Triggered by |
+|---|---|---|
+| Syntax validation | Hard fail — build aborted | Any nvim E-code error (`E474`, `E518`, etc.) |
+| Duplicate `set` commands | Warning — build continues | Same option set more than once |
+| Numeric option sanity | Warning — build continues | `tabstop` or `shiftwidth` set above 20 |
+| Risky options | Note — build continues | `set spell` or `set scrollbind` |
+
+When a hard failure occurs, the error is visible directly in `nix build` output without needing to inspect build logs:
+
+```
+Error detected in 'my-nvim-config':
+line    1:
+E474: Invalid argument: expandtab=false
+line    3:
+E518: Unknown option: unknownoption
+
+Content that failed validation (line numbers match the errors above):
+--------
+     1 set expandtab=false
+     2 set tabstop=2
+     3 set unknownoption
+--------
+```
+
+The line numbers in the nvim error correspond directly to the numbered listing below it, so the offending line can be located without counting manually.
+
+#### Adding Validators for New Config Languages
+
+When NiXium introduces a new configuration language that is written as a string and passed to a program, a build-time validator for that language SHOULD be added following the same pattern:
+
+1. Write the content to the Nix store with `pkgs.writeText` (avoids shell-escaping issues with special characters).
+2. Run the language's own checker or interpreter in a `pkgs.runCommandLocal` derivation.
+3. On failure, emit a human-readable error with the offending content and line references, then `exit 1`.
+4. On success, `readFile` the output derivation to return the validated string.
+5. Expose the validator on `flake.lib` so it is reachable from any module via `self`.
+
 ---
 
 ## Implementation Notes
@@ -206,6 +299,77 @@ We prefer POSIX-compliant scripts (ksh93 preferred) over bash for portability an
 - Works on any Unix-like system
 - Easier to reason about security
 - No bash-specific features needed for our use cases
+
+### Build-Time Config Validators
+
+NiXium validates all configuration strings at Nix evaluation time. The two validators currently in use are described here. See [Build-Time Config Verification](#build-time-config-verification) in the Contributing section for the rationale and the rule that applies to contributors.
+
+#### `pkgs.writeShellApplication`
+
+Defined in nixpkgs at `pkgs/build-support/trivial-builders/default.nix`. Wraps a shell script in a derivation whose `checkPhase` runs `bash -n` (dry-run syntax check) and shellcheck against the script text before writing it to the store. Any shellcheck finding aborts the build.
+
+Key parameters used in this codebase:
+
+| Parameter | Purpose |
+|---|---|
+| `name` | Derivation and binary name |
+| `text` | The shell script body (shebang and `set -o` options are prepended automatically) |
+| `bashOptions` | List of `set -o` options; defaults to `errexit nounset pipefail` |
+| `runtimeInputs` | Packages added to `PATH` at runtime; avoids unqualified command warnings in shellcheck |
+| `runtimeEnv` | Environment variables exported unconditionally at runtime |
+
+The `checkPhase` is what distinguishes `writeShellApplication` from `writeShellScriptBin`. Never use `writeShellScriptBin` for scripts that are written in this codebase — it skips all checks.
+
+#### `self.lib.mkVimConfig`
+
+Defined in `lib/mkVimConfig/`. Validates a vimscript string using nvim in headless batch mode at evaluation time and returns the validated string for use in `programs.neovim.extraConfig` or `programs.vim.extraConfig`. A configuration that nvim rejects cannot enter the Nix store.
+
+**Signature:** `pkgs → { content, name ? "vim-config" } → string`
+
+The function is curried so that `pkgs` is supplied once per module and the resulting function can be called multiple times with different `{ content, name }` pairs.
+
+**How it works internally:**
+
+1. `pkgs.writeText "${name}-content" content` — writes the vimscript to the store, bypassing all shell-escaping concerns (important for unicode listchars like `·`, `↵`, `▷`).
+2. `pkgs.runCommandLocal "${name}-validated" { buildInputs = [ pkgs.neovim pkgs.gnused ]; }` — runs the checks. `preferLocalBuild = true` and `allowSubstitutes = false` ensure nvim is available locally rather than requiring a remote builder.
+3. `nvim -V1 -es -u NONE -c "source ..." -c "quit"` — `-V1` (verbosity 1) routes error output to stdout so it appears in the Nix build log; `-es` is silent batch mode; `-u NONE` skips all user config files so only the content under test is evaluated.
+4. `builtins.readFile validated` — IFD (Import From Derivation) converts the output path back to a string for `extraConfig`.
+
+**Checks:**
+
+| # | Check | Behaviour | Detail |
+|---|---|---|---|
+| 1 | Syntax validation | Hard fail | Any nvim E-code error aborts the build. The store path in the error header is replaced with the human-readable `name` argument. |
+| 2 | Duplicate `set` commands | Warning | Same option name appearing more than once. Legal vimscript, but usually a copy/paste mistake across module boundaries. |
+| 3 | Numeric option sanity | Warning | `tabstop` or `shiftwidth` set to a value greater than 20. Almost certainly a mistake; causes severe visual distortion. |
+| 4 | Risky options | Note | `set spell` (startup performance impact) or `set scrollbind` (scroll-sync surprises). |
+
+**Error output format** (visible directly in `nix build` without `nix log`):
+
+```
+Error detected in 'my-nvim-config':
+line    1:
+E474: Invalid argument: expandtab=false
+line    3:
+E518: Unknown option: unknownoption
+
+Content that failed validation (line numbers match the errors above):
+--------
+     1 set expandtab=false
+     2 set tabstop=2
+     3 set unknownoption
+--------
+```
+
+**Accessing `self` in home-manager modules:**
+
+`self.lib.mkVimConfig` requires `self` to be in scope. In a home-manager module, `self` is available when the machine's release config (or VM test) passes it via `extraSpecialArgs`:
+
+```nix
+home-manager.extraSpecialArgs = { inherit self; };
+```
+
+This is already set in `kreyren`'s home configuration (`src/nixos/users/users/kreyren/home/default.nix`) and in the nvim VM test (`src/nixos/users/users/kreyren/home/modules/editors/nvim/default.nix`). Any new machine configuration that uses `mkVimConfig` must include the same line.
 
 ### Release-Independent Modules
 
