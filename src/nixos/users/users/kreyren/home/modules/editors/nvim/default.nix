@@ -115,6 +115,8 @@ in mkMerge [
 
 							boot.impermanence.enable = lib.mkForce false;
 							boot.kernelParams = [ "console=ttyS0" ];
+
+							# FIXME-MAINTAINABILITY(Krey): There is an issue in the current 25.11 release where the lib.majorMinor lib.version returns unwantedly 26.05, fix and the change this so that it doesn't have to be changed every new release (hard-coded)
 							system.stateVersion = "25.11";
 
 							age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
@@ -142,9 +144,34 @@ in mkMerge [
 					program = pkgs.writeShellApplication {
 						name = "nixos-vm-editors-nvim-kreyren";
 						bashOptions = [ "errexit" ];
-						runtimeInputs = [ pkgs.coreutils ];
-						text = concatStringsSep "\n" [
-							''export NIX_DISK_IMAGE="${modulePath}/nixos-vm-editors-nvim-kreyren.qcow2"''
+						runtimeInputs = with pkgs; [ qemu util-linux e2fsprogs coreutils ];
+					# Priority 1: FLAKE_ROOT (dev mode) - Check first for performance (most common in repo)
+					# Priority 2: NIX_DISK_IMAGE (user override) - Allow user to specify custom path
+					# Priority 3: Ephemeral mode (external runs) - Create base disk in /var/tmp, use QEMU snapshot
+					text = concatStringsSep "\n" [
+						''if [ -n "''${FLAKE_ROOT:-}" ] && [ -d "$FLAKE_ROOT" ]; then''
+						''	export NIX_DISK_IMAGE="$FLAKE_ROOT/nixos-vm-editors-nvim-kreyren.qcow2"''
+						''	exec "${test-nvim.config.system.build.vm}/bin/run-nixos-vm" "$@"''
+						''fi''
+						""
+						''if [ -n "''${NIX_DISK_IMAGE:-}" ]; then''
+						''	exec "${test-nvim.config.system.build.vm}/bin/run-nixos-vm" "$@"''
+						''fi''
+						""
+						''BASE_DISK="/var/tmp/nixium-vm-$$-$RANDOM.qcow2"''
+							""
+							''if [ ! -f "$BASE_DISK" ]; then''
+							''	temp=$(mktemp)''
+							''	qemu-img create -f raw "$temp" 8G >/dev/null 2>&1''
+							''	mkfs.ext4 -L nixos "$temp" -q -F''
+							''	qemu-img convert -f raw -O qcow2 "$temp" "$BASE_DISK"''
+							''	rm "$temp"''
+							''fi''
+							""
+							''export NIX_DISK_IMAGE="$BASE_DISK"''
+							''export QEMU_OPTS="''${QEMU_OPTS:+$QEMU_OPTS }-snapshot"''
+							''export TMPDIR="''${TMPDIR:-/var/tmp}"''
+							""
 							''exec "${test-nvim.config.system.build.vm}/bin/run-nixos-vm" "$@"''
 						];
 					};

@@ -26,3 +26,12 @@
 [submodule "vendor/disko"]
 	path = vendor/disko
 	url = https://github.com/nix-community/disko
+[submodule "vendor/claw-code"]
+	path = vendor/claw-code
+	url = https://github.com/Arcanyx-org/claw-code.git
+[submodule "/nix/persist/NiXium/vendor/opencode"]
+	path = /nix/persist/NiXium/vendor/opencode
+	url = https://github.com/anomalyco/opencode
+[submodule "vendor/OpenAgentsControl"]
+	path = vendor/OpenAgentsControl
+	url = git@github.com:darrenhinde/OpenAgentsControl.git

@@ -232,19 +232,82 @@ in mkMerge [
 				};
 			in {
 				packages.nixos-vm-programs-appimage = programs-appimage.config.system.build.vm;
-				apps.nixos-vm-programs-appimage = self'.packages.nixos-vm-programs-appimage;
-
-				packages.nixos-vm-impermanent-programs-appimage = pkgs.writeShellApplication {
-					name = "nixos-vm-impermanent-programs-appimage";
-					bashOptions = [ "errexit" ];
-					runtimeInputs = [ pkgs.util-linux ];
+				
+				apps.nixos-vm-programs-appimage = {
+					type = "app";
+					program = pkgs.writeShellApplication {
+						name = "nixos-vm-programs-appimage";
+						bashOptions = [ "errexit" ];
+						runtimeInputs = with pkgs; [ qemu util-linux e2fsprogs coreutils ];
+					# Priority 1: FLAKE_ROOT (dev mode)
+					# Priority 2: NIX_DISK_IMAGE (user override)
+					# Priority 3: Ephemeral mode
 					text = concatStringsSep "\n" [
-						''export NIX_DISK_IMAGE="${modulePath}/nixos-vm-impermanent-programs-appimage.qcow2"''
-						''[ ! -f "$NIX_DISK_IMAGE" ] || rm "$NIX_DISK_IMAGE"''
-						''exec "${programs-appimage.config.system.build.vm}/bin/run-nixos-vm" "$@"''
-					];
+						''if [ -n "''${FLAKE_ROOT:-}" ] && [ -d "$FLAKE_ROOT" ]; then''
+						''	export NIX_DISK_IMAGE="$FLAKE_ROOT/nixos-vm-programs-appimage.qcow2"''
+						''	exec "${programs-appimage.config.system.build.vm}/bin/run-nixos-vm" "$@"''
+						''fi''
+						""
+						''if [ -n "''${NIX_DISK_IMAGE:-}" ]; then''
+						''	exec "${programs-appimage.config.system.build.vm}/bin/run-nixos-vm" "$@"''
+						''fi''
+						""
+						''BASE_DISK="/var/tmp/nixium-vm-$$-$RANDOM.qcow2"''
+							""
+							''if [ ! -f "$BASE_DISK" ]; then''
+							''	temp=$(mktemp)''
+							''	qemu-img create -f raw "$temp" 8G >/dev/null 2>&1''
+							''	mkfs.ext4 -L nixos "$temp" -q -F''
+							''	qemu-img convert -f raw -O qcow2 "$temp" "$BASE_DISK"''
+							''	rm "$temp"''
+							''fi''
+							""
+							''export NIX_DISK_IMAGE="$BASE_DISK"''
+							''export QEMU_OPTS="''${QEMU_OPTS:+$QEMU_OPTS }-snapshot"''
+							''export TMPDIR="''${TMPDIR:-/var/tmp}"''
+							""
+							''exec "${programs-appimage.config.system.build.vm}/bin/run-nixos-vm" "$@"''
+						];
+					};
 				};
-				apps.nixos-vm-impermanent-programs-appimage = self'.packages.nixos-vm-impermanent-programs-appimage;
+
+				apps.nixos-vm-impermanent-programs-appimage = {
+					type = "app";
+					program = pkgs.writeShellApplication {
+						name = "nixos-vm-impermanent-programs-appimage";
+						bashOptions = [ "errexit" ];
+						runtimeInputs = with pkgs; [ qemu util-linux e2fsprogs coreutils ];
+					# Always start fresh by removing disk
+					# Priority 1: FLAKE_ROOT (dev mode)
+					# Priority 2: NIX_DISK_IMAGE (user override)
+					# Priority 3: Ephemeral mode (always fresh)
+					text = concatStringsSep "\n" [
+						''if [ -n "''${FLAKE_ROOT:-}" ] && [ -d "$FLAKE_ROOT" ]; then''
+						''	DISK_PATH="$FLAKE_ROOT/nixos-vm-impermanent-programs-appimage.qcow2"''
+						''	[ ! -f "$DISK_PATH" ] || rm "$DISK_PATH"''
+						''	export NIX_DISK_IMAGE="$DISK_PATH"''
+						''	exec "${programs-appimage.config.system.build.vm}/bin/run-nixos-vm" "$@"''
+						''fi''
+						""
+						''if [ -n "''${NIX_DISK_IMAGE:-}" ]; then''
+						''	[ ! -f "$NIX_DISK_IMAGE" ] || rm "$NIX_DISK_IMAGE"''
+						''	exec "${programs-appimage.config.system.build.vm}/bin/run-nixos-vm" "$@"''
+						''fi''
+						""
+						''BASE_DISK="/var/tmp/nixium-vm-impermanent-$$-$RANDOM.qcow2"''
+							''temp=$(mktemp)''
+							''qemu-img create -f raw "$temp" 8G >/dev/null 2>&1''
+							''mkfs.ext4 -L nixos "$temp" -q -F''
+							''qemu-img convert -f raw -O qcow2 "$temp" "$BASE_DISK"''
+							''rm "$temp"''
+							""
+							''export NIX_DISK_IMAGE="$BASE_DISK"''
+							''export TMPDIR="''${TMPDIR:-/var/tmp}"''
+							""
+							''exec "${programs-appimage.config.system.build.vm}/bin/run-nixos-vm" "$@"''
+						];
+					};
+				};
 
 				checks.programs-appimage-pulse = pkgs.writeShellApplication {
 					name = "check-programs-appimage-pulse";

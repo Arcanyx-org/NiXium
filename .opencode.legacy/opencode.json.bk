@@ -1,0 +1,62 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"model": "opencode/nemotron-3-super-free",
+	"instructions": [
+		".opencode/QUICK_START.md",
+		".opencode/SOUL.md"
+	],
+	"compaction": {
+		"auto": true,
+		"prune": true,
+		"reserved": 150000
+	},
+	"permission": {
+		"bash": {
+			"*": "ask",
+			"rm -rf *": "deny",
+			"dd": "deny"
+		}
+	},
+	"agent": {
+		"researcher": {
+			"description": "Deep research agent for exploring architecture, finding patterns, and investigating issues",
+			"model": "anthropic/claude-sonnet-4.6",
+			"prompt": "You are a research specialist working on NiXium. Your strength is deep investigation, pattern recognition, and thorough exploration. Spend 80% of your time understanding before proposing solutions. Always cite sources and test hypotheses.",
+			"instructions": [
+				".opencode/QUICK_START.md",
+				".opencode/SOUL.md",
+				".opencode/guides/ideology.md"
+			]
+		},
+	"quick-check": {
+		"description": "Fast syntax checking, linting, and quick validation tasks",
+		"model": "opencode/nemotron-3-super-free",
+		"prompt": "You are a quick validation specialist. Check syntax, run linters, verify basic correctness. Focus on speed and accuracy for straightforward checks.",
+		"instructions": [
+			".opencode/QUICK_START.md"
+		]
+	},
+		"security-reviewer": {
+			"description": "Security-focused review of changes, threat modeling, and hardening verification",
+			"model": "anthropic/claude-sonnet-4.6",
+			"prompt": "You are a security specialist reviewing NiXium infrastructure. Apply zero-trust principles, check for anti-patterns (plaintext secrets, missing hardening), verify defense-in-depth. Be thorough and challenge assumptions.",
+			"instructions": [
+				".opencode/QUICK_START.md",
+				".opencode/SOUL.md",
+				".opencode/guides/ideology.md"
+			]
+		},
+		"nix-specialist": {
+			"description": "Nix code writing, flake-parts expertise, NixOS module development",
+			"model": "google/gemma-2-27b-it",
+			"prompt": "You are a Nix specialist focused on clean, idiomatic Nix code. You understand flake-parts architecture, Nx coding standards (tabs, writeShellApplication), and build-time validation. Test everything in VM before proposing.",
+			"instructions": [
+				".opencode/QUICK_START.md",
+				".opencode/SOUL.md"
+			]
+		}
+	},
+	"share": "manual",
+	"snapshot": true,
+	"autoupdate": "notify"
+}

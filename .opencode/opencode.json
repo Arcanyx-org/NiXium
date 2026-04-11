@@ -1,0 +1,17 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"model": "opencode-go/glm-5.1",
+	"instructions": [
+		".opencode/context/project-intelligence/technical-domain.md"
+	],
+	// "permission": {
+	// 	"bash": {
+	// 		"*": "ask",
+	// 		"rm -rf *": "deny",
+	// 		"dd": "deny"
+	// 	}
+	// },
+	"share": "manual",
+	"snapshot": true,
+	"autoupdate": "notify"
+}

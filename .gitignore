@@ -8,3 +8,8 @@ system.raw
 tmp
 TODO
 *.qcow2
+.claw/
+.opencode/sessions/          # Private incident response, security research
+.opencode/MEMORY.md           # May contain operational details
+# .opencode/ other dirs are public (agents, commands, guides, etc.)
+.opencode/quests/             # User-only session management, not committed

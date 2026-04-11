@@ -6,8 +6,7 @@
 # Reference: https://github.com/tpope/vim-sensible/blob/master/plugin/sensible.vim
 
 let
-	inherit (lib) mkIf;
-	inherit (builtins) concatStringsSep;
+	inherit (lib) mkIf concatStringsSep;
 in mkIf config.programs.vim.enable {
 	programs.vim = {
 		settings = {

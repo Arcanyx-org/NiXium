@@ -28,6 +28,22 @@ This is a **living document** - you are expected to update it when you:
 
 ---
 
+## CRITICAL: Agree Before You Implement
+
+For any task that involves writing new files, new architecture, or non-trivial changes to existing files:
+
+1. **Stop before touching anything.**
+2. **State your proposed approach in ≤5 lines** — what you intend to do and why.
+3. **Wait for explicit user approval** ("yes", "proceed", "looks good", etc.) before writing or editing any file.
+
+This applies even if the task sounds clear. Implementation details surface misunderstandings that cost far more to undo than a 30-second approval round-trip.
+
+**What counts as non-trivial:** new `.nix` files, new `lib/` modules, changes to `flake.nix` or machine `default.nix`, any architectural change.
+
+**What does NOT need approval:** single-line fixes, typo corrections, adding an `import` for a file you just created at the user's direction.
+
+---
+
 ## CRITICAL: Architecture Overview
 
 ### NiXium is a flake-parts Project, NOT Standard NixOS

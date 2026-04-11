@@ -202,6 +202,12 @@
 				url = "github:nix-community/nix-vscode-extensions";
 				inputs.nixpkgs.follows = "nixpkgs";
 			};
+
+		claw-code = {
+			# url = "github:Arcanyx-org/claw-code";
+			url = "git+file:///nix/persist/NiXium/vendor/claw-code";
+			inputs.nixpkgs.follows = "nixpkgs";
+		};
 	};
 
 	outputs = inputs @ { self, ... }:
@@ -250,10 +256,13 @@
 						# Benchmarks
 						inputs.nixpkgs.legacyPackages.${system}.perf
 
-						# Utilities
-						inputs.nixpkgs.legacyPackages.${system}.git # Working with the codebase
-						inputs.nixpkgs.legacyPackages.${system}.nano # Editor to work with the codebase in cli
-						inputs.nixpkgs.legacyPackages.${system}.openssl
+					# Utilities
+					inputs.nixpkgs.legacyPackages.${system}.git # Working with the codebase
+					inputs.nixpkgs.legacyPackages.${system}.nano # Editor to work with the codebase in cli
+					inputs.nixpkgs.legacyPackages.${system}.openssl
+					inputs.nixpkgs.legacyPackages.${system}.python3 # Scripting and data processing
+					inputs.nixpkgs.legacyPackages.${system}.jq # Manipulating json data
+
 
 						inputs.disko.packages.${system}.disko-install
 						inputs.disko.packages.${system}.disko
@@ -264,6 +273,8 @@
 						inputs.nixpkgs.legacyPackages.${system}.ungoogled-chromium # Web browser used in the integrated developer environment for interacting with the outside resources
 
 						inputs.nixpkgs-unstable.legacyPackages.${system}.opencode
+
+						inputs.claw-code.packages.${system}.claw
 					];
 					inputsFrom = [
 						config.mission-control.devShell

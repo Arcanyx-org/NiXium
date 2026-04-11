@@ -5,7 +5,7 @@
 # Module that is going to set up the KREYREN user
 
 let
-	inherit (lib) mkIf mkForce;
+	inherit (lib) mkIf;
 in {
 	age.secrets.kreyren-user-password.file = "${self.outPath}/src/nixos/users/users/kreyren/kreyren-user-password.age";
 	# sops.secrets."users/kreyren/hashed-password".neededForUsers = true;
@@ -17,8 +17,8 @@ in {
 		createHome = true;
 		hashedPasswordFile = config.age.secrets.kreyren-user-password.path;
 		# hashedPasswordFile = config.sops.secrets."users/kreyren/hashed-password".path;
-    extraGroups = [
-      "disk"
+		extraGroups = [
+			"disk"
 			"wheel"
 			(mkIf config.virtualisation.docker.enable "docker")
 			"dialout" # To Access e.g. /dev/ttyUSB0 for USB debuggers
