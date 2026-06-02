@@ -3,3 +3,4 @@
 * [ ] 2. Adapt user 'kira' for new management and outsource any needed config into global home management
 * [ ] 3. Port all other systems on new management
 * [ ] 4. Template?
+* [ ] 5. Implement custom management of the kernel

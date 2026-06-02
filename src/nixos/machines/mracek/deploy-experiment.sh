@@ -3,26 +3,26 @@
 # Experiment
 
 targetIP="192.168.0.52"
-targetFlake="github:Arcanyx-org/NiXium/experimental#nixos-mracek-stable"
+targetFlake="github:Arcanyx-org/NiXium/00e9848f86fd5e8504b5521e6c885397a9fd4594#nixos-mracek-stable"
 
 set -e # Exit on false return
 
 set -x # Debug
 
-ssh "root@$targetIP" mkdir --verbose --parents  /run/agenix.d/1
+# ssh "root@$targetIP" mkdir --verbose --parents  /run/agenix.d/1
 
-ssh "root@$targetIP" ln --verbose --symbolic /run/agenix.d/1 /run/agenix # Perform the symlink
+# ssh "root@$targetIP" ln --verbose --symbolic /run/agenix.d/1 /run/agenix # Perform the symlink
 
-ssh "root@$targetIP" chown --verbose "root:root" "/run/agenix.d/1" # Ensure expected ownership
+# ssh "root@$targetIP" chown --verbose "root:root" "/run/agenix.d/1" # Ensure expected ownership
 
-ssh "root@$targetIP" chmod --verbose 700 "/run/agenix.d/1" # Ensure expected permission
+# ssh "root@$targetIP" chmod --verbose 700 "/run/agenix.d/1" # Ensure expected permission
 
-ssh "root@$targetIP" 'echo 000000 > /run/agenix/mracek-disks-password'
+# ssh "root@$targetIP" 'echo 000000 > /run/agenix/mracek-disks-password'
 
-ssh "root@$targetIP" 'cat > /etc/ssh/ssh_host_ed25519_key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/mracek/secrets/mracek-ssh-ed25519-private.age || true)
+# ssh "root@$targetIP" 'cat > /etc/ssh/ssh_host_ed25519_key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/mracek/secrets/mracek-ssh-ed25519-private.age || true)
 
-ssh "root@$targetIP" 'chmod 400 /etc/ssh/ssh_host_ed25519_key'
-ssh "root@$targetIP" 'chown root:root /etc/ssh/ssh_host_ed25519_key'
+# ssh "root@$targetIP" 'chmod 400 /etc/ssh/ssh_host_ed25519_key'
+# ssh "root@$targetIP" 'chown root:root /etc/ssh/ssh_host_ed25519_key'
 
 # ssh "root@$targetIP" 'cat > /key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/mracek/secrets/mracek-unlock-key.age || true)
 

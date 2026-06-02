@@ -6,7 +6,8 @@ let
 	inherit (lib) mkForce;
 in {
 	# FIXME-SECURITY(Krey): Make a Libre Kernel with Hardened patches
-		boot.kernelPackages = mkForce pkgs.linuxPackages-libre; # Use Linux-Libre
+	# FIXME(Krey): error: linux_libre has been removed due to lack of maintenance
+		# boot.kernelPackages = mkForce pkgs.linuxPackages-libre; # Use Linux-Libre
 
 	boot.kernelParams = [
 		# FIXME-SECURITY(Krey): Used to manage CPU Vulnerabilities, migrate to global module and apply by default to all x86_64 devices
