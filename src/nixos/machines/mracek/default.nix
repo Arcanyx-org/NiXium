@@ -22,12 +22,11 @@
 				./config/disks.nix
 				./config/firmware.nix
 				./config/hardware-acceleration.nix
+				./config/hardware.nix
 				./config/initrd.nix
 				./config/kernel.nix
 				./config/networking.nix
 				./config/plymouth.nix
-				./config/power-management.nix
-				./config/remote-unlock.nix
 				./config/security.nix
 				./config/sound.nix
 				./config/vm-build.nix
