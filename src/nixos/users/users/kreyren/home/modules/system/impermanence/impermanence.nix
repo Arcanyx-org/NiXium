@@ -84,6 +84,11 @@ in {
 				# FIXME(Krey): Only include this when dorion is installed
 				".config/dorion"
 
+			# OpenCode
+				# FIXME(Krey): Only include this when opencode is installed
+				".config/opencode"
+				".local/share/opencode"
+
 			".android"
 
 			".local/share/com.jeffser.Alpaca"

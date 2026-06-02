@@ -5,9 +5,11 @@ let
 in {
 	flake.homeManagerModules.apps-kreyren.imports = [
 		homeManagerModules.apps-bottles-kreyren
+		homeManagerModules.apps-opencode-kreyren
 	];
 
 	imports = [
 		./bottles
+		./opencode
 	];
 }

@@ -2,6 +2,7 @@
 name: CodeReviewer
 description: Code review, security, and quality assurance agent
 mode: subagent
+model: openrouter/google/gemma-4-31b-it:nitro
 temperature: 0.1
 permission:
   bash:

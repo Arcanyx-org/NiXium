@@ -1,1 +1,1 @@
-MRACEK's service-specific configuration directory
+TEMPLATE's service-specific configuration directory

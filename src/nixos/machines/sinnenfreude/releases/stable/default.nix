@@ -43,6 +43,7 @@ in {
 					services.usbguard.dbus.enable = false;
 				services.smartd.enable = true;
 				services.clamav.daemon.enable = true;
+				services.ollama.enable = true;
 				services.printing.enable = false;
 				# services.rustdesk-server.enable = true;
 				# 	services.rustdesk-server.openFirewall = tru

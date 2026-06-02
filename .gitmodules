@@ -1,37 +1,53 @@
 [submodule "vendor/impermanence"]
 	path = vendor/impermanence
 	url = git@github.com:Arcanyx-org/impermanence.git
+	ignore = dirty
 [submodule "vendor/agenix"]
 	path = vendor/agenix
 	url = git@github.com:Arcanyx-org/agenix.git
+	ignore = dirty
 [submodule "vendor/ragenix"]
 	path = vendor/ragenix
 	url = git@github.com:Arcanyx-org/ragenix.git
+	ignore = dirty
 [submodule "vendor/gjs-osk"]
 	path = vendor/gjs-osk
 	url = git@github.com:Kreyren/gjs-osk.git
 	branch = central
+	ignore = dirty
 [submodule "vendor/nixpkgs-stable"]
 	path = vendor/nixpkgs-stable
 	url = git@github.com:Arcanyx-org/nixpkgs-stable.git
+	ignore = dirty
 [submodule "vendor/stardustxr-telescope"]
 	path = vendor/stardustxr-telescope
 	url = git@github.com:StardustXR/telescope.git
+	ignore = dirty
 [submodule "vendor/mobile-nixos"]
 	path = vendor/mobile-nixos
 	url = git@github.com:Arcanyx-org/mobile-nixos.git
+	ignore = dirty
 [submodule "vendor/mission-control"]
 	path = vendor/mission-control
 	url = https://github.com/Platonic-Systems/mission-control
+	ignore = dirty
 [submodule "vendor/disko"]
 	path = vendor/disko
 	url = https://github.com/nix-community/disko
+	ignore = dirty
 [submodule "vendor/claw-code"]
 	path = vendor/claw-code
 	url = https://github.com/Arcanyx-org/claw-code.git
-[submodule "/nix/persist/NiXium/vendor/opencode"]
-	path = /nix/persist/NiXium/vendor/opencode
+	ignore = dirty
+[submodule "vendor/opencode"]
+	path = vendor/opencode
 	url = https://github.com/anomalyco/opencode
+	ignore = dirty
+[submodule "vendor/cbmk"]
+	path = vendor/cbmk
+	url = https://codeberg.org/canoeboot/cbmk
+	ignore = dirty
 [submodule "vendor/OpenAgentsControl"]
 	path = vendor/OpenAgentsControl
 	url = git@github.com:darrenhinde/OpenAgentsControl.git
+	ignore = dirty

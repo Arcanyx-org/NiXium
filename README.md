@@ -1,4 +1,9 @@
-# RED ALERT: Claude AI Agent proven to be able to find unknown zero days in the code which is publicly available: https://www.youtube.com/watch?v=-ndTTdOW_i4 ALL SERVICES ARE NOW TAKEN DOWN
+# RED ALERT: Claude AI Agent proven to be able to find unknown zero days in the code which is publicly available.
+* https://www.youtube.com/watch?v=-ndTTdOW_i4
+* https://www.youtube.com/watch?v=zMpn9ICagdE
+* https://www.youtube.com/watch?v=Oq5e_8zvick
+
+**ALL SERVICES ARE NOW TAKEN DOWN**
 
 ### NIXIUM IS IN CRISIS RECOVERY MODE.
 
@@ -18,6 +23,7 @@ Transparent Nix-based Open-Source Infrastructure as Code (OSS IaaC) for mission-
 - [lanzaboote](https://github.com/nix-community/lanzaboote) — Declarative Secure Boot
 - [nixos-generators](https://github.com/nix-community/nixos-generators) — Filesystem Images
 - [Release-independent Modules](#release-independent-modules) — Cross-release compatibility
+- [Canoeboot](https://canoeboot.org) - All systems are mandated to use open-source firmware without blobs
 
 ## Standards
 

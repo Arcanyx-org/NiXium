@@ -29,34 +29,33 @@ in mkMerge [
 		age.secrets.mracek-disks-password.file = "${self.outPath}/src/nixos/machines/mracek/secrets/mracek-disks-password.age"; # Supply password for disk encryption
 	}
 
-	{
-		# Enable SD-Card Unattended-boot
+	# {
+	# 	# Enable SD-Card Unattended-boot
 
-			# Needed to find the SD Card device during initrd stage
-			boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
+	# 		# Needed to find the SD Card device during initrd stage
+	# 		boot.initrd.kernelModules = [ "mmc_core" "mmc_block" "sd_mod"  ];
 
-			age.secrets.lengo-unlock-key.file = ../secrets/mracek-unlock-key.age; # KeyFile for unlocking the filesystems
+	# 		age.secrets.lengo-unlock-key.file = ../secrets/mracek-unlock-key.age; # KeyFile for unlocking the filesystems
 
-			boot.initrd.luks.devices = {
-				swap = {
-					device = "/dev/disk/by-partlabel/disk-system-swap";
-					preLVM = true;
-					allowDiscards = true;
-					keyFile = keyDevice;
-					keyFileSize = 4096;
-					# fallbackToPassword = true;
-				};
-				store = {
-					device = "/dev/disk/by-partlabel/disk-system-store";
-					preLVM = true;
-					allowDiscards = true;
-					keyFile = keyDevice;
-					keyFileSize = 4096;
-					# fallbackToPassword = true;
-				};
-			};
-	}
-
+	# 		boot.initrd.luks.devices = {
+	# 			swap = {
+	# 				device = "/dev/disk/by-partlabel/disk-system-swap";
+	# 				preLVM = true;
+	# 				allowDiscards = true;
+	# 				keyFile = keyDevice;
+	# 				keyFileSize = 4096;
+	# 				# fallbackToPassword = true;
+	# 			};
+	# 			store = {
+	# 				device = "/dev/disk/by-partlabel/disk-system-store";
+	# 				preLVM = true;
+	# 				allowDiscards = true;
+	# 				keyFile = keyDevice;
+	# 				keyFileSize = 4096;
+	# 				# fallbackToPassword = true;
+	# 			};
+	# 		};
+	# }
 
 	# FIXME(Krey): Causes infinite recursion, no idea why
 	# (if (config.boot.impermenance.enable == true) then {

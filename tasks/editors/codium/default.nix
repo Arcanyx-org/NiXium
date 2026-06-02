@@ -8,7 +8,7 @@
 				category = "Integrated Development Environments";
 				exec = let
 					vscodium-with-extensions = pkgs.vscode-with-extensions.override {
-						vscode = pkgs.vscodium;
+						vscode = inputs.nixpkgs-unstable.legacyPackages.x86_64-linux.vscodium;
 						vscodeExtensions = let
 								open-vsx-release = inputs.nix-vscode-extensions.extensions.${system}.open-vsx-release;
 							in [
@@ -26,6 +26,7 @@
 							open-vsx-release.markwylde.vscode-filesize
 							open-vsx-release.anwar.resourcemonitor
 							open-vsx-release.sst-dev.opencode
+							open-vsx-release.kilocode.kilo-code
 						];
 					};
 				in ''${vscodium-with-extensions}/bin/codium "$FLAKE_ROOT/default.code-workspace"'';

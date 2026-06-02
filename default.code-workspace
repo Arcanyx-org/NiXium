@@ -198,6 +198,7 @@
 		"gitlens.launchpad.indicator.enabled": false, // Disable launchpad indicator as we are not using that functionality
 		"gitlens.statusBar.enabled": false, // Do not bloat the status bar
 		"gitlens.statusBar.pullRequests.enabled": false,
+		"nixEnvSelector.nixFile": "${workspaceFolder}/flake.nix",
 	},
 
 	"extensions": {

@@ -2,8 +2,8 @@
 name: NixSpecialist
 description: Nix/NixOS specialist — flake-parts, NixOS module development, Nx coding standard, VM testing
 mode: subagent
-model: github-copilot/claude-sonnet-4.6
-temperature: 0.5
+model: openrouter/qwen/qwen3-coder-30b-a3b-instruct
+temperature: 0.0
 permission:
   task:
     "*": "deny"
@@ -178,7 +178,7 @@ nix run -L '.#nixosConfigurations.nixos-<machine>-stable.config.system.build.vmW
 ```
 VM Test Results:
 - Build: ✅ Success
-- Boot: ✅ Success  
+- Boot: ✅ Success
 - Service start: ✅ Success (systemctl status myservice)
 - Functionality: ✅ Verified ([specific test performed])
 - Logs: ✅ No errors (journalctl -u myservice)
@@ -212,7 +212,7 @@ All changes reverted. Awaiting approval to implement.
     - Relevant machine config read
     - Task scope understood (machine-specific vs shared module)
   </pre_flight>
-  
+
   <post_flight>
     - Code follows Nx standard (tabs, writeShellApplication, etc.)
     - VM test completed and documented

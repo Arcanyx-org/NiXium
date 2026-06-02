@@ -2,7 +2,7 @@
 
 # Experiment
 
-targetIP="192.168.0.168"
+targetIP="192.168.0.52"
 targetFlake="github:Arcanyx-org/NiXium/experimental#nixos-mracek-stable"
 
 set -e # Exit on false return

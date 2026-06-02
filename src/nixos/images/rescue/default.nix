@@ -1,70 +1,117 @@
-{ inputs, lib, self, ... }:
+{ inputs, self, ... }:
 
-# Customized rescueImage to work with the NixOS Distribution
+###! NiXium Rescue Image
+###!
+###! Minimal NixOS ISO for system recovery. Boots entirely into RAM (copytoram),
+###! enables wireless networking, and exposes an SSH daemon for remote access.
+###!
+###! Default platform: x86_64-linux (overridable via nixpkgs.hostPlatform).
+###!
+###! SSH Access:
+###!   Host: <ip>
+###!   User: root
+###!   Password: 000000
+###!   Key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve
+###!
+###! # Formats
+###!
+###! Physical media:
+###!   iso             — Bootable ISO image (CD/USB)
+###!   iso-installer   — NixOS installer ISO
+###!   sd-card         — SD card image (ARM only)
+###!   kexec           — Minimal netboot/kexec image
+###!
+###! Virtual machines:
+###!   qemu            — QEMU disk image (BIOS)
+###!   qemu-efi        — QEMU disk image (UEFI)
+###!   raw             — Raw disk image (BIOS)
+###!   raw-efi         — Raw disk image (UEFI)
+###!   virtualbox      — VirtualBox VDI image
+###!   vagrant-virtualbox — Vagrant box for VirtualBox
+###!   vmware          — VMware VMDK image
+###!   hyperv          — Hyper-V VHDX image
+###!
+###! Cloud:
+###!   amazon          — AWS EC2 AMI
+###!   azure           — Microsoft Azure VHD
+###!   cloudstack      — Apache CloudStack
+###!   digital-ocean   — DigitalOcean image
+###!   google-compute  — Google Compute Engine image
+###!   linode          — Linode image
+###!   oci             — Oracle Cloud Infrastructure
+###!   openstack       — OpenStack QCOW2
+###!   openstack-zfs   — OpenStack QCOW2 with ZFS
+###!
+###! Containers:
+###!   lxc             — LXC container tarball
+###!   lxc-metadata    — LXC metadata only
+###!   proxmox         — Proxmox VE image
+###!   proxmox-lxc     — Proxmox LXC container
+###!   kubevirt        — KubeVirt (Kubernetes VMs)
+###!
+###! # Usage
+###!
+###! nix build '.#nixosConfigurations.nixos-rescue.config.system.build.images.<format>'
+###!
+###! # Override architecture
+###!
+###!   flake.nixosConfigurations."nixos-rescue-aarch64" = inputs.nixpkgs.lib.nixosSystem {
+###!     modules = [
+###!       self.nixosModules."nixos-rescue"
+###!       { nixpkgs.hostPlatform = "aarch64-linux"; }
+###!     ];
+###!   };
 
-let
-	inherit (builtins) concatStringsSep;
-	inherit (lib) mkForce;
-in {
-	perSystem = { system, pkgs, inputs', self', ... }: {
-		packages.nixos-rescueImage = inputs.nixpkgs.lib.nixosSystem {
-			pkgs = import inputs.nixpkgs {
-				inherit system;
-				config.allowUnfree = true;
-			};
+{
+	flake.nixosModules."nixos-rescue" = { lib, pkgs, ... }: {
+		imports = [
+			"${inputs.nixpkgs}/nixos/modules/image/images.nix"
+		];
 
-			inherit system;
+		nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
-			modules = [
-				{
-					boot.loader.timeout = mkForce 0; # Skip Bootloader unless the spacebar is held down during boot
+		boot.loader.timeout = lib.mkForce 0;
 
-					boot.kernelParams = [
-						"copytoram" # Run the installer from the Random Access Memory
-					];
+		boot.kernelParams = [
+			"copytoram"
+		];
 
-					environment.systemPackages = [
-						pkgs.git
-					];
+		environment.systemPackages = [
+			pkgs.git
+			pkgs.cryptsetup
+		];
 
-					nix.settings.experimental-features = "nix-command flakes";
+		nix.settings.experimental-features = "nix-command flakes";
 
-					services.getty.greetingLine = ''<<< Welcome To The NiXium Rescue >>>'';
+		services.getty.greetingLine = ''<<< Welcome To The NiXium Rescue >>>'';
 
-					# networking.wireless.networks."FreeNet" = { }; # Connect to FreeNet if the system doesn't have access to the internet by itself
+		hardware.enableRedistributableFirmware = true;
+		nixpkgs.config.allowUnfree = true;
 
-					hardware.enableRedistributableFirmware = true;
+		networking.wireless.enable = true;
 
-					networking.wireless.enable = true;
-					networking.wireless.networks."Base48-5" = {
-						ssid = "Base48-5";
-						psk = "";
-					};
+		system.stateVersion = lib.versions.majorMinor lib.version;
 
-					system.stateVersion = lib.versions.majorMinor lib.version; # Silence the state version warning
-				}
+		networking.hostName = "nixium-rescue";
 
-				{
-					services.sshd.enable = true; # Start OpenSSH server
-					users.users.root.openssh.authorizedKeys.keys = [
-						"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
-					];
-					users.users.root.password = "000000";
-				}
-			];
-			format = "iso";
+		services.sshd.enable = true;
+		users.users.root.openssh.authorizedKeys.keys = [
+			"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org"
+		];
+		users.users.root.password = "000000";
+	};
 
-			specialArgs = {
-				inherit self;
-			};
+	flake.nixosConfigurations."nixos-rescue" = inputs.nixpkgs.lib.nixosSystem {
+		modules = [ self.nixosModules."nixos-rescue" ];
+	};
+
+	# Special case that requires i686 bootloader
+		flake.nixosModules."nixos-rescueI686Boot" = {
+			imports = [ self.nixosModules."nixos-rescue" ];
+			boot.loader.grub.forcei686 = true;
 		};
 
-		# apps.nixos-rescueImage ={
-		# 	meta.description = "Builder for the NiXium Rescue Image";
-		# 	type = "app";
-		# 	program = pkgs.writeShellScript "nixos-rescueImage" (concatStringsSep "/n"
-		# 		"echo \"ISO located at: ${self'.packages.nixos-rescueImage}\""
-		# 	);
-		# };
-	};
+		flake.nixosConfigurations."nixos-rescueI686Boot" = inputs.nixpkgs.lib.nixosSystem {
+			modules = [ self.nixosModules."nixos-rescue32Boot" ];
+		};
 }

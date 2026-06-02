@@ -1,7 +1,7 @@
 .direnv
 .vscode
 result
-result-1
+result-*
 result-man
 system.raw
 *.log
@@ -9,7 +9,10 @@ tmp
 TODO
 *.qcow2
 .claw/
-.opencode/sessions/          # Private incident response, security research
-.opencode/MEMORY.md           # May contain operational details
+.opencode/sessions/
+.opencode/MEMORY.md
 # .opencode/ other dirs are public (agents, commands, guides, etc.)
-.opencode/quests/             # User-only session management, not committed
+.opencode/quests/
+session-ses_*.md
+.tmp/
+*.swp

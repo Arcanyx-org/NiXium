@@ -42,5 +42,5 @@
 	];
 
 	# Module export to other systems in the infrastructure
-	flake.nixosModules.machine-ignucius = ./lib/ignucius-export.nix;
+	flake.nixosModules.machine-ignucius = ./lib/template-export.nix;
 }

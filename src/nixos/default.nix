@@ -28,6 +28,7 @@ in {
 
 	imports = [
 		./images
+		./lib
 		./machines
 		./modules
 		./overlays

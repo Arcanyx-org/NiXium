@@ -14,6 +14,7 @@
 | `test-coverage.md` | Testing standards | ⭐⭐⭐⭐⭐ | Writing tests |
 | `documentation.md` | Documentation rules | ⭐⭐⭐⭐ | Writing docs |
 | `security-patterns.md` | Security best practices | ⭐⭐⭐⭐ | Security review, patterns |
+| `agent-personality.md` | Agent interaction personality | ⭐⭐⭐⭐ | New conversations, reviewing behavior, yes-man detection |
 | `project-intelligence.md` | What and why | ⭐⭐⭐⭐ | Onboarding, understanding projects |
 | `project-intelligence-management.md` | How to manage | ⭐⭐⭐ | Managing intelligence files |
 | `code-analysis.md` | Analysis approaches | ⭐⭐⭐ | Analyzing code, debugging |
@@ -52,6 +53,10 @@
 1. Load `code-quality.md` (critical)
 2. Load `security-patterns.md` (high)
 3. Load `test-coverage.md` (high)
+
+**For agent personality/interaction**:
+1. Load `agent-personality.md` (critical)
+2. Principles in system prompt (`openagent.md`) are always active — this file provides examples and templates
 
 **For project onboarding/understanding**:
 1. Load `project-intelligence.md` (high)

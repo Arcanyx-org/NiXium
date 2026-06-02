@@ -1,4 +1,4 @@
-{ lib, pkgs, self, ... }:
+{ pkgs, self, ... }:
 
 # Kreyren's Neovim configuration for quick file edits
 #
@@ -8,24 +8,19 @@
 let
 	inherit (builtins) concatStringsSep;
 
-	# mkVimConfig validates vimscript at build time and returns the content
-	# string if valid, failing the build otherwise.  It is defined in
-	# lib/mkVimConfig/ and exposed on self.lib so it can be used from any
-	# home-manager module that receives `self` via specialArgs.
+	# mkVimConfig validates vimscript at build time and returns the content string if valid, failing the build otherwise.  It is defined in lib/mkVimConfig/ and exposed on self.lib so it can be used from any home-manager module that receives `self` via specialArgs
 	mkVimConfig = self.lib.mkVimConfig pkgs;
 in {
 	programs.neovim = {
 		extraConfig = mkVimConfig {
 			name = "kreyren-nvim-config";
 			content = concatStringsSep "\n" [
-				"set noexpandtab"   # Keep real tab characters; do not replace <TAB> with spaces
-				"set tabstop=2"     # One tab stop equals two columns, matching the project indentation standard
-				"set shiftwidth=0"  # Mirror tabstop for auto-indent width so the two settings never diverge
-				"set copyindent"    # Re-use the current indentation style when opening a new line
+				"set noexpandtab" # Keep real tab characters; do not replace <TAB> with spaces
+				"set tabstop=2" # One tab stop equals two columns, matching the project indentation standard
+				"set shiftwidth=0" # Mirror tabstop for auto-indent width so the two settings never diverge
+				"set copyindent" # Re-use the current indentation style when opening a new line
 
-				# Disable Vim's built-in indentexpr for Nix files so the indentation
-				# is driven purely by the tabstop/shiftwidth settings above rather
-				# than by an indent script that doesn't understand Nix syntax well
+				# Disable Vim's built-in indentexpr for Nix files so the indentation is driven purely by the tabstop/shiftwidth settings above rather than by an indent script that doesn't understand Nix syntax well
 				"autocmd FileType nix setlocal indentexpr="
 				# Enforce project tab style for every Nix buffer regardless of
 				# global defaults or any indent plugin that might be loaded

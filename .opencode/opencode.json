@@ -1,6 +1,6 @@
 {
 	"$schema": "https://opencode.ai/config.json",
-	"model": "opencode-go/glm-5.1",
+	"model": "openrouter/openrouter/free",
 	"instructions": [
 		".opencode/context/project-intelligence/technical-domain.md"
 	],

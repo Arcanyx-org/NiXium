@@ -9,8 +9,8 @@ in mkIf config.programs.firefox.enable {
 		# Refer to https://mozilla.github.io/policy-templates or `about:policies#documentation` in firefox
 		policies = {
 			# Used For Development
-				BlockAboutAddons = false;
-				BlockAboutConfig = false;
+				# BlockAboutAddons = false;
+				# BlockAboutConfig = false;
 
 			# Needed? Ever?
 			CaptivePortal = false;

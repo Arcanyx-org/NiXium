@@ -1,6 +1,6 @@
 { config, pkgs, lib, unstable, aagl, polymc, ... }:
 
-# FIXME(Krey): trace: evaluation warning: The ‘gnome.dconf-editor’ was moved to top-level. Please use ‘pkgs.dconf-editor’ directly. -- Channel 24.11
+# FIXME(Krey): trace: evaluation warning: The 'gnome.dconf-editor' was moved to top-level. Please use 'pkgs.dconf-editor' directly. -- Channel 24.11
 
 let
 	inherit (lib) mkIf;
@@ -47,21 +47,47 @@ in {
 			# FIXME-QA(Krey): Use this on GTK-based desktop environments
 				pkgs.fractal # GTK4+ Matrix Client Written in Rust
 
+			# (pkgs.goofcord.overrideAttrs (super: {
+			# 	# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+			# 	postInstall = (super.postInstall or "") + ''
+			# 		mv "$out/bin/goofcord" "$out/bin/.goofcord-wrapped" # Rename the old binary
+
+			# 		# Suffix with proxy server
+			# 		cat > "$out/bin/goofcord" <<-SCRIPT
+			# 			#!${pkgs.busybox}/bin/sh
+			# 			script_dir=\$(dirname "\$(readlink -f "\$0")")
+			# 			exec "\$script_dir/.goofcord-wrapped" --proxy-server=socks5h://127.0.0.1:25344 "\$@"
+			# 		SCRIPT
+
+			# 		# Ensure that it's executable
+			# 		chmod +x "$out/bin/goofcord"
+			# 	'';
+			# }))
+
 			(pkgs.goofcord.overrideAttrs (super: {
-				# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
-				postInstall = (super.postInstall or "") + ''
-					mv "$out/bin/goofcord" "$out/bin/.goofcord-wrapped" # Rename the old binary
+				nativeBuildInputs = (super.nativeBuildInputs or []) ++ [ pkgs.proxychains-ng ];
 
-					# Suffix with proxy server
-					cat > "$out/bin/goofcord" <<-SCRIPT
-						#!${pkgs.busybox}/bin/sh
-						script_dir=\$(dirname "\$(readlink -f "\$0")")
-						exec "\$script_dir/.goofcord-wrapped" --proxy-server=socks5h://127.0.0.1:25344 "\$@"
-					SCRIPT
+				postInstall = (super.postInstall or "") + builtins.concatStringsSep "\n" [
+					''mv "$out/bin/goofcord" "$out/bin/.goofcord-wrapped"''
 
-					# Ensure that it's executable
-					chmod +x "$out/bin/goofcord"
-				'';
+					''cat > "$out/bin/proxychains.conf" <<-CONF''
+						''strict_chain''
+						''proxy_dns''
+						''remote_dns_subnet 224''
+						''tcp_read_time_out 15000''
+						''tcp_connect_time_out 8000''
+						''[ProxyList]''
+						# FIXME-SECURITY(Krey): Ideally we want to keep the ports as private and rotate them, but this is very minor security issue
+						''socks5 127.0.0.1 25344''
+					''CONF''
+
+					''cat > "$out/bin/goofcord" <<-SCRIPT''
+						''#!${pkgs.busybox}/bin/sh''
+						''exec "$out/bin/.goofcord-wrapped" --proxy-server="socks5://127.0.0.1:25344" "\$@"''
+					''SCRIPT''
+
+					''chmod +x "$out/bin/goofcord"''
+				];
 			}))
 			# (pkgs.dissent.overrideAttrs (super: {
 			# 	# Force dissent to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
@@ -184,6 +210,7 @@ in {
 		pkgs.mtr # Packet Loss Tester
 		pkgs.sc-controller # Steam Controller Software
 		pkgs.monero-gui
+		unstable.opencode
 		pkgs.dialect # Language Translator
 		pkgs.endeavour # To-Do Notes
 		# FIXME-QA(Krey): As of 24th Jun 2024 this doesn't build

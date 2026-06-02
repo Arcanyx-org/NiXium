@@ -30,6 +30,10 @@
 
 		# Principle inputs
 			nixos-hardware.url = "github:NixOS/nixos-hardware";
+			mobile-nixos = {
+				url = "github:mobile-nixos/mobile-nixos";
+				flake = false;
+			};
 			nixos-flake.url = "github:srid/nixos-flake";
 			# nur.url = "github:nix-community/NUR/master";
 			# impermanence.url = "github:nix-community/impermanence";
@@ -229,8 +233,8 @@
 				"armv7l-linux"
 			];
 
-			perSystem = { system, config, inputs', ... }: {
-				devShells.default = inputs.nixpkgs.legacyPackages.${system}.mkShell {
+		perSystem = { system, config, inputs', lib, ... }: {
+			devShells.default = inputs.nixpkgs.legacyPackages.${system}.mkShell {
 					name = "NiXium-devshell";
 					nativeBuildInputs = [
 						# Shell
@@ -256,12 +260,12 @@
 						# Benchmarks
 						inputs.nixpkgs.legacyPackages.${system}.perf
 
-					# Utilities
-					inputs.nixpkgs.legacyPackages.${system}.git # Working with the codebase
-					inputs.nixpkgs.legacyPackages.${system}.nano # Editor to work with the codebase in cli
-					inputs.nixpkgs.legacyPackages.${system}.openssl
-					inputs.nixpkgs.legacyPackages.${system}.python3 # Scripting and data processing
-					inputs.nixpkgs.legacyPackages.${system}.jq # Manipulating json data
+						# Utilities
+						inputs.nixpkgs.legacyPackages.${system}.git # Working with the codebase
+						inputs.nixpkgs.legacyPackages.${system}.nano # Editor to work with the codebase in cli
+						inputs.nixpkgs.legacyPackages.${system}.openssl
+						inputs.nixpkgs.legacyPackages.${system}.python3 # Scripting and data processing
+						inputs.nixpkgs.legacyPackages.${system}.jq # Manipulating json data
 
 
 						inputs.disko.packages.${system}.disko-install

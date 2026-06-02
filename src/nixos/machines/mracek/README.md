@@ -2,7 +2,16 @@
 
 Named after the diminutive of Czech word 'mrak' meaning 'cloud' and used for cloud computing.
 
-Role: Always-on control and fallback server
+Role: TBD
+
+## Hardware
+
+Dell Optiplex 9020 SFF
+* **Chipset:** Intel Q87 Express
+* **Firmware:** [Canoeboot](https://canoeboot.org/docs/install/dell9020.html)
+* **CPU:** Intel(R) Core(TM) i5-4570 (4) @ 3.60 GHz
+* **GPU:** Intel Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller @ 1.15 GHz [In]
+* ...
 
 ## Services
 

@@ -2,7 +2,7 @@
 name: SecurityReviewer
 description: Security-focused review — zero-trust compliance, threat modeling, hardening verification, NiXium security standards
 mode: subagent
-model: github-copilot/claude-sonnet-4.6
+model: openrouter/google/gemma-4-31b-it:nitro
 temperature: 0.4
 permission:
   bash:

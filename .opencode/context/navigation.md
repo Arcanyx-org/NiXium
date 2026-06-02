@@ -31,15 +31,19 @@
 | **Write docs** | `core/standards/documentation.md` |
 | **Review code** | `core/workflows/code-review.md` |
 | **Delegate task** | `core/workflows/task-delegation-basics.md` |
+| **Manage quests** | `core/workflows/quests.md` |
 | **Add agent** | `openagents-repo/guides/adding-agent.md` |
 | **UI development** | `development/ui-navigation.md` |
 | **API development** | `development/backend-navigation.md` |
+| **Find a quest** | `../../quests/README.md` |
+| **Create a quest** | `../../quests/_template.md` |
 
 ---
 
 ## By Category
 
 **core/** - Standards, workflows, patterns → `core/navigation.md`
+**quests/** - Feature tracking & investigations → `../../quests/README.md`
 **openagents-repo/** - Repository-specific → `openagents-repo/navigation.md`
 **development/** - All development → `development/navigation.md`
 **ui/** - Design & UX → `ui/navigation.md`

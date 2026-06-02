@@ -1,5 +1,6 @@
 {
 	imports = [
+		./enchilada
 		./ignucius
 		./lengo
 		./mracek

@@ -43,7 +43,11 @@ in {
 		kreyren
 	];
 
-	"./users/users/kreyren/home/secrets/kreyren-github-access-token.age".publicKeys = [
+	"./users/users/kreyren/home/secrets/kreyren-opencode-auth.age".publicKeys = [
+		kreyren
+	];
+
+	"./users/users/kreyren/home/modules/apps/opencode/kreyren-opencode-auth.age".publicKeys = [
 		kreyren
 	];
 
@@ -285,6 +289,10 @@ in {
 	];
 
 	"./machines/sinnenfreude/secrets/sinnenfreude-builder-ssh-ed25519-private.age".publicKeys = [
+		kreyren sinnenfreude-system
+	];
+
+	"./machines/sinnenfreude/secrets/sinnenfreude-vast-api-key.age".publicKeys = [
 		kreyren sinnenfreude-system
 	];
 
