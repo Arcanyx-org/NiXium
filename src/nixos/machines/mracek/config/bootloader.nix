@@ -3,8 +3,9 @@
 # Bootloader management of MRACEK
 
 {
-	boot.lanzaboote.enable = false; # Whether to use NixOS's implementation of secure-boot
-	boot.loader.systemd-boot.enable = true;
-
-	boot.loader.efi.canTouchEfiVariables = true;
+	boot.lanzaboote.enable = false;
+	boot.loader.systemd-boot.enable = false;
+	boot.loader.grub.enable = false;
+	boot.loader.generic-extlinux-compatible.enable = true;
+	boot.loader.efi.canTouchEfiVariables = false;
 }

@@ -3,7 +3,7 @@
 # Experiment
 
 targetIP="192.168.0.52"
-targetFlake="github:Arcanyx-org/NiXium/00e9848f86fd5e8504b5521e6c885397a9fd4594#nixos-mracek-stable"
+targetFlake="github:Arcanyx-org/NiXium/618d8befbfb93b54d590ebb85d1e1da9b26ac1c1#nixos-mracek-stable"
 
 set -e # Exit on false return
 

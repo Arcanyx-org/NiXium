@@ -84,18 +84,25 @@ in mkMerge [
 						type = "gpt";
 						partitions = {
 
-							boot = {
+							grub = {
 								priority = 1; # Needs to be first partition
+								type = "EF02"; # BIOS Boot Partition
+								size = "1M";
+								content = {};
+							};
+
+							boot = {
+								priority = 2;
 								type = "EF00"; # EFI System Partition/
 								size = "512M";
 								content = {
 									type = "filesystem";
 									format = "vfat"; # FAT32
-										# SECURITY(Krey): Required since systemd 254, to not make the random-seed file writtable by default
-										# * https://github.com/nix-community/disko/issues/527#issuecomment-1924076948
-										# * https://discourse.nixos.org/t/nixos-install-with-custom-flake-results-in-boot-being-world-accessible/34555/14
-										mountOptions = [ "umask=0077" ];
-										mountpoint = "/boot";
+									# SECURITY(Krey): Required since systemd 254, to not make the random-seed file writtable by default
+									# * https://github.com/nix-community/disko/issues/527#issuecomment-1924076948
+									# * https://discourse.nixos.org/t/nixos-install-with-custom-boot-being-world-accessible/34555/14
+									mountOptions = [ "umask=0077" ];
+									mountpoint = "/boot";
 								};
 							};
 
@@ -195,8 +202,15 @@ in mkMerge [
 					type = "gpt";
 					partitions = {
 
-						boot = {
+						grub = {
 							priority = 1; # Needs to be first partition
+							type = "EF02"; # BIOS Boot Partition
+							size = "1M";
+							content = {};
+						};
+
+						boot = {
+							priority = 2;
 							type = "EF00"; # EFI System Partition/
 							size = "512M";
 							content = {

@@ -84,16 +84,13 @@ in {
 		apps.nixos-enchilada-stable-fastboot ={
 			meta.description = "Builder for Enchilada System's fastboot deployment";
 			type = "app";
-			program = pkgs.writeShellApplication {
+			program = "${pkgs.writeShellApplication {
 				name = "nixos-enchilada-stable-fastboot";
 				# runtimeInputs = [ ];
 				text = concatStringsSep "\n" [
 					"echo \"ISO located at: ${self'.packages.nixos-enchilada-stable-fastboot}\""
 				];
-			};
-			# program = concatStringsSep "/n" [
-			# 	"echo \"ISO located at: ${self'.packages.nixos-enchilada-stable-fastboot}\""
-			# ];
+			}}/bin/nixos-enchilada-stable-fastboot";
 		};
 	};
 

@@ -3,7 +3,7 @@
 # Module exporting configuration from MRACEK to other systems
 
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) mkMerge;
 in mkMerge [
 	{
 		# SSHD on Onions

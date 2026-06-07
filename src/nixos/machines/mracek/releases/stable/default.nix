@@ -38,7 +38,7 @@ in {
 					services.openssh.enable = true;
 					services.tor.enable = true;
 					# services.vaultwarden.enable = false; # Testing..
-					services.vikunja.enable = true;
+					services.vikunja.enable = false;
 
 					services.clamav.daemon.enable = true;
 
