@@ -206,7 +206,6 @@ in mkMerge [
 							priority = 1; # Needs to be first partition
 							type = "EF02"; # BIOS Boot Partition
 							size = "1M";
-							content = {};
 						};
 
 						boot = {
