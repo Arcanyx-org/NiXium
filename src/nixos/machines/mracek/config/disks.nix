@@ -84,15 +84,17 @@ in mkMerge [
 						type = "gpt";
 						partitions = {
 
-							grub = {
-								priority = 1; # Needs to be first partition
-								type = "EF02"; # BIOS Boot Partition
-								size = "1M";
-								content = {};
+						grub = {
+							priority = 1; # Needs to be first partition
+							type = "EF02"; # BIOS Boot Partition
+							size = "1M";
+							content = {
+								type = "raw";
 							};
+						};
 
-							boot = {
-								priority = 2;
+						boot = {
+							priority = 2;
 								type = "EF00"; # EFI System Partition/
 								size = "512M";
 								content = {
