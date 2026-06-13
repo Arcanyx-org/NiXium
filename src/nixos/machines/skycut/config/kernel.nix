@@ -15,11 +15,8 @@ in {
 			"tsx_async_abort=full,nosmt" # Enforce Full Mitigation if the management is needed
 			"mds=off" # Paranoid enforcement, shouldn't be needed..
 
-			# PS2 Keyboard
-			#"i8042.nokbd"
-			#"i8042.nomux"
-			"i8042.direct"
-			"i8042.dumbkbd"
+			# Keyboard
+			"i8042.nokbd" "i8042.nomux"
 	];
 
 	# FIXME(Krey): This should be in global module
