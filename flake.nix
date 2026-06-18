@@ -244,7 +244,8 @@
 
 						# Nix
 						inputs.nixpkgs.legacyPackages.${system}.nil # Needed for linting
-						inputs.nixpkgs.legacyPackages.${system}.nixpkgs-fmt # Nixpkgs formatter
+						# FIXME-QA(Krey): nixpkgs-fmt enforces nixpkgs style (spaces) which conflicts with the Nx Language Standard (tabs); replace with a formatter that supports the project coding style
+						# inputs.nixpkgs.legacyPackages.${system}.nixpkgs-fmt
 
 						# Javascript
 						inputs.nixpkgs.legacyPackages.${system}.nodePackages.eslint
@@ -288,7 +289,8 @@
 					#VARIABLE = "value"; # Comment
 				};
 
-				formatter = inputs.nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
+				# FIXME-QA(Krey): nixpkgs-fmt enforces nixpkgs style (spaces) which conflicts with the Nx Language Standard (tabs); replace with a formatter that supports the project coding style
+				# formatter = inputs.nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
 			};
 		};
 }

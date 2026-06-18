@@ -20,6 +20,7 @@ in mkIf config.services.openssh.enable {
 	services.tor.relay.onionServices."openssh".map = mkIf config.services.tor.enable config.services.openssh.ports; # Provide hidden SSH
 
 	# Set the pubkey
+	# FIXME-SECURITY(Krey): This key (AAAAIEmYpmNk...) does not match the tupac-system key in secrets.nix (AAAAIEpbUbuX...) or the knownHosts entry below; verify which key is correct and reconcile
 	environment.etc."ssh/ssh_host_ed25519_key.pub".text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEmYpmNkpSkSSk1FnxHvPb8JlbeYh2lf3d5u8MBqGpHP root@tupac";
 
 	services.openssh.hostKeys = mkForce []; # Do not generate SSH keys
