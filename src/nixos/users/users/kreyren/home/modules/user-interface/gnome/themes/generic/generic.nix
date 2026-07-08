@@ -50,11 +50,11 @@ in mkMerge [
 		}
 
 		{
-			"24.05" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+			"24.05" = mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) {
 				# This extension has been implemented in GNOME starting Nixpkgs >=24.11
 				dconf.settings."org/gnome/shell".enabled-extensions = [ "custom-accent-colors@demiskp" ]; # Enable custom accent color
 			};
-			"${optionalString (elem release [ "24.11" "25.05" ]) release}" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+			"${optionalString (elem release [ "24.11" "25.05" "26.05" ]) release}" = mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) {
 				dconf.settings."org/gnome/desktop/interface".accent-color = "purple"; # Set Accent Color
 			};
 			"25.11" = mkIf nixosConfig.services.desktopManager.gnome.enable {

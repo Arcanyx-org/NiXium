@@ -7,7 +7,7 @@ let
 	inherit (lib.trivial) release;
 in {
 	# FIXME-BACKPORT(Krey): This configuration was changed in 25.05 and is yet to be backported
-	"${optionalString (elem release [ "24.05" "24.11" ]) release}" = {
+	"${optionalString (elem release [ "24.05" "24.11" "26.05" ]) release}" = {
 		# Japanese Keyboard Input
 		i18n.inputMethod.enabled = "fcitx5";
 		i18n.inputMethod.fcitx5.addons = with pkgs; [ fcitx5-mozc ];
@@ -18,7 +18,7 @@ in {
 			"cs_CZ.UTF-8/UTF-8"
 		];
 	};
-	"${optionalString (elem release [ "25.05" "25.11" ]) release}" = {
+	"${optionalString (elem release [ "25.05" "25.11" "26.05" ]) release}" = {
 		# Japanese Keyboard Input
 		i18n.inputMethod.enable = true;
 			i18n.inputMethod.type = "fcitx5";
@@ -33,5 +33,5 @@ in {
 			"cs_CZ.UTF-8/UTF-8"
 		];
 	};
-}."${release}"
+}."${release}" or (throw "Release is not implemented: ${release}")
 

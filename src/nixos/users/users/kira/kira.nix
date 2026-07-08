@@ -1,7 +1,8 @@
 { config, pkgs, lib, ... }:
 
 let
-	inherit (lib) mkIf mkForce;
+	inherit (lib) mkIf mkForce versionOlder;
+	inherit (lib.trivial) release;
 in {
 	age.secrets.kira-user-password.file = ./kira-user-password.age;
 
@@ -14,9 +15,8 @@ in {
 			"wheel"
 			(mkIf config.virtualisation.docker.enable "docker")
 			"dialout" # To Access e.g. /dev/ttyUSB0 for USB debuggers
-			(mkIf config.programs.adb.enable "adbusers")
 			"disk"
-		];
+		] ++ lib.optional (versionOlder release "26.05" && config.programs.adb.enable) "adbusers";
 		openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDWzJOwfuNEniLzxeQJxa9Ys+zna4U0SVh7dw1VYN3A" ];
 	};
 

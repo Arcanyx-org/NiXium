@@ -47,7 +47,7 @@ in mkIf config.programs.git.enable (mkMerge [
 				# };
 			};
 		};
-		"25.11" = {
+		"${optionalString (elem release [ "25.11" "26.05" ]) release}" = {
 			programs.git = {
 				settings = {
 					user = {
@@ -78,5 +78,5 @@ in mkIf config.programs.git.enable (mkMerge [
 				};
 			};
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 ])

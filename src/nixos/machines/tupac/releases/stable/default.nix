@@ -12,6 +12,9 @@ in {
 			system = "x86_64-linux";
 			config.allowUnfree = true;
 			config.nvidia.acceptLicense = true; # Fuck You Nvidia! I am Forced into this!
+			config.permittedInsecurePackages = [
+				"python3.12-pypdf2-3.0.1"
+			];
 			config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
 				# FIXME-QA(Krey): Why the fuck is this needed for a steam controller?
 				"steam"
@@ -24,12 +27,12 @@ in {
 		modules = [
 			self.nixosModules."nixos-tupac"
 
-			{
+			({ pkgs, ... }: {
 				boot.impermanence.enable = true; # Whether To Use Impermanence
 				boot.plymouth.enable = true; # Show eyecandy on bootup?
 				nix.distributedBuilds = true; # Perform distributed builds
 
-				programs.adb.enable = true;
+				environment.systemPackages = [ pkgs.android-tools ];
 				programs.gamemode.enable = true;
 					# programs.gamemode.enableRenice = true;
 					# programs.gamemode.settings = {
@@ -177,7 +180,7 @@ in {
 				# 	substituters = mkForce [];
 				# 	trusted-public-keys = mkForce [];
 				# };
-			}
+			})
 
 			{
 				nix.nixPath = [
@@ -192,20 +195,22 @@ in {
 			# Principles
 			self.inputs.ragenix.nixosModules.default
 			self.inputs.sops.nixosModules.sops
-			self.inputs.hm.nixosModules.home-manager
+			self.inputs."hm-26_05".nixosModules.home-manager
 			self.inputs.disko.nixosModules.disko
 			self.inputs.lanzaboote.nixosModules.lanzaboote
 			self.inputs.impermanence.nixosModules.impermanence
 			self.inputs.arkenfox.hmModules.default
 
-			# An Anime Game
-			self.inputs.aagl.nixosModules.default {
-				networking.mihoyo-telemetry.block = true; # Block miHoYo telemetry servers
-				nix.settings = {
-					substituters = [ "https://ezkea.cachix.org" ];
-					trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
-				};
-			}
+			# FIXME(Krey): AAGL's wineWowPackages reference triggers deprecation
+		# warning in nixpkgs 26.05, blocked by abort-on-warn. Uncomment
+		# once upstream updates to wineWow64Packages.
+		# self.inputs.aagl-26_05.nixosModules.default {
+		# 	networking.mihoyo-telemetry.block = true;
+		# 	nix.settings = {
+		# 		substituters = [ "https://ezkea.cachix.org" ];
+		# 		trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
+		# 	};
+		# }
 		];
 
 		specialArgs = {

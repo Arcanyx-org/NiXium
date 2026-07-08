@@ -5,7 +5,8 @@
 # Module that is going to set up the KREYREN user
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) mkIf versionOlder;
+	inherit (lib.trivial) release;
 in {
 	age.secrets.kreyren-user-password.file = "${self.outPath}/src/nixos/users/users/kreyren/kreyren-user-password.age";
 	# sops.secrets."users/kreyren/hashed-password".neededForUsers = true;
@@ -22,10 +23,9 @@ in {
 			"wheel"
 			(mkIf config.virtualisation.docker.enable "docker")
 			"dialout" # To Access e.g. /dev/ttyUSB0 for USB debuggers
-			(mkIf config.programs.adb.enable "adbusers")
 			(mkIf config.programs.gamemode.enable "gamemode")
 			"video"
-		];
+		] ++ lib.optional (versionOlder release "26.05" && config.programs.adb.enable) "adbusers";
 		openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" ];
 	};
 

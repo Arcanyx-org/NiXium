@@ -8,9 +8,10 @@
 			nixpkgs-staging.url = "github:nixos/nixpkgs/staging";
 			nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-			nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+			nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
 			# nixpkgs.url = "git+file:///nix/persist/NiXium/vendor/nixpkgs-stable";
 
+			nixpkgs-26_05.url = "github:nixos/nixpkgs/nixos-26.05";
 			nixpkgs-25_11.url = "github:nixos/nixpkgs/nixos-25.11";
 			nixpkgs-25_05.url = "github:nixos/nixpkgs/nixos-25.05";
 			nixpkgs-24_11.url = "github:nixos/nixpkgs/nixos-24.11";
@@ -20,119 +21,115 @@
 			nixpkgs-22_11.url = "github:nixos/nixpkgs/nixos-22.11";
 			nixpkgs-22_05.url = "github:nixos/nixpkgs/nixos-22.05";
 
-			nixpkgs-kreyren.url = "github:kreyren/nixpkgs/central";
-			# nixpkgs-alpaca.url = "github:Gliczy/nixpkgs/alpaca-7.0.0";
-
 			nur-xddxdd = {
 				url = "github:xddxdd/nur-packages";
 				inputs.nixpkgs.follows = "nixpkgs";
 			};
 
 		# Principle inputs
-			nixos-hardware.url = "github:NixOS/nixos-hardware";
+			nixos-hardware = {
+				url = "github:NixOS/nixos-hardware";
+				inputs.nixpkgs.follows = "nixpkgs";
+			};
+
 			mobile-nixos = {
 				url = "github:mobile-nixos/mobile-nixos";
-				flake = false;
+				flake = false; # Ugh! Wouldn't be Samueldr's project if it didn't have "his way of doing things"
 			};
-			nixos-flake.url = "github:srid/nixos-flake";
-			# nur.url = "github:nix-community/NUR/master";
-			# impermanence.url = "github:nix-community/impermanence";
-				impermanence.url = "github:kreyren/impermanence"; # Use a fork to manage https://github.com/nix-community/impermanence/issues/167
-			flake-parts.url = "github:hercules-ci/flake-parts";
-			mission-control.url = "github:Platonic-Systems/mission-control";
 
-			flake-root.url = "github:srid/flake-root";
-			# NOTE(Krey): Lanzaboote was updated to 0.4.1, but those versions are not compatible with the nixpkgs stable channel
-			lanzaboote.url = "github:nix-community/lanzaboote/v0.4.2"; # MAINTAIN(Krey): has to be kept up to date -- https://github.com/nix-community/lanzaboote/issues/343
-
-		arkenfox = {
-			url = "github:dwarfmaster/arkenfox-nixos";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
-		arkenfox-unstable = {
-			url = "github:dwarfmaster/arkenfox-nixos";
-			inputs.nixpkgs.follows = "nixpkgs-unstable";
-		};
-		arkenfox-master = {
-			url = "github:dwarfmaster/arkenfox-nixos";
-			inputs.nixpkgs.follows = "nixpkgs-master";
-		};
-
-		firefox-addons = {
-			url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
-
-		# rust-overlay.url = "github:oxalica/rust-overlay";
-
-		nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
-
-		# Plasma Manager
-		# plasma-manager.url = "github:nix-community/plasma-manager";
-		# plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
-		# plasma-manager.inputs.home-manager.follows = "home-manager";
-
-		polymc.url = "github:PolyMC/PolyMC";
-
-		nixified-ai = {
-			url = "github:nixified-ai/flake";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
-
-		# FIXME(Krey): Move this to Arcanyx's fork, cuz I ain't dealing with Samuel and his bullshit
+			# FIXME(Krey): Move this to Arcanyx's fork, cuz I ain't dealing with Samuel and his bullshit
 			mobile-nixos-hana = {
 				url = "github:Arcanyx-org/mobile-nixos/google-hana";
 				flake = false;
 			};
 
-		# SOPS
+			nur = {
+				url = "github:nix-community/NUR";
+				inputs.nixpkgs.follows = "nixpkgs-unstable";
+			};
+
+			# impermanence.url = "github:nix-community/impermanence";
+				impermanence.url = "github:kreyren/impermanence"; # Use a fork to manage https://github.com/nix-community/impermanence/issues/167
+
+			flake-parts = {
+				url = "github:hercules-ci/flake-parts";
+				inputs.nixpkgs-lib.follows = "nixpkgs";
+			};
+
+			mission-control.url = "github:Platonic-Systems/mission-control";
+
+			flake-root.url = "github:srid/flake-root";
+
+			# Doesn't have stable release - https://github.com/nix-community/lanzaboote/issues/343
+			lanzaboote = {
+				url = "github:nix-community/lanzaboote";
+				inputs.nixpkgs.follows = "nixpkgs-unstable";
+			};
+
+			arkenfox = {
+				url = "github:dwarfmaster/arkenfox-nixos";
+				inputs.nixpkgs.follows = "nixpkgs";
+			};
+			arkenfox-unstable = {
+				url = "github:dwarfmaster/arkenfox-nixos";
+				inputs.nixpkgs.follows = "nixpkgs-unstable";
+			};
+			arkenfox-master = {
+				url = "github:dwarfmaster/arkenfox-nixos";
+				inputs.nixpkgs.follows = "nixpkgs-master";
+			};
+
+			firefox-addons = {
+				url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+				inputs.nixpkgs.follows = "nixpkgs-unstable";
+			};
+
+			# rust-overlay.url = "github:oxalica/rust-overlay";
+
+			# Latest always points to the most stable version
+			nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+
+			# Plasma Manager
+				# plasma-manager.url = "github:nix-community/plasma-manager";
+				# plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
+				# plasma-manager.inputs.home-manager.follows = "home-manager";
+
+			polymc = {
+				url = "github:PolyMC/PolyMC";
+				inputs.nixpkgs.follows = "nixpkgs-unstable";
+			};
+
+			nixified-ai = {
+				url = "github:nixified-ai/flake";
+				inputs.nixpkgs.follows = "nixpkgs-unstable";
+			};
+
 			sops = {
 				url = "github:Mic92/sops-nix";
-				inputs.nixpkgs.follows = "nixpkgs";
-			};
-			sops-unstable = {
-				url = "github:Mic92/sops-nix";
 				inputs.nixpkgs.follows = "nixpkgs-unstable";
 			};
-			sops-master = {
-				url = "github:Mic92/sops-nix";
-				inputs.nixpkgs.follows = "nixpkgs-master";
-			};
 
-		# Ragenix
 			ragenix = {
 				url = "github:yaxitech/ragenix";
-				inputs.nixpkgs.follows = "nixpkgs";
-			};
-			ragenix-unstable = {
-				url = "github:yaxitech/ragenix";
 				inputs.nixpkgs.follows = "nixpkgs-unstable";
-			};
-			ragenix-master = {
-				url = "github:yaxitech/ragenix";
-				inputs.nixpkgs.follows = "nixpkgs-master";
 			};
 
-		# DISKO
+			# MAINTAIN(Krey): Check this periodically if they changed on stable channel yet
 			disko = {
 				url = "github:nix-community/disko";
-				inputs.nixpkgs.follows = "nixpkgs";
-			};
-			disko-unstable = {
-				url = "github:nix-community/disko";
 				inputs.nixpkgs.follows = "nixpkgs-unstable";
-			};
-			disko-master = {
-				url = "github:nix-community/disko";
-				inputs.nixpkgs.follows = "nixpkgs-master";
 			};
 
 		# AAGL
 			aagl = {
-				url = "github:ezKEa/aagl-gtk-on-nix/release-25.11";
-				inputs.nixpkgs.follows = "nixpkgs-25_11";
+				url = "github:ezKEa/aagl-gtk-on-nix";
+				inputs.nixpkgs.follows = "nixpkgs-unstable";
 			};
 
+			aagl-26_05 = {
+				url = "github:ezKEa/aagl-gtk-on-nix/release-26.05";
+				inputs.nixpkgs.follows = "nixpkgs-26_05";
+			};
 			aagl-25_11 = {
 				url = "github:ezKEa/aagl-gtk-on-nix/release-25.11";
 				inputs.nixpkgs.follows = "nixpkgs-25_11";
@@ -154,24 +151,20 @@
 				inputs.nixpkgs.follows = "nixpkgs-23_11";
 			};
 
-			aagl-unstable = {
-				url = "github:ezKEa/aagl-gtk-on-nix/main";
-				inputs.nixpkgs.follows = "nixpkgs-unstable";
-			};
-			aagl-master = {
-				url = "github:ezKEa/aagl-gtk-on-nix/main";
-				inputs.nixpkgs.follows = "nixpkgs-master";
-			};
-
 		# Home-Manager
 			hm = {
-				url = "github:nix-community/home-manager/release-25.11";
-				inputs.nixpkgs.follows = "nixpkgs";
+				url = "github:nix-community/home-manager";
+				inputs.nixpkgs.follows = "nixpkgs-unstable";
+			};
+
+			hm-26_05 = {
+				url = "github:nix-community/home-manager/release-26.05";
+				inputs.nixpkgs.follows = "nixpkgs-26_05";
 			};
 
 			hm-25_11 = {
 				url = "github:nix-community/home-manager/release-25.11";
-				inputs.nixpkgs.follows = "nixpkgs-24_11";
+				inputs.nixpkgs.follows = "nixpkgs-25_11";
 			};
 
 			hm-25_05 = {
@@ -188,30 +181,22 @@
 				url = "github:nix-community/home-manager/release-24.05";
 				inputs.nixpkgs.follows = "nixpkgs-24_05";
 			};
+
 			hm-23_11 = {
 				url = "github:nix-community/home-manager/release-23.11";
 				inputs.nixpkgs.follows = "nixpkgs-23_11";
 			};
 
-			hm-unstable = {
-				url = "github:nix-community/home-manager/master";
-				inputs.nixpkgs.follows = "nixpkgs-unstable";
-			};
-			hm-master = {
-				url = "github:nix-community/home-manager/master";
-				inputs.nixpkgs.follows = "nixpkgs-master";
-			};
-
 			nix-vscode-extensions = {
 				url = "github:nix-community/nix-vscode-extensions";
-				inputs.nixpkgs.follows = "nixpkgs";
+				# inputs.nixpkgs.follows = "nixpkgs";
 			};
 
-		claw-code = {
-			# url = "github:Arcanyx-org/claw-code";
-			url = "git+file:///nix/persist/NiXium/vendor/claw-code";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
+		# claw-code = {
+		# 	# url = "github:Arcanyx-org/claw-code";
+		# 	url = "git+file:///nix/persist/NiXium/vendor/claw-code";
+		# 	inputs.nixpkgs.follows = "nixpkgs";
+		# };
 	};
 
 	outputs = inputs @ { self, ... }:
@@ -247,7 +232,7 @@
 						inputs.nixpkgs.legacyPackages.${system}.nixpkgs-fmt # Nixpkgs formatter
 
 						# Javascript
-						inputs.nixpkgs.legacyPackages.${system}.nodePackages.eslint
+						inputs.nixpkgs.legacyPackages.${system}.eslint
 
 						# Secrets
 						inputs.ragenix.packages.${system}.default # To manage secrets
@@ -278,7 +263,7 @@
 
 						inputs.nixpkgs-unstable.legacyPackages.${system}.opencode
 
-						inputs.claw-code.packages.${system}.claw
+						# inputs.claw-code.packages.${system}.claw
 					];
 					inputsFrom = [
 						config.mission-control.devShell

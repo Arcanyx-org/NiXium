@@ -294,6 +294,99 @@ in mkMerge [
 
 This is different from `mkIf` - it does NOT evaluate the body for non-matching releases.
 
+### Release-Gated Option Paths (26.05+)
+
+When NixOS/home-manager renames an option across releases, use `if` in `mkIf` conditions (not `mkIf` itself, since it evaluates both branches):
+
+```nix
+# GOOD: Only the matching branch evaluates
+mkIf (if elem release [ "26.05" ]
+      then config.services.desktopManager.gnome.enable
+      else config.services.xserver.desktopManager.gnome.enable
+) { /* ... */ }
+```
+
+Pattern for short-circuiting removed options:
+```nix
+# versionOlder short-circuits on 26.05+:
+users.users.kreyren.extraGroups = lib.optional
+  (lib.versionOlder release "26.05" && config.programs.adb.enable)
+  "adbusers";
+```
+
+### Common 26.05 Deprecations
+
+| Removed (26.05) | Replacement |
+|-----------------|-------------|
+| `services.xserver.desktopManager.gnome.enable` | `services.desktopManager.gnome.enable` |
+| `systemd.sleep.extraConfig` | `systemd.sleep.settings.Sleep.HibernateDelaySec` |
+| `programs.adb.enable` | `environment.systemPackages = [ pkgs.android-tools ]` |
+| `pkgs.xorg.xkill` | `pkgs.xkill` |
+| `programs.neovim.extraLuaConfig` | `programs.neovim.initLua` |
+| `programs.git.userEmail` | `programs.git.settings.user.email` |
+| `programs.vscode` package field | use `programs.vscodium` on 26.05+ |
+| Scripted initrd (`boot.initrd.systemd.enable = false`) | must use systemd initrd |
+| `pkgs.firefox` binary name (25.11→26.05) | `firefox` (not `firefox-esr`) — 25.11 shipped ESR as default |
+
+### NixOS 26.05 GNOME Notes (GNOME 49/50)
+
+- **NixOS 25.11**: GNOME 46, **NixOS 26.05**: GNOME 49/50 (NOT GNOME 48 as assumed)
+- `custom-accent-colors@demiskp` extension only supports up to GNOME 46 — already gated to ≤24.05 in NiXium; on 26.05 native accent-color is used
+- Caffeine extension v57 breaks on GNOME 49 (OSD API change); v58+ works — verify packaged version
+- gnome-shell-extensions (drive-menu, user-theme) not auto-installed since 25.05 — explicit packages are fine
+
+### Impermanence Fork fsType Fix
+
+The kreyren impermanence fork (`github:kreyren/impermanence`, rev `5f94a1c`) does NOT set `fsType` in `mkBindMountNameValuePair`. NixOS 26.05+ requires `fsType` (`types.nonEmptyStr`, no default).
+
+**Real solution** (not workaround): Patch both `fileSystems` AND `virtualisation.fileSystems` to add `fsType`. The fork already sets `virtualisation.fileSystems = bindMounts` — qemu-vm.nix reads from this when creating VM variant entries.
+
+```nix
+fileSystems = dirsToFsType allDirs;
+virtualisation.fileSystems = dirsToFsType allDirs;  # qemu-vm.nix mirrors this
+```
+
+Do NOT use `virtualisation.vmVariant.fileSystems` or `virtualisation.vmVariant.virtualisation.fileSystems` — these are fragile workarounds. Fix the source (`virtualisation.fileSystems`) that qemu-vm.nix copies from.
+
+**Do not** use `mkOverride 140` on fileSystems (replaces entire attrset, losing root fs). Use `mkDefault "none"` on individual entries — NixOS merges submodule attrs correctly.
+
+### Vendored HM `stripHomePrefix` Feature
+
+The vendored impermanence at `vendor/impermanence/` has a custom `stripHomePrefix` option (upstream has none).
+
+**What it does:** When set to `true` on a `home.persistence."<path>"` store, it strips the home directory prefix from the persistent storage path. Without it, `Desktop` is stored at `<persistentStoragePath>/home/kreyren/Desktop`; with it, at `<persistentStoragePath>/Desktop`.
+
+**Implementation:**
+- `submodule-options.nix`: Declared at store level (in `!usersOpts` block) with `default = false`, and at dir/file level in `commonOpts` inheriting from store via `default = config.stripHomePrefix`. A new internal `sourcePath` option carries the path without home prefix.
+- `nixos.nix`: All `what` (source) paths in systemd mount units, initrd mounts, and create-directories scripts use `sourcePath ?? dirPath` (defaulting to `dirPath` for backward compat). The `mkParent` function checks `stripHomePrefix` to determine whether to prepend `dir.home`.
+- Both `sourcePath` option declarations use `type = str` (not `path`) because it can be relative when `stripHomePrefix = true`.
+
+**Usage:**
+```nix
+home.persistence."/nix/persist/users/kreyren" = {
+  stripHomePrefix = true;
+  directories = [ "Desktop" "Documents" ];
+};
+```
+
+### Release-Gating Pattern for VSCode/VSCodium
+
+Use `if ... else if` chain in module definitions to pick the right option per release:
+```nix
+{ config, lib, pkgs, ... }:
+let
+  inherit (lib) elem mkIf mkMerge;
+  inherit (lib.trivial) release;
+in
+if elem release [ "24.11" ] then {
+  # uses programs.vscode with extensions
+} else if elem release [ "25.05" "25.11" ] then {
+  # uses programs.vscode with profiles
+} else {
+  # 26.05+: uses programs.vscodium directly
+}
+```
+
 ---
 
 ## Tagged Code
@@ -358,6 +451,30 @@ Without direnv: `nix develop` then `, <task-name>`
 For project overview, see [README.md](README.md).
 For evolving discussion context, see [DISCUSSION.md](DISCUSSION.md).
 For coding standards, see [docs/nx/standard.md](docs/nx/standard.md).
+
+---
+
+## Persistence Mount Failures — Root Cause & Fix
+
+**Root cause:** `systemd.mount` units for impermanence bind mounts fail at boot when the source path (in persistent storage) doesn't exist yet. The vendored impermanence module creates these dirs in an activation script (`create-directories.bash`), but activation scripts run after `local-fs.target` — so the mount unit fails before the dir is created.
+
+**Fix in `src/nixos/modules/system/impermenance/system-impermenance.nix`:**
+Generate `systemd.tmpfiles.rules` entries (`d` type) for ALL persistence source paths — both system stores (`environment.persistence`) and HM user stores (`home-manager.users.*.home.persistence`). tmpfiles runs before `local-fs.target`, ensuring source paths exist when mount units attempt to bind.
+
+**Key implementation details:**
+- `mkDirRule` — creates `d` entry for each directory's `sourcePath` (the persistent storage path)
+- `mkFileParentRule` — creates `d` entry for each file's parent dir (file persistence creates a symlink, not a directory)
+- System user sub-stores (`users.<name>` under system persistence) inherit the parent store's `persistentStoragePath` since they don't have their own top-level option
+- Use `nullToDash` helper to convert `null` user/group/mode to `-` (tmpfiles' "no change" sentinel) — important for HM stores where `group = null` by default
+- `lib.flatten` is from `lib`, not `builtins`; `hasPrefix` is from `lib`, not `builtins`
+
+**Verification:** Check `/nix/store/*tmpfiles.d*/lib/tmpfiles.d/00-nixos.conf` for entries like:
+```
+d /nix/persist/system/var/log 0755 root root -
+d /nix/persist/users/kreyren/.ssh 0755 kreyren - -
+```
+
+**Avoid:** Don't rely on activation scripts to create persistence dirs — they run too late. Don't use `mkOverride` on fileSystems or virtualisation.fileSystems to fix this (fragile).
 
 ---
 
@@ -465,3 +582,52 @@ Config directories follow pattern: `{MODEL}_{BOARD}_{VARIANT}`
 
 **Moonraker API down**:
 - Reboot via: `curl -u root:PASSWORD -X POST http://PRINTER:7125/machine/reboot`
+
+---
+
+## SSH Host Key Deployment in VMs
+
+**Problem:** Machine config (`openssh.nix`) sets `hostKeys = mkForce []` and `sshd-keygen.enable = mkForce false` because SSH host keys come from age secrets on real hardware. In VMs, age secrets are unavailable (no identity), so keys must be generated differently.
+
+**What does NOT work:**
+1. **Activation scripts** — files created in initrd are lost after `switch_root`
+2. **systemd.tmpfiles `C` rules** — subject to ordering races with sshd (tmpfiles may not complete before sshd starts)
+3. **sshd-keygen script override + `Before=sshd.service`** — the service fails silently early in boot (possibly `/etc` not writable); root cause unclear but the `mkdir -p` before `rm -f` fix didn't resolve it
+
+**What works:**
+Use a **custom systemd service** (not tmpfiles, not sshd-keygen) that:
+1. Generates the key at build time via `pkgs.runCommand`
+2. Copies it to `/etc/ssh/` at boot with correct permissions
+3. Runs `After=local-fs.target`, `Before=sshd.service`, `WantedBy=multi-user.target`
+
+```nix
+systemd.services.my-hostkey = {
+  description = "VM SSH Host Key Setup";
+  before = [ "sshd.service" ];
+  after = [ "local-fs.target" ];
+  wantedBy = [ "multi-user.target" ];
+  serviceConfig.Type = "oneshot";
+  script = ''
+    mkdir -p /etc/ssh
+    cp -f ${hostKey}/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
+    chmod 0600 /etc/ssh/ssh_host_ed25519_key
+  '';
+};
+```
+
+Also override `environment.etc."ssh/ssh_host_ed25519_key.pub".text` with the generated pubkey using `mkForce` to avoid conflict with the machine config's hardcoded pubkey.
+
+**Key insights:**
+- `Before=sshd.service` on a custom service correctly orders it before sshd in systemd's graph (systemd mirrors `Before/After` bidirectionally)
+- `After=local-fs.target` ensures `/etc/ssh/` is writable (not a concern on most systems, but early boot ordering can be fragile)
+- `RequiredBy = [ "sshd.service" ]` is NOT needed — `wantedBy = [ "multi-user.target" ]` with `Before` is sufficient
+
+---
+
+## agenix Fork Spec Architecture (July 2026)
+
+The NiXium agenix fork (`vendor/agenix/`) has comprehensive specs embedded as `###!` comments:
+- `vendor/agenix/modules/age.nix` (848 lines) — System-level secrets
+- `vendor/agenix/modules/age-home.nix` (475 lines) — User-level secrets
+
+Key decisions: persistent agenix-agent with mlocked IdentityKey, Unix socket, get-secret subcommand. No /run/agenix ramfs — secrets piped directly to target paths. Anchored regex check validates completeness. Injection model with auto-derived placeholders from check presets. Exit codes 0/1/2/4. Ghost Identity pipeline with encrypted salt for HNDL defense. Anti-TPM, FIDO2 preferred. Upstream code preserved as reference below specs.

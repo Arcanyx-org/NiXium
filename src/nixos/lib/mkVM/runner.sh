@@ -125,9 +125,9 @@ if [ "$EXIT_MODE" = "propagate" ]; then
 	# QEMU exits with (guest_code << 1) | 1 when isa-debug-exit fires
 	set +e
 	if [ -n "$TIMEOUT" ]; then
-		timeout "$TIMEOUT" "${VM_PATH}"
+		timeout "$TIMEOUT" "${VM_PATH}" "$@"
 	else
-		"${VM_PATH}"
+		"${VM_PATH}" "$@"
 	fi
 	QEMU_EXIT=$?
 	set -e
@@ -155,8 +155,8 @@ if [ "$EXIT_MODE" = "propagate" ]; then
 else
 	# exitMode = "poweroff" or "shell" — just run the VM, no exit code decoding
 	if [ -n "$TIMEOUT" ]; then
-		exec timeout "$TIMEOUT" "${VM_PATH}"
+		exec timeout "$TIMEOUT" "${VM_PATH}" "$@"
 	else
-		exec "${VM_PATH}"
+		exec "${VM_PATH}" "$@"
 	fi
 fi

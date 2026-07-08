@@ -303,4 +303,43 @@ Need to decide on approach to implement pulse check VM:
 
 ---
 
+---
+
+## NixOS 26.05 Upgrade — sinnenfreude
+
+**Status:** `nixos-sinnenfreude-stable` upgraded from 25.11 to 26.05, verified builds successfully.
+
+### Deprecations Fixed
+
+| Issue | Fix | Files Changed |
+|-------|-----|---------------|
+| `systemd.sleep.extraConfig` removed | → `systemd.sleep.settings.Sleep.HibernateDelaySec` | 1 |
+| `programs.adb.enable` removed | → `environment.systemPackages = [ pkgs.android-tools ]` | 1 |
+| `pkgs.xorg.xkill` removed | → `pkgs.xkill` | 2 |
+| AAGL flake input mismatch | `aagl` → `aagl-26_05` | 1 |
+| home-manager flake input mismatch | `hm` → `hm-26_05` | 1 |
+| `programs.neovim.extraLuaConfig` removed | → `programs.neovim.initLua` (26.05+) | 1 |
+| `programs.git.userEmail` removed | → `programs.git.settings.user.email` (26.05+) | 1 |
+| Scripted initrd deprecated in nixpkgs 26.05 | Removed `boot.initrd.systemd.enable = false` override | 1 |
+| `adbusers` group membership (option removed) | `versionOlder` gate short-circuits on 26.05+ | 3 |
+| VSCode/VSCodium module restructured | Release-gated `if` chains: `programs.vscode` (≤25.11) / `programs.vscodium` (26.05+) | 4 |
+| GNOME `services.xserver.desktopManager.gnome.enable` warned via `builtins.trace` | `if elem release [ "26.05" ]` → new path `services.desktopManager.gnome.enable` | 27 |
+| Impermanence `mkBindMountNameValuePair` missing `fsType` | Dynamic derivation from `config.environment.persistence` | 1 |
+
+### Verification
+
+- `nix develop . -c , verify nixos sinnenfreude stable` → **exit 0** (builds successfully)
+- `, verify all` → fails on enchilada (pre-existing, unrelated to our work)
+- sinnenfreude is `WIP` status, so `, verify all` skips it
+
+### Key Patterns Used
+
+- `if elem release [ "26.05" ] then <new-path> else <old-path>` for option renames
+- `lib.versionOlder release "26.05" && condition` for short-circuit evaluation of removed options
+- Release-gated `if ... else if ...` chains in module definitions (only matching release's branch evaluates)
+- `lib.optionalAttrs` at top-level merge for adding release-specific enable flags
+- `({ pkgs, ... }: { ... })` function wrapper for inline modules needing `pkgs`
+
+---
+
 *This file evolves as discussions happen. Review before starting new work to avoid repeating topics.*

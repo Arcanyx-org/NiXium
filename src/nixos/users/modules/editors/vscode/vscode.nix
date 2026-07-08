@@ -30,7 +30,7 @@ in mkIf config.programs.vscode.enable (mkMerge [
 				};
 			};
 		};
-		"${optionalString (elem release [ "25.05" "25.11" ]) release}" = {
+		"${optionalString (elem release [ "25.05" "25.11" "26.05" ]) release}" = {
 			# `programs.vscode.extensions` (24.11) -> `programs.vscode.profiles.default.extensions` (25.05)
 			# `programs.vscode.enableExtensionUpdateCheck` (24.11) -> `programs.vscode.profiles.default.enableExtensionUpdateCheck` (25.05)
 			programs.vscode = {
@@ -59,5 +59,5 @@ in mkIf config.programs.vscode.enable (mkMerge [
 				};
 			};
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 ])

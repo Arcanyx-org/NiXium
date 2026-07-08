@@ -3,7 +3,6 @@
 {
 	age.secrets.kreyren-wireproxy-protonvpn-config = {
 		file = "${self.outPath}/src/nixos/users/users/kreyren/home/secrets/kreyren-wireproxy-protonvpn-config.age";
-		symlink = false;
 	};
 
 	# FIXME(Krey): Make an option for this

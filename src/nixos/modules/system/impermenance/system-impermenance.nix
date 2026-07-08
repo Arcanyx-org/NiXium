@@ -1,9 +1,10 @@
 { config, lib, ... }:
 
 let
-	inherit (builtins) attrNames map;
-	inherit (lib) mkIf mkMerge;
+	inherit (builtins) attrNames;
+	inherit (lib) mkIf mkMerge filterAttrs mapAttrsToList flatten;
 in mkMerge [
+
 	# Default age identity for VM builds to satisfy ragenix assertion
 	# Will be overridden by impermanence config when enabled
 	{
@@ -12,42 +13,139 @@ in mkMerge [
 
 	# Full config when impermanence is enabled
 	(mkIf config.boot.impermanence.enable {
+
 		# Create user persist directories for all users with home-manager
 		# This ensures directories exist with correct ownership before home-manager runs
+		# Also creates nix per-user profile dirs needed by home-manager activation
 		# Always enabled regardless of impermanence since it's needed for user directories
 		systemd.tmpfiles.rules =
 			let
+				inherit (builtins) attrNames attrValues dirOf;
+				inherit (lib) hasPrefix filter;
+
 				userNames = attrNames config.home-manager.users;
-			in
-				map (username: let
+				persistDirRules = map (username: let
 					user = config.users.users.${username};
 					uid = user.uid;
 					gid = if user.group != null then user.group else "users";
 				in
 					"d /nix/persist/users/${username} 0755 ${toString uid} ${gid}"
 				) userNames;
+				nixProfileRules = map (username: let
+					user = config.users.users.${username};
+					uid = user.uid;
+				in
+					"d /nix/var/nix/profiles/per-user/${username} 0755 ${toString uid} users"
+				) userNames;
 
-		# Impermanence-specific configuration
-		environment.persistence = {
-			"/nix/persist/system" = {
-				hideMounts = true;
-				directories = [
-					"/var/log"
-					"/var/lib/bluetooth"
-					"/var/lib/systemd/coredump"
-					"/etc/NetworkManager/system-connections"
-					{ directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "u=rwx,g=rx,o="; }
-					{ directory = "/var/lib/private"; user = "root"; group = "root"; mode = "u=rwx,g=,o="; }
-				] ++ lib.optional config.virtualisation.waydroid.enable "/var/lib/waydroid"
-					++ lib.optional config.services.fprintd.enable "/var/lib/fprint"
-					++ lib.optional config.services.ollama.enable "/var/lib/private/ollama";
-				files = [
-					"/etc/machine-id"
-					"/var/lib/systemd/random-seed"
-					"/etc/ssh/ssh_host_ed25519_key"
-				];
-			};
+				# Generate tmpfiles rules so persistence source paths exist
+				# before systemd mount units run (they need the source to
+				# exist at boot, before activation scripts create them).
+				#
+				# For directory entries: the source dir itself must exist.
+				# For file entries: the parent dir of the source path must exist.
+				#
+				# This mirrors the concatPaths logic from the vendor's
+				# nixos.nix mkBindMount/mkPersistFile functions.
+
+				# Compute the full persistent storage source path for an entry
+				mkWhat = psp: sourcePath:
+					if hasPrefix "/" sourcePath
+					then "${psp}${sourcePath}"
+					else "${psp}/${sourcePath}";
+
+				# Coerce null-or-string to tmpfiles-usable value
+				nullToDash = v: if v != null then v else "-";
+
+				# Directory entry: source path must exist as a directory
+				mkDirRule = psp: entry: let
+					what = mkWhat psp entry.sourcePath;
+					u = nullToDash (entry.user or null);
+					g = nullToDash (entry.group or null);
+					m = nullToDash (entry.mode or null);
+				in "d ${what} ${m} ${u} ${g} -";
+
+				# File entry: parent directory of source path must exist
+				mkFileParentRule = psp: entry: let
+					what = mkWhat psp entry.sourcePath;
+					parentDir = dirOf what;
+					pd = entry.parentDirectory or {};
+					u = nullToDash (pd.user or null);
+					g = nullToDash (pd.group or null);
+					m = nullToDash (pd.mode or null);
+				in "d ${parentDir} ${m} ${u} ${g} -";
+
+				# Process a persistence store with its storage path
+				mkStoreRules = psp: store:
+					(map (mkDirRule psp) (store.directories or []))
+					++ (map (mkFileParentRule psp) (store.files or []));
+
+				# All enabled system persistence stores
+				systemStores = filter (s: s.enable or true)
+					(attrValues (config.environment.persistence or {}));
+
+				# System stores and their user sub-stores
+				# User sub-stores (usersOpts=true) need parent's psp
+				systemAllStores = flatten (map (store:
+					let psp = store.persistentStoragePath; in
+					[ (mkStoreRules psp store) ]
+					++ (map (userStore: mkStoreRules psp userStore)
+						(attrValues (store.users or {})))
+				) systemStores);
+
+				# All HM user persistence stores
+				hmStores = flatten (mapAttrsToList (_: hm:
+					map (hmStore:
+						mkStoreRules hmStore.persistentStoragePath hmStore
+					) (attrValues (hm.home.persistence or {}))
+				) (config.home-manager.users or {}));
+			in
+				persistDirRules
+				++ nixProfileRules
+				++ flatten systemAllStores
+				++ hmStores;
+
+	# Impermanence-specific configuration
+	environment.persistence = {
+		"/nix/persist/system" = {
+			hideMounts = true;
+			directories = [
+				"/var/log"
+				"/var/lib/bluetooth"
+				"/var/lib/systemd/coredump"
+				"/etc/NetworkManager/system-connections"
+				{ directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "u=rwx,g=rx,o="; }
+				{ directory = "/var/lib/private"; user = "root"; group = "root"; mode = "u=rwx,g=,o="; }
+			] ++ lib.optional config.virtualisation.waydroid.enable "/var/lib/waydroid"
+				++ lib.optional config.services.fprintd.enable "/var/lib/fprint"
+				++ lib.optional config.services.ollama.enable "/var/lib/private/ollama";
+			files = [
+				"/etc/machine-id"
+				"/var/lib/systemd/random-seed"
+				"/etc/ssh/ssh_host_ed25519_key"
+				"/etc/ssh/ssh_host_ed25519_key.pub"
+				"/etc/ssh/ssh_host_rsa_key"
+				"/etc/ssh/ssh_host_rsa_key.pub"
+			];
 		};
+	};
+
+	# NixOS 26.05 requires fsType and device on all fileSystems entries.
+	# The vendored impermanence creates systemd.mount entries that get mirrored into fileSystems via the
+	# qemu-vm virtualisation.fileSystems alias. This sets fsType, device, and neededForBoot on all
+	# bind-mounted persistence directories via mkDefault so machine configs can override if needed.
+	fileSystems = lib.mkMerge [
+		(lib.mkIf (config.environment.persistence ? "/nix/persist/system") (
+			builtins.listToAttrs (map (dir: {
+				name = if lib.isString dir then dir else dir.directory;
+				value = {
+					fsType = lib.mkDefault "none";
+					device = lib.mkDefault "none";
+					neededForBoot = lib.mkDefault true;
+				};
+			}) (config.environment.persistence."/nix/persist/system".directories or []))
+		))
+	];
 
 		boot.initrd.systemd.suppressedUnits = [ "systemd-machine-id-commit.service" ];
 		systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];

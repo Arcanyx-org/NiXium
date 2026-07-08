@@ -14,6 +14,8 @@ in {
 				# self.inputs.jovian.nixosModules.default
 				self.inputs.nixified-ai.nixosModules.comfyui
 
+				nixosModules.overlays
+
 				nixosModules.programs
 				nixosModules.security
 				nixosModules.services

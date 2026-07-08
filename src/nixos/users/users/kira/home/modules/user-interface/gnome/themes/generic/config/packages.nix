@@ -3,25 +3,14 @@
 # Management of needed packages for Kira's Generic GNOME Theme
 
 let
-	inherit (lib) mkIf mkMerge;
-in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
+	inherit (lib) elem mkIf mkMerge optionalString;
+	inherit (lib.trivial) release;
+in mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) (mkMerge [
 	{
-		"24.05" = {
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" "25.11" "26.05" ]) release}" = {
 			home.packages = [];
 		};
-		# FIXME-QA(Krey): Duplicate Code
-		"24.11" = {
-			home.packages = [];
-		};
-		# FIXME-QA(Krey): Duplicate Code
-		"25.05" = {
-			home.packages = [];
-		};
-		# FIXME-QA(Krey): Duplicate Code
-		"25.11" = {
-			home.packages = [];
-		};
-	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
+	}."${release}" or (throw "Release is not implemented: ${release}")
 
 	{
 		home.packages = [

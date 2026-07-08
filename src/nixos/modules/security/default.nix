@@ -10,6 +10,7 @@ in {
 		nixosModules.security-acme
 		nixosModules.security-nvidia
 		nixosModules.security-sudo
+		nixosModules.security-debugfs
 
 		{
 			system.copySystemConfiguration = mkForce false; # Do not copy system configuration as it will be incomplete due to our use of flakes and may contain secrets
@@ -22,5 +23,6 @@ in {
 		./acme
 		./nvidia
 		./sudo
+		./debugfs
 	];
 }

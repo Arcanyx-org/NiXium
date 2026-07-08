@@ -5,27 +5,15 @@
 # FIXME-DOCS(Krey): This file is getting complicated, document what packages are needed for what version and what reason
 
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) mkIf mkMerge elem optionalString;
+	inherit (lib.trivial) release;
 	inherit (builtins) toString;
 in mkIf nixosConfig.services.xserver.desktopManager.kodi.enable (mkMerge [
 	{
-		"23.11" = {
+		"${optionalString (elem release [ "23.11" "24.05" "24.11" "25.05" "25.11" "26.05" ]) release}" = {
 			home.packages = [];
 		};
-		"24.05" = {
-			home.packages = [];
-		};
-		"24.11" = {
-			home.packages = [];
-		};
-		# FIXME-QA(Krey): Duplicate Code
-		"25.05" = {
-			home.packages = [];
-		};
-		"25.11" = {
-			home.packages = [];
-		};
-	}."${lib.trivial.release}" or (throw "Release is not implemented: ${lib.trivial.release}")
+	}."${release}" or (throw "Release is not implemented: ${release}")
 
 	{
 		programs.kodi.enable = true;

@@ -137,7 +137,7 @@ vm.runner    # «derivation ...-nixos-vm-repl-test.drv»
 | `name` | Yes | — | VM name (runner binary name, disk image filename) |
 | `command` | Yes | — | Command to run in the VM |
 | `modulePath` | Yes | — | Path for dev-mode disk storage |
-| `graphical` | No | `null` | `null`/`"wayland"`/`"xorg"` |
+| `graphical` | No | `null` | `null`/`"machine"`/`"wayland"`/`"xorg"` |
 | `exitMode` | No | `"propagate"` | `"propagate"`/`"poweroff"`/`"shell"` |
 | `timeout` | No | `300` | Seconds before VM kill (null to disable) |
 | `gpuPassthrough` | No | `null` | `null`/`"auto"`/PCI address |

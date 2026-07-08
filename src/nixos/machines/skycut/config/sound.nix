@@ -23,7 +23,7 @@ in mkMerge [
 		};
 
 		# Option `sound` was removed in 24.11
-		"${lib.optionalString (lib.elem release [ "24.11" "25.05" ]) release}" = {
+		"${lib.optionalString (lib.elem release [ "24.11" "25.05" "26.05" ]) release}" = {
 			hardware.pulseaudio.enable = false;
 
 			services.pipewire = {

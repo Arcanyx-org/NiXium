@@ -31,7 +31,7 @@ in mkIf config.powerManagement.enable (mkMerge [
 			};
 		};
 
-		"25.11" = {
+		"${optionalString (elem release [ "25.11" "26.05" ]) release}" = {
 			services.logind.settings.Login = {
 				HandlePowerKey = "suspend-then-hibernate";
 				HandlePowerKeyLongPress = "poweroff";
@@ -39,11 +39,11 @@ in mkIf config.powerManagement.enable (mkMerge [
 				HandleLidSwitchExternalPower = "suspend";
 			};
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 
 	{
 		powerManagement.powertop.enable = true;
-		systemd.sleep.extraConfig = "HibernateDelaySec=30s";
+		systemd.sleep.settings.Sleep.HibernateDelaySec = "30s";
 	}
 
 	# TLP Management

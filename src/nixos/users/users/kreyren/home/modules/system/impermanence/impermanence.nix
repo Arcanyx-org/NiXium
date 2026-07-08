@@ -4,6 +4,7 @@ let
 	inherit (lib) mkIf;
 in {
 	home.persistence."/nix/persist/users/kreyren" = mkIf config.home.impermanence.enable {
+		stripHomePrefix = true;
 		directories = [
 			"Desktop"
 			"Documents"
@@ -31,9 +32,6 @@ in {
 			# FIXME(Krey): Do not persist the whole signal directory only inject the secrets to perform login
 			".config/Signal"
 
-			# FIXME-QA(Krey): Should only be applied if `monero-gui` package is installed
-			"Monero"
-
 			# FIXME-QA(Krey): Should only be applied if `element-desktop` is installed
 			".config/Element" # Element-Desktop
 
@@ -47,8 +45,6 @@ in {
 			".local/share/fractal"
 
 			".local/share/PolyMC"
-
-			(mkIf nixosConfig.services.flatpak.enable ".local/share/flatpak")
 
 			# FIXME-QA(Krey): Should only be applied if `anime-game-launcher` is installed
 			".local/share/anime-game-launcher"
@@ -104,7 +100,7 @@ in {
 			".local/share/flare/db.sqlite"
 		];
 
-		allowOther = true; # FIXME-DOCS(Krey): What is this used for?
+
 	};
 
 	home.stateVersion = nixosConfig.system.nixos.release; # Impermanence does not have state

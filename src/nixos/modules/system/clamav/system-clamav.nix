@@ -9,6 +9,14 @@ in mkIf config.services.clamav.daemon.enable {
 
 	services.clamav.updater.enable = true; # Daemon to update malware definitions
 
+	# Network-dependent — retry if database.clamav.net is unreachable at boot
+	systemd.services.clamav-freshclam = {
+		serviceConfig = {
+			Restart = "on-failure";
+			RestartSec = 30;
+		};
+	};
+
 	# OpenSnitch
 		# FIXME-PRIVACY(Krey): Should go over Tor
 	services.opensnitch.rules = mkIf config.services.opensnitch.enable {

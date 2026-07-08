@@ -25,9 +25,12 @@ in mkIf config.services.openssh.enable {
 	# Set the pubkey
 	environment.etc."ssh/ssh_host_ed25519_key.pub".text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji root@sinnenfreude";
 
-	services.openssh.hostKeys = mkForce []; # Do not generate SSH keys
+	services.openssh.hostKeys = mkForce []; # Keys managed via age, no auto-generation needed
+
+	systemd.services.sshd-keygen.enable = mkForce false; # hostKeys = [] creates empty ExecStart service; disable entirely since keys are deployed via age
 
 	services.openssh.openFirewall = true;
+
 
 	users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
 		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)
@@ -36,4 +39,5 @@ in mkIf config.services.openssh.enable {
 	programs.ssh.knownHosts."localhost".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji";
 
 	age.secrets.sinnenfreude-ssh-ed25519-private.file = ../secrets/sinnenfreude-ssh-ed25519-private.age; # Declare private key
+
 }

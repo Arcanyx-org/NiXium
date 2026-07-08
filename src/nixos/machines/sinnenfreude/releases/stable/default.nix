@@ -17,13 +17,13 @@ in {
 		modules = [
 			self.nixosModules."nixos-sinnenfreude"
 
-			{
+			({ pkgs, ... }: {
 				boot.impermanence.enable = true; # Impermanence
 				boot.plymouth.enable = true; # Eye Candy Boot Animation
 
 				nix.distributedBuilds = false; # Do Not Perform distributed builds
 
-				programs.adb.enable = true; # Android Debug Bridge
+				environment.systemPackages = [ pkgs.android-tools ]; # Android Debug Bridge
 				programs.appimage.enable = true; # Enable compatibility layer for appimages
 				programs.nix-ld.enable = true;
 				programs.noisetorch.enable = true;
@@ -68,7 +68,7 @@ in {
 				virtualisation.docker.enable = true;
 
 				nix.channel.enable = true; # To be able to use nix repl :l <nixpkgs> as loading flake loads only 16 variables
-			}
+			})
 
 			{
 				nix.nixPath = [
@@ -93,14 +93,14 @@ in {
 			# Principles
 			self.inputs.ragenix.nixosModules.default
 			self.inputs.sops.nixosModules.sops
-			self.inputs.hm.nixosModules.home-manager
+			self.inputs.hm-26_05.nixosModules.home-manager
 			self.inputs.disko.nixosModules.disko
 			self.inputs.lanzaboote.nixosModules.lanzaboote
 			self.inputs.impermanence.nixosModules.impermanence
 			self.inputs.arkenfox.hmModules.default
 
 			# An Anime Game
-			self.inputs.aagl.nixosModules.default {
+			self.inputs.aagl-26_05.nixosModules.default {
 				networking.mihoyo-telemetry.block = true; # Block miHoYo telemetry servers
 				nix.settings = {
 					substituters = [ "https://ezkea.cachix.org" ];

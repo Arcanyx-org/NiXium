@@ -22,7 +22,8 @@ let
 	inherit (lib) mkMerge;
 
 	diskoDevice = "/dev/disk/by-id/nvme-SOLIDIGM_SSDPFKNU010TZ_BTEH24220RNQ1P0B";
-	keyDevice = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
+	# FIXME(Krey): No SD card available during deployment
+	# keyDevice = "/dev/disk/by-id/mmc-SA02G_0x9cdde6c0";
 	swapSize = "60G";
 
 	# Reference: https://www.youtube.com/watch?v=oe4X5x1P-3w
@@ -51,6 +52,7 @@ in {
 			age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
 
 			fileSystems."/nix/persist/system".neededForBoot = true;
+			fileSystems."/nix".neededForBoot = true;
 
 			# Set up decryption via key
 			#boot.initrd.luks.devices = {
@@ -108,19 +110,17 @@ in {
 								store = {
 									priority = 3;
 									size = "100%";
-									content = {
-										name = "nix-store";
-										type = "luks";
-										settings.allowDiscards = true;
+							content = {
+								name = "nix-store";
+								type = "luks";
+								settings.allowDiscards = true;
 
-										passwordFile = config.age.secrets.tupac-disks-password.path;
+								passwordFile = config.age.secrets.tupac-disks-password.path;
 
-										keyFile = keyDevice;
+								initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
-										initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
-
-										extraFormatArgs = [
-											"--use-random" # use true random data from /dev/random, will block until enough entropy is available
+								extraFormatArgs = [
+									"--use-random" # use true random data from /dev/random, will block until enough entropy is available
 											"--label=CRYPT_NIX"
 											"--uuid=${setUUID}" # IT Crowd Easter Egg: "0118 999 881 999 119 725 3"
 										];
@@ -158,19 +158,17 @@ in {
 								swap = {
 									priority = 2;
 									size = swapSize;
-									content = {
-										name = "swap";
-										type = "luks";
+								content = {
+									name = "swap";
+									type = "luks";
 
-										settings.allowDiscards = true;
+									settings.allowDiscards = true;
 
-										passwordFile = config.age.secrets.tupac-disks-password.path;
+									passwordFile = config.age.secrets.tupac-disks-password.path;
 
-										keyFile = keyDevice;
+									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
-										initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
-
-										extraFormatArgs = [
+									extraFormatArgs = [
 											"--use-random" # use true random data from /dev/random, will block until enough entropy is available
 											"--label=CRYPT_SWAP"
 											"--uuid=${setUUID}" # IT Crowd Easter Egg: "0118 999 881 999 119 725 3"

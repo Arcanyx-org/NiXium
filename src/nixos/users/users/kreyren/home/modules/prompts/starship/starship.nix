@@ -13,7 +13,7 @@ in mkIf config.programs.starship.enable (mkMerge [
 				(pkgs.nerdfonts.override { fonts = [ "Noto" "FiraCode"]; }) # Add NerdFont's Noto and FiraCode
 			];
 		};
-		"${optionalString (elem release [ "25.05" "25.11" ]) release}" = {
+		"${optionalString (elem release [ "25.05" "25.11" "26.05" ]) release}" = {
 			home.packages = [
 				# Add the fonts that we are using in the shell
 				# This override was recommended, because nerdfonts might have issues with rendering -- https://github.com/TanvirOnGH/nix-config/blob/nix%2Bhome-manager/desktop/customization/font.nix#L4-L39
@@ -22,7 +22,7 @@ in mkIf config.programs.starship.enable (mkMerge [
 				pkgs.nerd-fonts.fira-code
 			];
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 
 	{
 		programs.starship = {

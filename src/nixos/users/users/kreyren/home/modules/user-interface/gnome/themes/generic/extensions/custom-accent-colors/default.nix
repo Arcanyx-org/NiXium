@@ -12,7 +12,7 @@
 # 	{
 # 		"${optionalString (elem release [ "23.05" "23.11" "24.05" "24.11" ]) release}" = let
 # 				gnomeVersion = pkgs.gnome.gnome-shell.version;
-# 			in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
+# 			in mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) (mkMerge [
 # 			{
 # 				"${optionalString (elem gnomeVersion [ "42.4" "43.2" "44.2" "45.5" "46.2" ]) gnomeVersion}" = {
 # 					home.packages = [ pkgs.gnomeExtensions.custom-accent-colors ]; # Install the extension
@@ -53,7 +53,7 @@ let
 	inherit (lib.trivial) release;
 in mkMerge [
 	{
-		"24.05" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+		"24.05" = mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) {
 			home.packages = [ pkgs.gnomeExtensions.custom-accent-colors ]; # Install the extension
 
 			dconf.settings = {
@@ -70,7 +70,7 @@ in mkMerge [
 				};
 			};
 		};
-		"${optionalString (elem release [ "24.11" "25.05" "25.11" ]) release}" = {
+		"${optionalString (elem release [ "24.11" "25.05" "25.11" "26.05" ]) release}" = {
 			# Deprecated with GNOME 47
 		};
 	}."${release}"

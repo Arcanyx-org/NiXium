@@ -10,13 +10,13 @@ let
 in mkMerge [
 	{
 		"23.11" = {
-			home.packages = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable [
+			home.packages = mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) [
 				pkgs.gnome.dconf-editor
 				pkgs.pinentry-gnome # Needed for inputting passwords
 			];
 		};
 
-		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" "26.05" ]) release}" = mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) {
 			home.packages = [
 				pkgs.dconf-editor
 				pkgs.pinentry-gnome3 # Needed for inputting passwords
@@ -28,7 +28,7 @@ in mkMerge [
 				pkgs.pinentry-gnome3 # Needed for inputting passwords
 			];
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 
 	{
 		home.packages = [

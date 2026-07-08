@@ -3,9 +3,10 @@
 # Kira's Module for Adjusting the Nightlight (blue-light filter) on GNOME
 
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) elem mkIf mkMerge;
+	inherit (lib.trivial) release;
 	inherit (lib.hm.gvariant) mkUint32;
-in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
+in mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) (mkMerge [
 	# Common Configuration across multiple GNOME releases
 		{
 			dconf.settings = {

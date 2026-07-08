@@ -10,9 +10,9 @@ let
 	inherit (builtins) concatStringsSep toString;
 in mkIf nixosConfig.services.xserver.desktopManager.kodi.enable (mkMerge [
 	{
-		"${optionalString (elem release [ "23.11" "24.05" "24.11" "25.05" "25.11" ]) release}" = {
+		"${optionalString (elem release [ "23.11" "24.05" "24.11" "25.05" "25.11" "26.05" ]) release}" = {
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 
 	{
 		programs.kodi.enable = true;

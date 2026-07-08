@@ -68,7 +68,7 @@ in {
 		# defined in extraConfig above.  scope is disabled for the same reason as
 		# with ibl: it requires treesitter parsers to detect block boundaries.
 		# (https://github.com/Saghen/blink.indent)
-		extraLuaConfig = ''
+		initLua = ''
 			require("blink.indent").setup({
 				static = {
 					-- ▎ (U+258E LEFT ONE QUARTER BLOCK) gives the widest practical

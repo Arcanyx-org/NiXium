@@ -3,7 +3,8 @@
 # Proxy Automatic Configuration Management
 
 let
-	inherit (lib) mkIf mkMerge;
+	inherit (lib) elem mkIf mkMerge;
+	inherit (lib.trivial) release;
 in mkMerge [
 	{
 		home.file."proxy.pac" = {
@@ -13,7 +14,7 @@ in mkMerge [
 	}
 
 	# Configure GNOME to use PAC
-	(mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+	(mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) {
 		dconf.settings = {
 			"system/proxy" = {
 				mode = "auto";

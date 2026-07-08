@@ -19,7 +19,7 @@ in {
 		hardware.graphics.enable = true;
 		hardware.graphics.enable32Bit = true;
 	};
-	"${optionalString (elem release [ "25.05" "25.11" ]) release}" = {
+	"${optionalString (elem release [ "25.05" "25.11" "26.05" ]) release}" = {
 		hardware.graphics = {
 			enable = true;
 			extraPackages = with pkgs; [

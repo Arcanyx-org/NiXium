@@ -6,8 +6,9 @@
 
 
 let
-	inherit (lib) mkIf mkMerge;
-in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
+	inherit (lib) elem mkIf mkMerge optionalString;
+	inherit (lib.trivial) release;
+in mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) (mkMerge [
 	# Common Configuration across multiple GNOME releases
 		{
 			dconf.settings = {
@@ -50,16 +51,8 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 		}
 
 		{
-			"24.11" = {
+			"${optionalString (elem release [ "24.11" "25.05" "25.11" "26.05" ]) release}" = {
 				dconf.settings."org/gnome/desktop/interface".accent-color = "green"; # Set Accent Color
 			};
-			# FIXME-QA(Krey): Duplicate Code
-			"25.05" = {
-				dconf.settings."org/gnome/desktop/interface".accent-color = "green"; # Set Accent Color
-			};
-			# FIXME-QA(Krey): Duplicate Code
-			"25.11" = {
-				dconf.settings."org/gnome/desktop/interface".accent-color = "green"; # Set Accent Color
-			};
-		}.${lib.trivial.release} or (throw "Release '${lib.trivial.release}' is not implemented")
+		}.${release} or (throw "Release '${release}' is not implemented")
 ])

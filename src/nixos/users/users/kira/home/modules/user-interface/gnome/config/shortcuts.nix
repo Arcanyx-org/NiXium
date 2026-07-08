@@ -3,8 +3,9 @@
 # Kira's Module for Managing Keyboard Shortcuts
 
 let
-	inherit (lib) mkIf mkMerge;
-in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
+	inherit (lib) elem mkIf mkMerge;
+	inherit (lib.trivial) release;
+in mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) (mkMerge [
 	# Common Configuration across multiple GNOME releases
 		{
 			# FIXME(Krey): Configure this and change the shortcuts
@@ -31,16 +32,14 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 					# Terminal
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
 						name = "Open Terminal";
-						command = "alacritty";
+						command = "${pkgs.alacritty}/bin/alacritty";
 						binding = "<Super>Return";
 					};
 
 					# Web Browser
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
 						name = "Open Web Browser";
-						# FIXME(Krey): Replace with full path to the nixium's firefox with config adjustments by the user
-						# command = "${pkgs.firefox-esr}/bin/firefox-esr";
-						command = "firefox-esr";
+						command = "${pkgs.firefox}/bin/firefox";
 						binding = "<Super>t";
 					};
 
@@ -54,7 +53,7 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
 					# xkill
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
 						name = "xkill";
-						command = "${pkgs.xorg.xkill}/bin/xkill";
+						command = "${pkgs.xkill}/bin/xkill";
 						binding = "<Control>Escape";
 					};
 

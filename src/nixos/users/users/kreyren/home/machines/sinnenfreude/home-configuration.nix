@@ -4,6 +4,7 @@
 
 let
 	inherit (lib) mkIf;
+	inherit (lib.trivial) release;
 in {
 	gtk.enable = true;
 
@@ -20,7 +21,6 @@ in {
 	programs.firefox.enable = true; # Fully hardened web browser (Privacy > Comfort)
 	programs.librewolf.enable = true; # Lesser security web browser (Comfort > Privacy)
 	programs.vim.enable = true;
-	programs.vscode.enable = true;
 	programs.nix-index.enable = true;
 
 	services.gpg-agent.enable = true;
@@ -135,7 +135,7 @@ in {
 
 
 			# Temporary management of Post-Quantum Safety until matrix manages it, see https://github.com/matrix-org/matrix-spec/issues/975 for details
-			unstable.simplex-chat-desktop
+			#unstable.simplex-chat-desktop
 
 			unstable.signal-desktop
 
@@ -185,9 +185,10 @@ in {
 		# Engineering
 		pkgs.blender
 		# Nixpkgs broke file chooser, this is a temporary workaround (https://github.com/NixOS/nixpkgs/issues/467783#issuecomment-3621306981)
-		(pkgs.freecad.overrideAttrs (old: {
-      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ];
-    }))
+		# (pkgs.freecad.overrideAttrs (old: {
+    #   nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ];
+    # }))
+		# pkgs.freecad
 		pkgs.gimp
 		pkgs.kicad-small
 
@@ -322,4 +323,8 @@ in {
 			disabled-extensions = [];
 		};
 	};
+} // lib.optionalAttrs (lib.elem release [ "24.11" "25.05" "25.11" ]) {
+	programs.vscode.enable = true;
+} // lib.optionalAttrs (lib.elem release [ "26.05" ]) {
+	programs.vscodium.enable = true;
 }

@@ -21,7 +21,7 @@ in mkMerge [
 		};
 
 		# Option `sound` was removed in 24.11
-		"${lib.optionalString (lib.elem release [ "24.11" "25.05" "25.11" ]) release}" = {
+		"${lib.optionalString (lib.elem release [ "24.11" "25.05" "25.11" "26.05" ]) release}" = {
 			hardware.pulseaudio.enable = false; # Whether to use pulseaudio, requires to be turned off if pipewire is used
 			services.pipewire.enable = true; # Whether to use pipewire
 

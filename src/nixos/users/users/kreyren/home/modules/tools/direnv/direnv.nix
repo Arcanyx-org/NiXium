@@ -2,12 +2,13 @@
 
 let
 	inherit (lib) mkIf;
-in mkIf config.programs.direnv.enable {
+in {
 	programs.direnv = {
-		nix-direnv.enable = true; # Always use nix-direnv with direnv
+		enable = true;
+		nix-direnv.enable = true;
+		enableBashIntegration = true;
 	};
 
-	# Impermanence
 	home.persistence."/nix/persist/users/kreyren".directories = mkIf config.home.impermanence.enable [
 		".local/share/direnv"
 	];

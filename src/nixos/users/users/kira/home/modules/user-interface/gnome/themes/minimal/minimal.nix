@@ -5,8 +5,9 @@
 # This theme is mostly used as a fallback in case the other themes fail to deploy on new GNOME release, so keep it simple and compatible
 
 let
-	inherit (lib) mkIf mkMerge;
-in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable (mkMerge [
+	inherit (lib) elem mkIf mkMerge;
+	inherit (lib.trivial) release;
+in mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) (mkMerge [
 	# Common Configuration across multiple GNOME releases
 		{
 			dconf.settings = {

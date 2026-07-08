@@ -7,7 +7,7 @@ let
 	inherit (lib.trivial) release;
 in mkMerge [
 	{
-		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" "26.05" ]) release}" = mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) {
 			# FIXME(Krey): Configure this and change the shortcuts
 			home.packages = [ pkgs.gnomeExtensions.shortcuts ]; # Install an extension to show the shortcuts on demand
 
@@ -32,7 +32,7 @@ in mkMerge [
 					# Terminal
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
 						name = "Open Terminal";
-						command = "alacritty";
+						command = "${pkgs.alacritty}/bin/alacritty";
 						binding = "<Super>Return";
 					};
 
@@ -40,7 +40,7 @@ in mkMerge [
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
 						name = "Open Web Browser";
 						# command = "${pkgs.firefox-esr}/bin/firefox-esr";
-						command = "firefox-esr";
+						command = "${pkgs.firefox}/bin/firefox";
 						binding = "<Super>t";
 					};
 
@@ -54,7 +54,7 @@ in mkMerge [
 					# xkill
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
 						name = "xkill";
-						command = "${pkgs.xorg.xkill}/bin/xkill";
+						command = "${pkgs.xkill}/bin/xkill";
 						binding = "<Control>Escape";
 					};
 
@@ -91,7 +91,7 @@ in mkMerge [
 					# Terminal
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
 						name = "Open Terminal";
-						command = "alacritty";
+						command = "${pkgs.alacritty}/bin/alacritty";
 						binding = "<Super>Return";
 					};
 
@@ -99,7 +99,7 @@ in mkMerge [
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
 						name = "Open Web Browser";
 						# command = "${pkgs.firefox-esr}/bin/firefox-esr";
-						command = "firefox-esr";
+						command = "${pkgs.firefox}/bin/firefox";
 						binding = "<Super>t";
 					};
 
@@ -113,7 +113,7 @@ in mkMerge [
 					# xkill
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
 						name = "xkill";
-						command = "${pkgs.xorg.xkill}/bin/xkill";
+						command = "${pkgs.xkill}/bin/xkill";
 						binding = "<Control>Escape";
 					};
 
@@ -125,5 +125,5 @@ in mkMerge [
 					};
 			};
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 ]

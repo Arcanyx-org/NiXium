@@ -389,7 +389,7 @@ in mkMerge [
 	{
 		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = { /* ... */ };
 		"25.11" = { /* ... */ };
-	}."${release}"
+  }."${release}" or (throw "Release is not implemented: ${release}")
 ]
 ```
 

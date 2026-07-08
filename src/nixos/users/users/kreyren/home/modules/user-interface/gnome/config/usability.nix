@@ -7,7 +7,7 @@ let
 	inherit (lib.trivial) release;
 in mkMerge [
 	{
-		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" "26.05" ]) release}" = mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) {
 			dconf.settings = {
 				# FIXME(Krey): Figure out how to do more than 150%
 				"org/gnome/desktop/sound".allow-volume-above-100-percent = true; # Over-Amplification
@@ -63,5 +63,5 @@ in mkMerge [
 				};
 			};
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 ]

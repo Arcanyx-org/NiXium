@@ -33,7 +33,7 @@ in {
 
 		services.xserver.videoDrivers = [ "nvidia" ];
 	};
-	"${optionalString (elem release [ "25.05" "25.11" ]) release}" = {
+	"${optionalString (elem release [ "25.05" "25.11" "26.05" ]) release}" = {
 		hardware.nvidia = {
 			modesetting.enable = true;
 

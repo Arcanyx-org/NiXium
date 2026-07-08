@@ -1,7 +1,7 @@
 { config, pkgs, lib, aagl, aagl-unstable, unstable, polymc, self, ... }:
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) elem mkIf versionOlder versionAtLeast;
 	inherit (builtins) concatStringsSep;
 in {
 	gtk.enable = true;
@@ -17,7 +17,8 @@ in {
 	programs.gpg.enable = true;
 	programs.firefox.enable = true;
 	programs.vim.enable = true;
-	programs.vscode.enable = true; # Generic use only
+	programs.vscode.enable = lib.versionOlder lib.trivial.release "26.05"; # Generic use only
+	programs.vscodium.enable = lib.versionAtLeast lib.trivial.release "26.05";
 
 	services.gpg-agent.enable = (mkIf config.programs.gpg.enable true);
 
@@ -228,7 +229,7 @@ in {
 		pkgs.pinentry-gnome3
 
 		# WINEHQ Experiments
-    pkgs.wineWowPackages.stagingFull
+    pkgs.wineWow64Packages.stagingFull
 	];
 
 	# GNOME Extensions

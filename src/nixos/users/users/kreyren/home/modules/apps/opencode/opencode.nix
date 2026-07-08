@@ -22,12 +22,7 @@ in {
 			};
 		};
 		default_agent = "plan";
-		plugins = [
-			# "opencode-gitlab-plugin@latest"
-			"@mohak34/opencode-notifier@latest"
-			# "opencode-homeassistant@latest"
-		];
-		enabled_providers = [ "openrouter "];
+		enabled_providers = [ "openrouter" "opencode" ];
 		provider = {
 			openrouter = {
 				npm = "@ai-sdk/openai-compatible";
@@ -47,7 +42,7 @@ in {
 							output = 4096;
 						};
 						options = {
-							include_reasoning = false;
+							include_reasoning = true;
 							temperature = 0.0;
 						};
 					};
@@ -55,7 +50,11 @@ in {
 			};
 		};
 
-		model = "openrouter/google/gemma-4-31b-it";
+		model = "opencode/big-pickle";
+
+		# opencode provider is auto-loaded (no explicit config needed)
+		# Model: opencode/big-pickle (free stealth model)
+		# Auth: managed via /connect in opencode CLI
 
 		autoupdate = false;
 	};

@@ -5,8 +5,9 @@
 # FIXME(Krey): This is kinda a weird one to manage as in gnome-47 this was added in the gnome itself and we are using multiple themes.. Maybe add this to the generic theme up until gnome-47?
 
 let
-	inherit (lib) mkIf;
-in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
+	inherit (lib) elem mkIf;
+	inherit (lib.trivial) release;
+in mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) {
 	"24.05" = {
 		home.packages = [ pkgs.gnomeExtensions.custom-accent-colors ]; # Install the extension
 
@@ -34,6 +35,10 @@ in mkIf nixosConfig.services.xserver.desktopManager.gnome.enable {
 	};
 	# FIXME-QA(Krey): Duplicate code
 	"25.11" = {
+		# Deprecated with GNOME 47
+	};
+	# FIXME-QA(Krey): Duplicate code
+	"26.05" = {
 		# Deprecated with GNOME 47
 	};
 }."${lib.trivial.release}" or (throw "The NixOS Release '${lib.trivial.release}' is not implemented")

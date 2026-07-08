@@ -1,10 +1,12 @@
 { lib, config, nixosConfig, ... }:
 
 let
-	inherit (lib) mkIf;
+	inherit (lib) elem mkIf;
+	inherit (lib.trivial) release;
 in {
 	# FIXME-QA(Krey): Should only be used for home-manager NixOS Module, not expected to work in standalone setup!
 	home.persistence."/nix/persist/users/kira" = mkIf config.home.impermanence.enable {
+		stripHomePrefix = true;
 		directories = [
 			"Desktop"
 			"Documents"
@@ -32,9 +34,6 @@ in {
 			# FIXME(Krey): Do not persist the whole signal directory only inject the secrets to perform login
 			".config/Signal"
 
-			# FIXME-QA(Krey): Should only be applied if `monero-gui` package is installed
-			"Monero"
-
 			# FIXME-QA(Krey): Should only be applied if `element-desktop` is installed
 			".config/Element" # Element-Desktop
 
@@ -51,8 +50,6 @@ in {
 			".local/share/fractal"
 
 			".local/share/PolyMC"
-
-			(mkIf nixosConfig.services.flatpak.enable ".local/share/flatpak")
 
 			# FIXME-QA(Krey): Should only be applied if `anime-game-launcher` is installed
 			".local/share/anime-game-launcher"
@@ -96,10 +93,10 @@ in {
 			# FIXME-PURITY(Krey): This should be managed declaratively
 			".config/monitors.xml"
 			(mkIf config.programs.nix-index.enable ".cache/nix-index/files")
-			(mkIf nixosConfig.services.xserver.desktopManager.gnome.enable ".local/share/gnome-shell/application_state") # GNOME Well-Being Usage Data
+			(mkIf (if elem release [ "26.05" ] then nixosConfig.services.desktopManager.gnome.enable else nixosConfig.services.xserver.desktopManager.gnome.enable) ".local/share/gnome-shell/application_state") # GNOME Well-Being Usage Data
 		];
 
-		allowOther = true; # FIXME-DOCS(Krey): What is this used for?
+
 	};
 
 	home.stateVersion = nixosConfig.system.nixos.release; # Impermanence does not have state

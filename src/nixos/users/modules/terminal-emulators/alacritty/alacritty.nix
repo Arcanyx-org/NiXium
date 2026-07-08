@@ -15,10 +15,10 @@ in mkIf config.programs.alacritty.enable (mkMerge [
 			};
 		};
 
-		"${optionalString (elem release [ "24.11" "25.05" "25.11" ]) release}" = {
+		"${optionalString (elem release [ "24.11" "25.05" "25.11" "26.05" ]) release}" = {
 			programs.alacritty.settings = {
 				terminal.shell = mkDefault "${pkgs.bashInteractive}/bin/bash";
 			};
 		};
-	}."${release}"
+	}."${release}" or (throw "Release is not implemented: ${release}")
 ])

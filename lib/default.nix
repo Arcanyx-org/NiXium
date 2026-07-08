@@ -10,7 +10,7 @@
 		# mkVM is imported with lib, inputs, and self baked into its closure.
 		# Call sites use: `let inherit (self.lib) mkVM; in mkVM { ... }`
 		# No need to pass inputs or self — they're already in scope.
-		mkVM = import ../src/nixos/lib/mkVM { inherit lib inputs self; };
+		mkVM = import ../src/nixos/lib/mkVM/lib-mkVM.nix { inherit lib inputs self; };
 		# mkScript requires pkgs and stdenv which are not available in this
 		# flake-parts module context.  Expose as a curried function so callers
 		# in perSystem can write:

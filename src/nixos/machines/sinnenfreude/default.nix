@@ -31,11 +31,13 @@
 			./config/bootloader.nix
 			./config/disks.nix
 			./config/firmware.nix
+			./config/hardware.nix
 			./config/hardware-acceleration.nix
 			./config/initrd.nix
 			./config/kernel.nix
 			./config/networking.nix
 			./config/nvidia.nix
+			./config/plymouth.nix
 			./config/power-management.nix
 			./config/security.nix
 			./config/vm-build.nix
@@ -44,7 +46,6 @@
 			./services/distributedBuilds.nix
 			./services/openssh.nix
 			./services/tor.nix
-
 			# Systems
 				# self.nixosModules.machine-ignucius
 				self.nixosModules.machine-lengo
@@ -54,7 +55,7 @@
 				self.nixosModules.machine-twinkcentral
 
 			# Extras
-			self.nixosModules.infra-base48
+			self.nixosModules.infra
 		];
 	};
 
