@@ -49,7 +49,7 @@
 			};
 
 			# impermanence.url = "github:nix-community/impermanence";
-				impermanence.url = "github:kreyren/impermanence"; # Use a fork to manage https://github.com/nix-community/impermanence/issues/167
+				impermanence.url = "github:arcanyx-org/impermanence"; # Fix: RequiresMountsFor on initrd bind mounts
 
 			flake-parts = {
 				url = "github:hercules-ci/flake-parts";

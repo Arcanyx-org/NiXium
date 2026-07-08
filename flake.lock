@@ -1055,15 +1055,15 @@
     },
     "impermanence": {
       "locked": {
-        "lastModified": 1783539924,
-        "narHash": "sha256-hClS+XkWbPqa+YloDLp5CPvuUbc+MqQRuzPEzuvpIzo=",
-        "owner": "kreyren",
+        "lastModified": 1783551214,
+        "narHash": "sha256-be46waQ75P9CHZeuU/63cYgGXaeGm6ayV6IlA0BS6NU=",
+        "owner": "arcanyx-org",
         "repo": "impermanence",
-        "rev": "ef1ae476d4c3640c46987b713c7d55c06cfff9d4",
+        "rev": "dd47d7799bee158e360bfb5ad2da670f8d004c3c",
         "type": "github"
       },
       "original": {
-        "owner": "kreyren",
+        "owner": "arcanyx-org",
         "repo": "impermanence",
         "type": "github"
       }
