@@ -27,7 +27,8 @@ let
 	swapSize = "60G";
 
 	# Reference: https://www.youtube.com/watch?v=oe4X5x1P-3w
-	setUUID = "0118-9998-8199-9119-7253" + "000000000";
+	# IT Crowd Easter Egg: "0118 999 881 999 119 725 3" encoded as valid UUID (8-4-4-4-12)
+	setUUID = "01189998-8199-9119-7253-000000000000";
 in {
 	config = mkMerge [
 		{
