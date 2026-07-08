@@ -130,20 +130,30 @@ in mkMerge [
 		};
 	};
 
-	# NixOS 26.05 requires fsType and device on all fileSystems entries.
-	# The vendored impermanence creates systemd.mount entries that get mirrored into fileSystems via the
-	# qemu-vm virtualisation.fileSystems alias. This sets fsType, device, and neededForBoot on all
-	# bind-mounted persistence directories via mkDefault so machine configs can override if needed.
+	# Generate proper fileSystems entries for bind-mounted persistence dirs.
+	# The vendored impermanence creates systemd.mount units with correct source
+	# paths, but NixOS also needs fileSystems entries so the fstab and
+	# systemd-fstab-generator produce correct initrd mount units. Without this,
+	# the fstab gets device="none" which makes systemd-initrd fail to bind-mount.
 	fileSystems = lib.mkMerge [
 		(lib.mkIf (config.environment.persistence ? "/nix/persist/system") (
-			builtins.listToAttrs (map (dir: {
-				name = if lib.isString dir then dir else dir.directory;
-				value = {
-					fsType = lib.mkDefault "none";
-					device = lib.mkDefault "none";
-					neededForBoot = lib.mkDefault true;
-				};
-			}) (config.environment.persistence."/nix/persist/system".directories or []))
+			let
+				psp = config.environment.persistence."/nix/persist/system".persistentStoragePath;
+			in builtins.listToAttrs (map (dir:
+				let
+					name = if lib.isString dir then dir else dir.directory;
+					sourcePath = if lib.isString dir then dir else (dir.sourcePath or dir.directory);
+					device = "${psp}${sourcePath}";
+				in {
+					inherit name;
+					value = {
+						inherit device;
+						fsType = lib.mkDefault "none";
+						options = lib.mkDefault [ "bind" ];
+						neededForBoot = lib.mkDefault true;
+					};
+				}
+			) (config.environment.persistence."/nix/persist/system".directories or []))
 		))
 	];
 
