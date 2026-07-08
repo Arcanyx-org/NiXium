@@ -624,6 +624,43 @@ Also override `environment.etc."ssh/ssh_host_ed25519_key.pub".text` with the gen
 
 ---
 
+## Initrd Bind Mount Fstab Bug
+
+**Problem:** Persistence bind mounts fail in systemd-initrd with errors like `failed to mount /sysroot/var/lib/bluetooth`. The initrd-fstab was generated with `device="none"` for bind mounts:
+
+```
+none /var/lib/bluetooth none x-initrd.mount 0 0
+```
+
+**Root cause:** `src/nixos/modules/system/impermenance/system-impermenance.nix` had:
+```nix
+device = lib.mkDefault "none";  # WRONG
+```
+And was missing `options = [ "bind" ]`. This meant systemd-fstab-generator created mount units with `What=none` instead of the actual bind source path.
+
+**Fix:** Compute the correct device path from `persistentStoragePath + sourcePath`:
+```nix
+device = "${psp}${sourcePath}";
+options = lib.mkDefault [ "bind" ];
+```
+
+This produces correct fstab entries:
+```
+/nix/persist/system/var/lib/bluetooth /var/lib/bluetooth none bind 0 0
+```
+
+**Why the vendored impermanence's `boot.initrd.systemd.mounts` didn't help:** They created correct static mount units, but systemd-fstab-generator overrides static mount units with generated ones from fstab. The broken fstab entries (with `device=none`) took precedence and broke the boot.
+
+**Verification:** Check the initrd fstab in the nix store:
+```sh
+cat /nix/store/*-initrd-fstab | grep -E '^none /var'
+```
+No `none /var/...` entries should remain. All persistence bind mounts must show the correct source path.
+
+**Double-concern:** The `fileSystems` entries from `system-impermanence.nix` and the `boot.initrd.systemd.mounts` from vendored impermanence create duplicate mount units. This is safe because systemd-fstab-generator overrides static units. If ordering issues arise, remove the duplicate from `vendor/impermanence/nixos.nix`.
+
+---
+
 ## agenix Fork Spec Architecture (July 2026)
 
 The NiXium agenix fork (`vendor/agenix/`) has comprehensive specs embedded as `###!` comments:
