@@ -91,7 +91,8 @@ in {
 		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
-		aagl.anime-game-launcher # An Anime Game
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# aagl.anime-game-launcher # An Anime Game
 		pkgs.colobot # Colobot
 		pkgs.etlegacy # Wolfenstein: Enemy Territory
 		pkgs.airshipper # Veloren
@@ -100,16 +101,18 @@ in {
 
 		# Web Browsers
 		# pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
-		pkgs.tor-browser
-		(pkgs.brave.overrideAttrs (super: {
-			postInstall = ''
-				wrapProgram $out/bin/brave \
-					--append-flags "--no-proxy-server"
-			'';
-		})) # Standard Insecure Web Browser
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# pkgs.tor-browser
+		# (pkgs.brave.overrideAttrs (super: {
+		# 	postInstall = ''
+		# 		wrapProgram $out/bin/brave \
+		# 			--append-flags "--no-proxy-server"
+		# 	'';
+		# })) # Standard Insecure Web Browser
 
 		# Engineering
-		pkgs.blender
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# pkgs.blender
 		# Nixpkgs broke file chooser, this is a temporary workaround (https://github.com/NixOS/nixpkgs/issues/467783#issuecomment-3621306981)
 		# (pkgs.freecad.overrideAttrs (old: {
 		# 	nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ];
@@ -129,7 +132,8 @@ in {
 		pkgs.yt-dlp
 		pkgs.android-tools
 		pkgs.picocom # Interface for Serial Console devices
-		(unstable.bottles.override { removeWarningPopup = true; }) # Wine Management Tool
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# (unstable.bottles.override { removeWarningPopup = true; }) # Wine Management Tool
 		pkgs.mtr # Packet Loss Tester
 		pkgs.sc-controller # Steam Controller Software
 		pkgs.monero-gui
@@ -140,42 +144,46 @@ in {
 		pkgs.kooha # Screen Recorder
 		pkgs.qbittorrent # Torrents
 		pkgs.tealdeer # TLDR Pages Implementation
-		pkgs.nextcloud-client
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# pkgs.nextcloud-client
 		# FIXME(Krey): To be managed..
 		#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
 		pkgs.moonlight-qt
-		pkgs.libreoffice
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# pkgs.libreoffice
 		pkgs.gnome-decoder
 
-		(pkgs.writeShellApplication {
-			name = "hydralauncher";
-
-			runtimeInputs = [ pkgs.hydralauncher ];
-
-			text = ''hydralauncher --proxy-server "" "$@"'';
-		})
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# (pkgs.writeShellApplication {
+		# 	name = "hydralauncher";
+		#
+		# 	runtimeInputs = [ pkgs.hydralauncher ];
+		#
+		# 	text = ''hydralauncher --proxy-server "" "$@"'';
+		# })
 
 		#unstable.nexusmods-app
 		pkgs.flashrom
 		# (unstable.alpaca.override { ollama = pkgs.ollama-cuda; })
 		# unstable.alpaca
-		(pkgs.geary.overrideAttrs (super: {
-			# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
-			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
-			postInstall = (super.postInstall or "") + ''
-				mv "$out/bin/geary" "$out/bin/.geary-wrapped" # Rename the old binary
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# (pkgs.geary.overrideAttrs (super: {
+		# 	# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+		# 	nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
+		# 	postInstall = (super.postInstall or "") + ''
+		# 		mv "$out/bin/geary" "$out/bin/.geary-wrapped" # Rename the old binary
 
-				# Wrap in short script that prefixes the command with `torsocks`
-				cat > "$out/bin/geary" <<-SCRIPT
-					#!${pkgs.busybox}/bin/sh
-					script_dir=\$(dirname "\$(readlink -f "\$0")")
-					exec torsocks "\$script_dir/.geary-wrapped" "\$@"
-				SCRIPT
+		# 		# Wrap in short script that prefixes the command with `torsocks`
+		# 		cat > "$out/bin/geary" <<-SCRIPT
+		# 			#!${pkgs.busybox}/bin/sh
+		# 			script_dir=\$(dirname "\$(readlink -f "\$0")")
+		# 			exec torsocks "\$script_dir/.geary-wrapped" "\$@"
+		# 		SCRIPT
 
-				# Ensure that it's executable
-				chmod +x "$out/bin/geary"
-			'';
-		}))
+		# 		# Ensure that it's executable
+		# 		chmod +x "$out/bin/geary"
+		# 	'';
+		# }))
 
 		# (pkgs.writeShellScriptBin "geary" ''
 		# 	exec ${pkgs.torsocks}/bin/torsocks ${pkgs.geary}/bin/geary "$@"
@@ -216,7 +224,8 @@ in {
 		# pkgs.stremio # Media Server Client
 		pkgs.freetube # YouTube Client
 		pkgs.mpv
-		pkgs.vlc
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+		# pkgs.vlc
 
 		# Gnome extensions
 		pkgs.gnomeExtensions.removable-drive-menu
@@ -229,7 +238,8 @@ in {
 		pkgs.pinentry-gnome3
 
 		# WINEHQ Experiments
-    pkgs.wineWow64Packages.stagingFull
+		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+    # pkgs.wineWow64Packages.stagingFull
 	];
 
 	# GNOME Extensions

@@ -51,18 +51,20 @@ in {
 					# 	# 	end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
 					# 	# };
 					# };
-				programs.gamescope.enable = true;
-					programs.gamescope.capSysNice = true;
-					programs.gamescope.args = [
-						"--prefer-vk-device"
-						"10de:28a0"
-						"--backend"
-						"sdl"
-					];
+				# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+				# programs.gamescope.enable = true;
+				# 	programs.gamescope.capSysNice = true;
+				# 	programs.gamescope.args = [
+				# 		"--prefer-vk-device"
+				# 		"10de:28a0"
+				# 		"--backend"
+				# 		"sdl"
+				# 	];
 
 				services.seatd.enable = true;
 				services.seatd.user = "kreyren";
-				programs.steam.enable = true;
+				# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+				# programs.steam.enable = true;
 				programs.noisetorch.enable = true; # Microphone filtering
 				programs.nix-ld.enable = true;
 				# programs.appimage = {
@@ -165,7 +167,8 @@ in {
 				security.sudo.enable = false;
 				security.sudo-rs.enable = true;
 
-				virtualisation.waydroid.enable = true;
+				# FIXME-QA(Krey): Commented out for deployment — OOM on target host
+				# virtualisation.waydroid.enable = true;
 				virtualisation.docker.enable = true;
 
 				nix.settings.trusted-users = [ "kreyren" ]; # Add Kreyren in Trusted-Users
