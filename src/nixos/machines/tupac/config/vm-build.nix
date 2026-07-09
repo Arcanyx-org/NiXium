@@ -16,6 +16,7 @@
 			cores = 2;
 		};
 
+		virtualisation.fileSystems."/nix".neededForBoot = true;
 		virtualisation.fileSystems."/nix/persist/system".neededForBoot = true;
 		virtualisation.fileSystems."/nix/persist/users".neededForBoot = true;
 
