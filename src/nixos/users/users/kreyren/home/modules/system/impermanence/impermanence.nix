@@ -18,6 +18,7 @@ in {
 			"Videos"
 			".gnupg"
 			".local/state/nix/profiles"
+			".local/state/home-manager"
 			".ssh"
 			".cache"
 			"Games"
