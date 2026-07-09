@@ -149,7 +149,7 @@ in mkMerge [
 					value = {
 						inherit device;
 						fsType = lib.mkDefault "none";
-						options = lib.mkDefault [ "bind" ];
+						options = [ "bind" ];
 						neededForBoot = lib.mkDefault true;
 					};
 				}
