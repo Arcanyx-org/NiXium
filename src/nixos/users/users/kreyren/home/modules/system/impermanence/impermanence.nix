@@ -6,6 +6,8 @@ in {
 	home.persistence."/nix/persist/users/kreyren" = mkIf config.home.impermanence.enable {
 		stripHomePrefix = true;
 		directories = [
+			# HM activation needs to write dconf user file here
+			".config/dconf"
 			"Desktop"
 			"Documents"
 			"Downloads"

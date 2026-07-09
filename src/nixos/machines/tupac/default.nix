@@ -41,6 +41,7 @@
 			./config/printing.nix
 			./config/security.nix
 			./config/sound.nix
+			./config/user-dirs.nix
 			./config/vm-build.nix
 
 			./services/binfmt.nix
