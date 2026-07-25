@@ -29,6 +29,7 @@ let
 		ignucius-system
 		lengo-system
 		morph-system
+		scar-system
 		mracek-system
 		sinnenfreude-system
 		tupac-system

@@ -114,8 +114,8 @@ in mkMerge [
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
 									extraFormatArgs = [
-										"--use-random" # use true random data from /dev/random, will block until enough entropy is available
-										"--label=CRYPT_NIX"
+								"--use-urandom" # FIXME-SECURITY: use-urandom for install only, switch to use-random post-install — use-random OOMs on 8GB installer
+								"--label=CRYPT_NIX"
 									];
 
 									extraOpenArgs = [
@@ -157,8 +157,8 @@ in mkMerge [
 									initrdUnlock = true; # Add a boot.initrd.luks.devices entry for the specified disk
 
 									extraFormatArgs = [
-										"--use-random" # use true random data from /dev/random, will block until enough entropy is available
-										"--label=CRYPT_SWAP"
+								"--use-urandom" # FIXME-SECURITY: use-urandom for install only, switch to use-random post-install — use-random OOMs on 8GB installer
+								"--label=CRYPT_SWAP"
 									];
 
 									extraOpenArgs = [
