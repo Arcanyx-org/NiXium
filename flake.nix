@@ -49,8 +49,7 @@
 			};
 
 			# impermanence.url = "github:nix-community/impermanence";
-				# impermanence.url = "github:arcanyx-org/impermanence"; # Fix: RequiresMountsFor on initrd bind mounts
-				impermanence.url = "git+file:///nix/persist/NiXium/vendor/impermanence-local";
+			impermanence.url = "github:Arcanyx-org/impermanence/niXium-patches";
 
 			flake-parts = {
 				url = "github:hercules-ci/flake-parts";
@@ -129,7 +128,7 @@
 
 	# StardustXR Telescope (clients: flatland, hexagon launcher, black-hole)
 		telescope = {
-			url = "./vendor/telescope";
+			url = "github:StardustXR/telescope";
 			inputs.nixpkgs.follows = "nixpkgs-26_05";
 		};
 

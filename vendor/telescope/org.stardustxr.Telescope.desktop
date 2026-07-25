@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Telescope
-Comment=StardustXR based OpenXR Overlay
-Exec=telescope
-Type=Application
-Icon=org.stardustxr.Telescope
-Categories=Utility;X-WiVRn-VR;
-X-XR-Plugin=true

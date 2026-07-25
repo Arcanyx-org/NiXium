@@ -1,7 +1,3 @@
-[submodule "vendor/impermanence"]
-	path = vendor/impermanence
-	url = git@github.com:Arcanyx-org/impermanence.git
-	ignore = dirty
 [submodule "vendor/agenix"]
 	path = vendor/agenix
 	url = git@github.com:Arcanyx-org/agenix.git
@@ -51,9 +47,6 @@
 	path = vendor/OpenAgentsControl
 	url = git@github.com:darrenhinde/OpenAgentsControl.git
 	ignore = dirty
-[submodule "vendor/telescope"]
-	path = vendor/telescope
-	url = https://github.com/StardustXR/telescope.git
 [submodule "vendor/protostar"]
 	path = vendor/protostar
 	url = https://github.com/StardustXR/protostar
@@ -66,3 +59,10 @@
 [submodule "vendor/atmosphere"]
 	path = vendor/atmosphere
 	url = https://github.com/StardustXR/atmosphere
+[submodule "vendor/impermanence"]
+	path = vendor/impermanence
+	url = git@github.com:Arcanyx-org/impermanence.git
+	branch = niXium-patches
+[submodule "vendor/telescope"]
+	path = vendor/telescope
+	url = git@github.com:StardustXR/telescope.git
