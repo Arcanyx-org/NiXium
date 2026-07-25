@@ -40,7 +40,7 @@ in mkMerge [
 					"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
 						name = "Open Web Browser";
 						# command = "${pkgs.firefox-esr}/bin/firefox-esr";
-						command = "${pkgs.firefox}/bin/firefox";
+						command = "${pkgs.firefox-esr}/bin/firefox-ser";
 						binding = "<Super>t";
 					};
 

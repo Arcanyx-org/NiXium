@@ -25,6 +25,7 @@ This is a **living document** - you are expected to update it when you:
 - Correcting misunderstood architecture details
 - Adding new build commands that work
 - Documenting required dependencies or overlays
+- Documenting tmpfs + sysinfo compatibility issue
 
 ---
 
@@ -668,3 +669,96 @@ The NiXium agenix fork (`vendor/agenix/`) has comprehensive specs embedded as `#
 - `vendor/agenix/modules/age-home.nix` (475 lines) — User-level secrets
 
 Key decisions: persistent agenix-agent with mlocked IdentityKey, Unix socket, get-secret subcommand. No /run/agenix ramfs — secrets piped directly to target paths. Anchored regex check validates completeness. Injection model with auto-derived placeholders from check presets. Exit codes 0/1/2/4. Ghost Identity pipeline with encrypted salt for HNDL defense. Anti-TPM, FIDO2 preferred. Upstream code preserved as reference below specs.
+
+---
+
+## Kexec Task — NOT IMPLEMENTED (Deferred)
+
+**Status:** Deferred — see the full spec in `tasks/administration/kexec/tasks-kexec.sh` (`###!` comments).
+
+The implementation was blocked by fundamental constraints:
+
+1. **dm-crypt keys are in kernel slab memory** — kexec replaces ALL kernel memory, so LUKS mappings are lost. No mechanism exists to hand over device mapper state across kexec.
+2. **GPU/console fails after kexec** — i915 cannot re-initialize because GPU firmware state (GuC/HuC, display PLLs, GTT) is lost. The result is a black screen with the system otherwise alive.
+3. **Password-less LUKS unlock requires TPM2 or agenix rewrite** — keyfile on /boot was rejected as a security threat. TPM2 `systemd-cryptenroll` is the correct solution but requires one-time enrollment. The agenix fork rewrite (Arcanyx, in progress) would provide a NiXium-native alternative but is not yet available.
+
+### What Exists
+
+- `src/nixos/modules/apps/kexec/apps-kexec.nix` — auto-adds `pkgs.kexec-tools` to all machines
+- `tasks/administration/kexec/` — stub task that prints "not implemented" and exits
+- Full technical spec with kernel internals, failure analysis, and future implementation guide in the `###!` comments at the top of `tasks/administration/kexec/tasks-kexec.sh`
+
+---
+
+## tmpfs Root + sysinfo Compatibility
+
+### The Problem
+
+Apps using `sysinfo::Disks` (or similar crate-based mount detection) fail to check free space on system with tmpfs root. `sysinfo::Disks::new_with_refreshed_list()` excludes tmpfs from its disk list by default. Since `statvfs()` metadata on ANY path under tmpfs root carries a tmpfs device number, the ancestor-walk-and-device-number-match always fails.
+
+This manifests as "Path is not mounted" errors in apps like:
+- `anime-game-launcher` (via `anime-game-core`'s `free_space::available()`)
+- `airshipper` (similar sysinfo-based check)
+
+### Why It Happens Now (26.05) vs Not Before (25.11)
+
+NixOS 25.11 used btrfs for root. The btrfs device showed up in `sysinfo::Disks`, so ancestor-device-matching worked. NixOS 26.05 with the NiXium impermanence setup uses tmpfs for root, and tmpfs is invisible to `sysinfo::Disks`.
+
+### Workaround
+
+Persist affected cache directories on real filesystem (e.g., `/nix/persist/users/kreyren/.cache/...`). The bind mount's source lives on the persistent storage's real filesystem, so the device number matches a disk in sysinfo's list.
+
+### Upstream Fix
+
+The apps should use `statvfs()` directly (e.g., `std::fs::available_space()` or `fs2::available_space()` at the path itself, or `statvfs` on any ancestor), which works regardless of filesystem type. `sysinfo::Disks` is the wrong tool for single-path free-space checks.
+
+### Where It's Applied
+
+- `src/nixos/users/users/kreyren/home/modules/system/impermanence/impermanence.nix` — cache dirs for affected apps added with `FIXME-UPSTREAM` comments
+
+---
+
+## StardustXR Telescope — Crane API Compatibility
+
+### Problem
+
+StardustXR's telescope sub-packages (protostar, gravity, black-hole) all use crane build system. The upstream repos use the **old crane API** (`crane.lib.${system}.buildPackage`) which:
+- Only works with crane versions that have the `lib` attribute (removed in crane commit `6f7504ad`, 2024-08-29)
+- Uses `crane-utils-0.0.1` internally which passes `cargoSha256` to `buildRustPackage`
+- `cargoSha256` is deprecated in nixpkgs-24.11+ (triggers `lib.warn` → `abort-on-warn` kills build)
+- `cargoSha256` is removed in nixpkgs-26.05+ (hard error)
+
+The **new crane API** (`crane.mkLib pkgs`) works with nixpkgs-26.05 but doesn't have the `lib` attribute.
+
+### Solution
+
+All three sub-packages are vendored as git submodules under `vendor/` with patched `flake.nix`:
+
+| Package | Submodule Path | Patches Applied |
+|---------|---------------|-----------------|
+| protostar | `vendor/protostar/` | `crane.lib.${system}` → `crane.mkLib pkgs`; removed test-only `ashpd-demo` dep |
+| gravity | `vendor/gravity/` | `crane.lib.${system}` → `crane.mkLib pkgs` |
+| black-hole | `vendor/black-hole/` | Removed `overrideToolchain` (rust-overlay `rust-bin` not available); removed non-existent `res/` directory reference |
+
+Telescope's `flake.nix` references them with `git+file:///` paths and `inputs.nixpkgs.follows = "nixpkgs"`.
+
+### Why Submodules (Not Flake Inputs)
+
+- Upstream repos pin old crane in their `flake.lock` → must update lock after vendoring
+- `follows` doesn't work across flake boundary for nested inputs like crane
+- Local submodules allow patching `flake.nix` while keeping upstream tracking
+- Each submodule's `crane` input updated to latest (2026-07-04) via `nix flake update` inside the submodule
+
+### When Updating Submodules
+
+1. `cd vendor/<package>` → `git pull origin main`
+2. `nix flake update` (updates crane lock)
+3. Verify patches still apply (re-apply if upstream changed flake.nix)
+4. `git add -A && git commit`
+5. `git add vendor/<package>` in parent repo
+6. `nix flake lock --update-input telescope`
+7. Build test: `nix build .#nixosConfigurations.nixos-<machine>-stable.config.system.build.toplevel`
+
+### crane `inputs.nixpkgs.follows` Warning
+
+The warning `input 'telescope/<package>/crane' has an override for a non-existent input 'nixpkgs'` is harmless — latest crane removed its `nixpkgs` input (commit `6f7504ad`). The `follows` is silently ignored.

@@ -1,1 +1,0 @@
-For version-controlled repositories that are forked with adjustments for this management

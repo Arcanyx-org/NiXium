@@ -1,5 +1,7 @@
 #@ This POSIX Shell Script is executed in an isolated reproducible environment managed by Nix <https://github.com/NixOS/nix>, which handles dependencies, ensures deterministic function imports, sets any needed variables and performs strict linting prior to script execution to capture common issues for quality assurance.
 
+# DNC(Krey): These scripts do not conform to the coding quality of Arcanyx organization and are used for research to figure out the spec for proper implementation
+
 ### [START] Export this outside [START] ###
 
 # FIXME-QA(Krey): This should be a runtimeInput
@@ -30,28 +32,23 @@ hostname="$(hostname --short)"
 
 # Check current system if no argument is provided
 [ "$#" != 0 ] || {
-	derivation="$(grep "$hostname" "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
+	derivation=$(nix eval ".#nixosConfigurations.nixos-$hostname._derivationName" --raw 2>/dev/null || echo "$hostname")
 
-	# FIXME(Krey): It's possible that current system has deployed a configuration that is different from the one in the repo -> Get this derivation somewhere on the filesystem and try to read that first
-	status "Checking current system's configured derivation: $derivation"
+	status "Verifying current system: $hostname ($derivation)"
 
 	nixos-rebuild dry-build \
-		--flake "git+file://$FLAKE_ROOT#$derivation" \
+		--flake "git+file://$FLAKE_ROOT#$hostname" \
 		--option eval-cache false \
-		--show-trace || die 1 "Verification of the current system failed"
+		--show-trace || die 1 "Verification of system '$hostname' ($derivation) failed"
 
 	success
 }
 
-# FIXME-QA(Krey): Hacky af
-nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | sed "s#^$FLAKE_ROOT/src/nixos/machines/##g" | tr '\n' ' ')" # Get a space-separated list of all systems in the nixos distribution of NiXium
+nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | sed "s#^$FLAKE_ROOT/src/nixos/machines/##g" | tr '\n' ' ')"
 
-# If special argument 'all' is used then verify all systems across all distributions and all releases
 [ "$1" != "all" ] || {
-	# FIXME(Krey): Once we have more distros this needs management
 	distro="nixos"
 
-	# NixOS Distribution
 	for system in $nixosSystems; do
 		status="$(cat "$FLAKE_ROOT/src/nixos/machines/$system/status")"
 
@@ -67,8 +64,8 @@ nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | se
 						--show-trace || die 1 "System '$system' in distribution '$distro' of release '$release' failed evaluation!"
 				done
 			;;
-			"WIP") echo "Configuration for system '$system' in distribution '$distro' is marked a Work-in-Progress, skipping build.." ;;
-			*) echo "System '$system' reports undeclared status state: $status"
+			"WIP") echo "System '$system' is Work-in-Progress, skipping.." ;;
+			*) echo "System '$system' has undeclared status: $status"
 		esac
 	done
 
@@ -77,27 +74,26 @@ nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | se
 
 [ "$#" != 1 ] || {
 	machine="$1"
-	derivation="$(grep "$machine" "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
 
-	status "Checking configured release: $derivation"
+	derivation=$(nix eval ".#nixosConfigurations.nixos-$machine._derivationName" --raw 2>/dev/null || echo "$machine")
+
+	status "Verifying machine '$machine' ($derivation)"
 
 	nixos-rebuild dry-build \
-		--flake "git+file://$FLAKE_ROOT#$derivation" \
+		--flake "git+file://$FLAKE_ROOT#$machine" \
 		--option eval-cache false \
-		--show-trace || die 1 "Verification of the derivation '$derivation' failed"
+		--show-trace || die 1 "Verification of machine '$machine' ($derivation) failed"
 
 	success
 }
 
-# If special argument `all` is used as second argument then process all releases and distros that match the first argument as machine name
-[ "$2" != "all" ] ||  {
+[ "$2" != "all" ] || {
 	machine="$1"
 
-	STATUS "Checking all distributions that contain machine '$machine'"
+	status "Verifying all releases for machine '$machine'"
 
-	# NixOS Distribution
-	status="$(cat "$FLAKE_ROOT/src/nixos/machines/$machine/status")"
 	distro="nixos"
+	status="$(cat "$FLAKE_ROOT/src/nixos/machines/$machine/status")"
 
 	case "$status" in
 		"OK")
@@ -108,25 +104,22 @@ nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | se
 					dry-build \
 					--flake "git+file://$FLAKE_ROOT#nixos-$machine-$release" \
 					--option eval-cache false \
-					--show-trace || die 1 "System '$system' in distribution '$distro' of release '$release' failed evaluation!"
+					--show-trace || die 1 "System '$machine' in distribution '$distro' of release '$release' failed evaluation!"
 			done
 		;;
-		"WIP") echo "Configuration for system '$system' in distribution '$distro' is marked a Work-in-Progress, skipping build.." ;;
-		*) echo "System '$system' reports undeclared status state: $status"
+		"WIP") echo "System '$machine' is Work-in-Progress, skipping.." ;;
+		*) echo "System '$machine' has undeclared status: $status"
 	esac
 
 	success
 }
 
-# Process Arguments
-distro="$1" # e.g. nixos
-machine="$2" # e.g. tupac, tsvetan, sinnenfreude or special `all`
-release="$3" # Optional argument uses stable as default, ability to set supported release e.g. unstable or master
+distro="$1"
+machine="$2"
+release="$3"
 
 case "$distro" in
-	"nixos") # NixOS Management
-
-		# Process all systems in NixOS distribution if `nixos all` is used
+	"nixos")
 		[ "$2" != "all" ] || {
 			for system in $nixosSystems; do
 				status="$(cat "$FLAKE_ROOT/src/nixos/machines/$system/status")"
@@ -140,17 +133,16 @@ case "$distro" in
 							--option eval-cache false \
 							--show-trace || echo "WARNING: System '$system' in distribution '$distro' failed evaluation!"
 					;;
-					"WIP") echo "Configuration for system '$system' in distribution '$distro' is marked a Work-in-Progress, skipping build.." ;;
-					*) echo "System '$system' reports undeclared status state: $status"
+					"WIP") echo "System '$system' is Work-in-Progress, skipping.." ;;
+					*) echo "System '$system' has undeclared status: $status"
 				esac
 			done
 		}
 
-		# Check if the system is defined
-		[ -d "$FLAKE_ROOT/src/nixos/machines/$machine" ] || die 1 "This system '$machine' is not implemented in NiXium's management of distribution '$distro'"
+		[ -d "$FLAKE_ROOT/src/nixos/machines/$machine" ] || die 1 "System '$machine' is not defined in NiXium"
 
 		[ -n "$3" ] || {
-			echo "Processing all available releases for machine '$machine' in distribution '$distro'"
+			echo "Processing all available releases for machine '$machine'"
 
 			for release in $(find "$FLAKE_ROOT/src/nixos/machines/$machine/releases/"* -maxdepth 0 -type f | sed -E "s#^$FLAKE_ROOT/src/nixos/machines/$machine/releases/##g" | sed -E "s#.nix##g" | tr '\n' ' '); do
 				echo "Checking system '$machine' in distribution '$distro', release '$release'"
@@ -162,10 +154,9 @@ case "$distro" in
 					--show-trace || die 1 "System '$machine' in distribution '$distro' of release '$release' failed evaluation!"
 			done
 
-			exit 0 # Success
+			exit 0
 		}
 
-		# Process the system
 		echo "Checking system '$machine' in distribution '$distro' and release '$release'"
 
 		nixos-rebuild \

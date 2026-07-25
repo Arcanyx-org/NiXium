@@ -1,8 +1,9 @@
 { config, lib, ... }:
 
 let
-	inherit (builtins) attrNames;
-	inherit (lib) mkIf mkMerge filterAttrs mapAttrsToList flatten;
+	inherit (builtins) attrNames attrValues dirOf;
+	inherit (lib) mkIf mkMerge filterAttrs mapAttrsToList flatten
+		hasPrefix filter;
 in mkMerge [
 
 	# Default age identity for VM builds to satisfy ragenix assertion
@@ -20,10 +21,9 @@ in mkMerge [
 		# Always enabled regardless of impermanence since it's needed for user directories
 		systemd.tmpfiles.rules =
 			let
-				inherit (builtins) attrNames attrValues dirOf;
-				inherit (lib) hasPrefix filter;
-
 				userNames = attrNames config.home-manager.users;
+
+				# User persistence base dir
 				persistDirRules = map (username: let
 					user = config.users.users.${username};
 					uid = user.uid;
@@ -31,6 +31,8 @@ in mkMerge [
 				in
 					"d /nix/persist/users/${username} 0755 ${toString uid} ${gid}"
 				) userNames;
+
+				# Nix per-user profile dir
 				nixProfileRules = map (username: let
 					user = config.users.users.${username};
 					uid = user.uid;
@@ -38,26 +40,15 @@ in mkMerge [
 					"d /nix/var/nix/profiles/per-user/${username} 0755 ${toString uid} users"
 				) userNames;
 
-				# Generate tmpfiles rules so persistence source paths exist
-				# before systemd mount units run (they need the source to
-				# exist at boot, before activation scripts create them).
-				#
-				# For directory entries: the source dir itself must exist.
-				# For file entries: the parent dir of the source path must exist.
-				#
-				# This mirrors the concatPaths logic from the vendor's
-				# nixos.nix mkBindMount/mkPersistFile functions.
-
-				# Compute the full persistent storage source path for an entry
+				# Generate tmpfiles rules so persistence SOURCE paths exist
+				# before systemd mount units run.
 				mkWhat = psp: sourcePath:
 					if hasPrefix "/" sourcePath
 					then "${psp}${sourcePath}"
 					else "${psp}/${sourcePath}";
 
-				# Coerce null-or-string to tmpfiles-usable value
 				nullToDash = v: if v != null then v else "-";
 
-				# Directory entry: source path must exist as a directory
 				mkDirRule = psp: entry: let
 					what = mkWhat psp entry.sourcePath;
 					u = nullToDash (entry.user or null);
@@ -65,7 +56,6 @@ in mkMerge [
 					m = nullToDash (entry.mode or null);
 				in "d ${what} ${m} ${u} ${g} -";
 
-				# File entry: parent directory of source path must exist
 				mkFileParentRule = psp: entry: let
 					what = mkWhat psp entry.sourcePath;
 					parentDir = dirOf what;
@@ -75,17 +65,14 @@ in mkMerge [
 					m = nullToDash (pd.mode or null);
 				in "d ${parentDir} ${m} ${u} ${g} -";
 
-				# Process a persistence store with its storage path
 				mkStoreRules = psp: store:
 					(map (mkDirRule psp) (store.directories or []))
 					++ (map (mkFileParentRule psp) (store.files or []));
 
-				# All enabled system persistence stores
+				# System stores
 				systemStores = filter (s: s.enable or true)
 					(attrValues (config.environment.persistence or {}));
 
-				# System stores and their user sub-stores
-				# User sub-stores (usersOpts=true) need parent's psp
 				systemAllStores = flatten (map (store:
 					let psp = store.persistentStoragePath; in
 					[ (mkStoreRules psp store) ]
@@ -93,12 +80,13 @@ in mkMerge [
 						(attrValues (store.users or {})))
 				) systemStores);
 
-				# All HM user persistence stores
+				# HM user persistence SOURCE stores
 				hmStores = flatten (mapAttrsToList (_: hm:
 					map (hmStore:
 						mkStoreRules hmStore.persistentStoragePath hmStore
 					) (attrValues (hm.home.persistence or {}))
 				) (config.home-manager.users or {}));
+
 			in
 				persistDirRules
 				++ nixProfileRules

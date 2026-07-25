@@ -16,6 +16,7 @@ let
 	ignucius-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKWL1P+3Bg7rr3NEW2h0I1bXBZtwCpU3IiruewsUQrcg";
 	lengo-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVORJbikrudevtNrK023PsAIRIBfQb1xJmmnSiizalR";
 	morph-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFJh5Bd1p4GGCAvNkfoWoflrRIFnoj43b2aMs0GxmULs";
+	scar-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC0VBKxpvraJTZ0eLHdUpzQM0c8Belq26/gqSpGJcQkD";
 	mracek-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8d9Nz64gE+x/+Dar4zknmXMAZXUAxhF1IgrA9DO4Ma";
 	sinnenfreude-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAXnS4xUPWwjBdKDvvy5OInLbs3oeHUUs5qUsX+fBji";
 	tsvetan-system = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdqMVQ3TO5ckmk9nepAY/7zLHy555EkzBJxpfTIwuT5";
@@ -180,6 +181,31 @@ in {
 	"./machines/morph/secrets/morph-onion.age".publicKeys = [
 		kreyren
 	] ++ all-systems;
+
+	# SCAR)
+	"./machines/scar/secrets/scar-ssh-ed25519-private.age".publicKeys = [
+		kreyren kira scar-system
+	];
+	"./machines/scar/secrets/scar-disks-password.age".publicKeys = [
+		kreyren kira scar-system
+	];
+	"./machines/scar/secrets/scar-onion.age".publicKeys = [
+		kreyren kira scar-system tupac-system mracek-system
+	];
+	"./machines/scar/secrets/scar-onion-secretKey.age".publicKeys = [
+		kreyren kira scar-system
+	];
+	"./machines/scar/secrets/scar-onion-openssh-private.age".publicKeys = [
+		kreyren kira scar-system
+	];
+
+	# "./machines/scar/secrets/scar-builder-ssh-ed25519-private.age".publicKeys = [
+	# 	kreyren kira scar-system
+	# ];
+
+	# "./machines/scar/secrets/scar-unlock-key.age".publicKeys = [
+	# 	kreyren scar-system
+	# ];
 
 	# MRACEK (system)
 	"./machines/mracek/secrets/mracek-disks-password.age".publicKeys = [

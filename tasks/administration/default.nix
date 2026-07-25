@@ -4,6 +4,7 @@
 		./build
 		./deploy
 		./install
+		./kexec
 		./switch
 	];
 }

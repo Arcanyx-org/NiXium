@@ -4,6 +4,7 @@
 		./ignucius
 		./lengo
 		./mracek
+		./scar
 		./sinnenfreude
 		./tupac
 		./twinkcentral

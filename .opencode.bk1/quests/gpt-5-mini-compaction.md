@@ -1,1 +1,0 @@
-GPT-5-Mini model is really good at compaction and due to GitHub Copilot Pro it's agentic use doesn't use premium request so it's use is basically free -> Implement a workflow that uses it for compaction

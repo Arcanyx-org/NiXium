@@ -34,6 +34,7 @@ in {
 		# FIXME(Krey): What the fuck? - https://www.reddit.com/r/Stremio/comments/1isd5xp/comment/mdlf66w/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 		"stremio-shell"
 		"stremio-server"
+		"stremio-linux-shell"
 
 		# alpaka
 		"cuda_cudart"
@@ -84,6 +85,7 @@ in {
 
 		unstable.simplex-chat-desktop
 		pkgs.flare-signal
+		pkgs.signal-desktop
 		pkgs.hexchat
 
 		# Slicers
@@ -91,8 +93,7 @@ in {
 		pkgs.orca-slicer # Prusa-slicer fork by BambuLab adapted by the community
 
 		# Games
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-		# aagl.anime-game-launcher # An Anime Game
+		aagl.anime-game-launcher # An Anime Game
 		pkgs.colobot # Colobot
 		pkgs.etlegacy # Wolfenstein: Enemy Territory
 		pkgs.airshipper # Veloren
@@ -101,24 +102,23 @@ in {
 
 		# Web Browsers
 		# pkgs.tor-browser-bundle-bin # Standard Tor Web Browser
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-		# pkgs.tor-browser
-		# (pkgs.brave.overrideAttrs (super: {
-		# 	postInstall = ''
-		# 		wrapProgram $out/bin/brave \
-		# 			--append-flags "--no-proxy-server"
-		# 	'';
-		# })) # Standard Insecure Web Browser
+		pkgs.tor-browser
+		(pkgs.brave.overrideAttrs (super: {
+			postInstall = ''
+				wrapProgram $out/bin/brave \
+					--append-flags "--no-proxy-server"
+			'';
+		})) # Standard Insecure Web Browser
 
 		# Engineering
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-		# pkgs.blender
+		pkgs.blender
 		# Nixpkgs broke file chooser, this is a temporary workaround (https://github.com/NixOS/nixpkgs/issues/467783#issuecomment-3621306981)
 		# (pkgs.freecad.overrideAttrs (old: {
 		# 	nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ];
 		# }))
+		pkgs.freecad
 		pkgs.gimp
-		#pkgs.kicad
+		pkgs.kicad
 
 		# iOS Stuff
 		pkgs.libimobiledevice
@@ -132,8 +132,7 @@ in {
 		pkgs.yt-dlp
 		pkgs.android-tools
 		pkgs.picocom # Interface for Serial Console devices
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-		# (unstable.bottles.override { removeWarningPopup = true; }) # Wine Management Tool
+		(pkgs.bottles.override { removeWarningPopup = true; }) # Wine Management Tool
 		pkgs.mtr # Packet Loss Tester
 		pkgs.sc-controller # Steam Controller Software
 		pkgs.monero-gui
@@ -144,51 +143,41 @@ in {
 		pkgs.kooha # Screen Recorder
 		pkgs.qbittorrent # Torrents
 		pkgs.tealdeer # TLDR Pages Implementation
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
 		# pkgs.nextcloud-client
 		# FIXME(Krey): To be managed..
 		#(mkIf (config.system.nixos.release != "24.11") pkgs.printrun) # Currently broken in unstable+
 		pkgs.moonlight-qt
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-		# pkgs.libreoffice
+		pkgs.libreoffice
 		pkgs.gnome-decoder
 
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-		# (pkgs.writeShellApplication {
-		# 	name = "hydralauncher";
-		#
-		# 	runtimeInputs = [ pkgs.hydralauncher ];
-		#
-		# 	text = ''hydralauncher --proxy-server "" "$@"'';
-		# })
+		(pkgs.writeShellApplication {
+			name = "hydralauncher";
 
-		#unstable.nexusmods-app
+			runtimeInputs = [ pkgs.hydralauncher ];
+
+			text = ''hydralauncher --proxy-server "" "$@"'';
+		})
+
 		pkgs.flashrom
-		# (unstable.alpaca.override { ollama = pkgs.ollama-cuda; })
+		# (pkgs.alpaca.override { ollama = pkgs.ollama-cuda; })
 		# unstable.alpaca
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-		# (pkgs.geary.overrideAttrs (super: {
-		# 	# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
-		# 	nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
-		# 	postInstall = (super.postInstall or "") + ''
-		# 		mv "$out/bin/geary" "$out/bin/.geary-wrapped" # Rename the old binary
+		(pkgs.geary.overrideAttrs (super: {
+			# Force Geary to use Tor, inspired by https://discourse.nixos.org/t/using-wrapprogram-to-prefix-a-command/13862
+			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
+			postInstall = (super.postInstall or "") + ''
+				mv "$out/bin/geary" "$out/bin/.geary-wrapped" # Rename the old binary
 
-		# 		# Wrap in short script that prefixes the command with `torsocks`
-		# 		cat > "$out/bin/geary" <<-SCRIPT
-		# 			#!${pkgs.busybox}/bin/sh
-		# 			script_dir=\$(dirname "\$(readlink -f "\$0")")
-		# 			exec torsocks "\$script_dir/.geary-wrapped" "\$@"
-		# 		SCRIPT
+				# Wrap in short script that prefixes the command with `torsocks`
+				cat > "$out/bin/geary" <<-SCRIPT
+					#!${pkgs.busybox}/bin/sh
+					script_dir=\$(dirname "\$(readlink -f "\$0")")
+					exec torsocks "\$script_dir/.geary-wrapped" "\$@"
+				SCRIPT
 
-		# 		# Ensure that it's executable
-		# 		chmod +x "$out/bin/geary"
-		# 	'';
-		# }))
-
-		# (pkgs.writeShellScriptBin "geary" ''
-		# 	exec ${pkgs.torsocks}/bin/torsocks ${pkgs.geary}/bin/geary "$@"
-		# '')
-
+				# Ensure that it's executable
+				chmod +x "$out/bin/geary"
+			'';
+		}))
 
 		pkgs.nmap
 
@@ -197,7 +186,7 @@ in {
 
 		# pkgs.dosbox-x # DOS
 
-		# pkgs.duckstation # PlayStation 1
+		# # pkgs.duckstation # PlayStation 1
 		# pkgs.pcsx2 # PlayStation 2
 		# pkgs.rpcs3 # PlayStation 3
 		# pkgs.ppsspp-qt # PlayStation Portable
@@ -210,7 +199,8 @@ in {
 		# pkgs.mgba # Nintendo Game Boy Advance
 		# pkgs.dolphin-emu # Nintendo GameCube & Wii
 		# pkgs.cemu # Nintendo Wii U
-		# pkgs.ryujinx-greemdev # Nintendo Switch
+		# # pkgs.ryujinx-greemdev # Nintendo Switch
+		# 	pkgs.ryubing
 		# pkgs.snes9x-gtk # Super Nintendo Entertainment System
 
 		# pkgs.blastem # Sega Genesis / Megadrive
@@ -218,28 +208,27 @@ in {
 		# pkgs.mednafen # Sega Saturn (Many others supported)
 		# pkgs.mednaffe # GTK-based frontend for mednafen emulator
 
-    # pkgs.xemu # Xbox
+    pkgs.xemu # Xbox
 
 		# Video
-		# pkgs.stremio # Media Server Client
+		pkgs.stremio-linux-shell # Media Server Client
 		pkgs.freetube # YouTube Client
 		pkgs.mpv
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-		# pkgs.vlc
+		pkgs.vlc
 
 		# Gnome extensions
 		pkgs.gnomeExtensions.removable-drive-menu
 		pkgs.gnomeExtensions.vitals
 		pkgs.gnomeExtensions.blur-my-shell
 		pkgs.gnomeExtensions.gsconnect
+		pkgs.gnomeExtensions.all-in-one-clipboard
 
 		# FIXME_QA(Krey): Figure out how to enable this only on GNOME
 		# FIXME(Krey): on NixOS 23.11 it's pinentry-gnome, but on unstable it's pinentry-gnome3
 		pkgs.pinentry-gnome3
 
 		# WINEHQ Experiments
-		# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-    # pkgs.wineWow64Packages.stagingFull
+		pkgs.wine
 	];
 
 	# GNOME Extensions

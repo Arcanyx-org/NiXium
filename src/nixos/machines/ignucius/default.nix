@@ -3,6 +3,11 @@
 # Flake management of IGNUCIUS system
 
 {
+	# FIXME(Krey): Sub-optimal — _derivationName is used because alias resolution via
+	# derivation path comparison (nix eval + toplevel.outPath) fails when configs can't
+	# evaluate their toplevel (missing paths, broken modules, etc.)
+	flake.nixosConfigurations."nixos-ignucius" = self.nixosConfigurations."nixos-ignucius-24_05" // { _derivationName = "nixos-ignucius-24_05"; };
+
 	flake.nixosModules."nixos-ignucius" = {
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration

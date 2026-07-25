@@ -49,7 +49,8 @@
 			};
 
 			# impermanence.url = "github:nix-community/impermanence";
-				impermanence.url = "github:arcanyx-org/impermanence"; # Fix: RequiresMountsFor on initrd bind mounts
+				# impermanence.url = "github:arcanyx-org/impermanence"; # Fix: RequiresMountsFor on initrd bind mounts
+				impermanence.url = "git+file:///nix/persist/NiXium/vendor/impermanence-local";
 
 			flake-parts = {
 				url = "github:hercules-ci/flake-parts";
@@ -119,6 +120,18 @@
 				url = "github:nix-community/disko";
 				inputs.nixpkgs.follows = "nixpkgs-unstable";
 			};
+
+	# StardustXR (upstream, Bevy-based)
+		stardust-xr = {
+			url = "github:StardustXR/server";
+			inputs.nixpkgs.follows = "nixpkgs-26_05";
+		};
+
+	# StardustXR Telescope (clients: flatland, hexagon launcher, black-hole)
+		telescope = {
+			url = "./vendor/telescope";
+			inputs.nixpkgs.follows = "nixpkgs-26_05";
+		};
 
 		# AAGL
 			aagl = {

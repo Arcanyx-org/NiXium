@@ -191,6 +191,14 @@ in mkIf config.services.open-webui.enable {
 	nix.settings.trusted-substituters = ["https://ai.cachix.org"];
 	nix.settings.trusted-public-keys = ["ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="];
 
+	# Ananicy process scheduling for AI stack
+	services.ananicy.extraRules = [
+		{ name = "ollama"; type = "LLM-Inference"; } # Responsive LLM inference
+		{ name = "comfyui"; type = "LLM-Inference"; oom_score_adj = 500; } # Kill first on OOM (heavy VRAM)
+		{ name = "uvicorn"; type = "Service"; } # Open-WebUI web server
+		{ name = "openedai-speech"; type = "Player-Audio"; } # TTS responsiveness
+	];
+
 	# Impermanence
 	# environment.persistence."/nix/persist/system".directories = mkIf config.boot.impermanence.enable [
 	# 	# FIXME(Krey): This is a temporary solution as the models should be set declaratively

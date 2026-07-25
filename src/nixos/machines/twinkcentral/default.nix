@@ -3,6 +3,11 @@
 # Flake management of TWINKCENTRAL system
 
 {
+	# FIXME(Krey): Sub-optimal — _derivationName is used because alias resolution via
+	# derivation path comparison (nix eval + toplevel.outPath) fails when configs can't
+	# evaluate their toplevel (missing paths, broken modules, etc.)
+	flake.nixosConfigurations."nixos-twinkcentral" = self.nixosConfigurations."nixos-twinkcentral-stable" // { _derivationName = "nixos-twinkcentral-stable"; };
+
 	flake.nixosModules."nixos-twinkcentral" = {
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration

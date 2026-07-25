@@ -51,3 +51,18 @@
 	path = vendor/OpenAgentsControl
 	url = git@github.com:darrenhinde/OpenAgentsControl.git
 	ignore = dirty
+[submodule "vendor/telescope"]
+	path = vendor/telescope
+	url = https://github.com/StardustXR/telescope.git
+[submodule "vendor/protostar"]
+	path = vendor/protostar
+	url = https://github.com/StardustXR/protostar
+[submodule "vendor/black-hole"]
+	path = vendor/black-hole
+	url = https://github.com/StardustXR/black-hole
+[submodule "vendor/gravity"]
+	path = vendor/gravity
+	url = https://github.com/StardustXR/gravity
+[submodule "vendor/atmosphere"]
+	path = vendor/atmosphere
+	url = https://github.com/StardustXR/atmosphere

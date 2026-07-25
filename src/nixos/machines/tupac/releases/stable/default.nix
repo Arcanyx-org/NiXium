@@ -33,7 +33,7 @@ in {
 				nix.distributedBuilds = true; # Perform distributed builds
 
 				environment.systemPackages = [ pkgs.android-tools ];
-				programs.gamemode.enable = true;
+				programs.gamemode.enable = false; # Using autonice that conlicts
 					# programs.gamemode.enableRenice = true;
 					# programs.gamemode.settings = {
 					# 	general = {
@@ -146,6 +146,7 @@ in {
 				services.desktopManager.gnome.enable = true;
 					programs.dconf.enable = true; # Needed for home-manager to not fail deployment (https://github.com/nix-community/home-manager/issues/3113)
 					services.displayManager.gdm.autoSuspend = false;
+					services.geoclue2.enable = true; # GNOME night light needs geolocation for automatic schedule
 					# services.xserver.displayManager.gdm.wayland = false; # Do not use wayland as it has CONSTANT issues
 
 				# Power Management
@@ -204,23 +205,23 @@ in {
 			self.inputs.impermanence.nixosModules.impermanence
 			self.inputs.arkenfox.hmModules.default
 
-			# FIXME(Krey): AAGL's wineWowPackages reference triggers deprecation
-		# warning in nixpkgs 26.05, blocked by abort-on-warn. Uncomment
-		# once upstream updates to wineWow64Packages.
-		# self.inputs.aagl-26_05.nixosModules.default {
-		# 	networking.mihoyo-telemetry.block = true;
-		# 	nix.settings = {
-		# 		substituters = [ "https://ezkea.cachix.org" ];
-		# 		trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
-		# 	};
-		# }
+			self.inputs.aagl-26_05.nixosModules.default {
+				networking.mihoyo-telemetry.block = true;
+				nix.settings = {
+					substituters = [ "https://ezkea.cachix.org" ];
+					trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
+				};
+			}
 		];
 
-		specialArgs = {
-			inherit self;
+	specialArgs = {
+		inherit self;
 
-			# Priciple args
-			stable = import inputs.nixpkgs {
+		stardust-xr = inputs.stardust-xr.packages.x86_64-linux.default;
+		stardust-startup-script = inputs.telescope.packages.x86_64-linux.startup_script;
+
+		# Priciple args
+		stable = import inputs.nixpkgs {
 				system = "x86_64-linux";
 				config.allowUnfree = true;
 			};

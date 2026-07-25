@@ -39,7 +39,7 @@ in {
 
 			powerManagement.finegrained = true;
 
-			open = true;
+			open = false;
 
 			nvidiaSettings = true;
 

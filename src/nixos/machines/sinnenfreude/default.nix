@@ -3,6 +3,11 @@
 # Flake management of SINNENFREUDE system
 
 {
+	# FIXME(Krey): Sub-optimal — _derivationName is used because alias resolution via
+	# derivation path comparison (nix eval + toplevel.outPath) fails when configs can't
+	# evaluate their toplevel (missing paths, broken modules, etc.)
+	flake.nixosConfigurations."nixos-sinnenfreude" = self.nixosConfigurations."nixos-sinnenfreude-stable" // { _derivationName = "nixos-sinnenfreude-stable"; };
+
 	flake.nixosModules."nixos-sinnenfreude" = {
 		imports = [
 			self.nixosModules.default

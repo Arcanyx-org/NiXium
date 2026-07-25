@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 #! # Power Management of TUPAC
 #!
@@ -117,4 +117,21 @@ in mkIf config.powerManagement.enable (mkMerge [
 			STOP_CHARGE_THRESH_BAT0 = 100;
 		};
 	})
+
+	{
+		# Ananicy - Auto-Nice Management
+		services.ananicy = {
+			enable = true;
+			package = pkgs.ananicy-cpp;
+			rulesProvider = pkgs.ananicy-rules-cachyos;
+
+			# Custom types for tupac-specific workloads not covered by cachyos rules
+			extraTypes = [
+				# AI/ML inference — responsive but doesn't starve interactive apps
+				{ type = "LLM-Inference"; nice = -5; ioclass = "best-effort"; ionice = 4; }
+				# Streaming servers — low latency encoding for VR/game streaming
+				{ type = "Streaming-Server"; nice = -8; ioclass = "best-effort"; ionice = 2; }
+			];
+		};
+	}
 ])

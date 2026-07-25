@@ -1,33 +1,32 @@
+# DNC(Krey): These scripts do not conform to the coding quality of Arcanyx organization and are used for research to figure out the spec for proper implementation
+
 # shellcheck shell=sh # POSIX
 set +u # Do not fail on nounset as we use command-line arguments for logic
 
-# QA(Krey): This is experimental file designed to research how to implement this functionality
-
-hostname="$(hostname --short)" # Capture the hostname of the current system
+hostname="$(hostname --short)"
 
 # FIXME(Krey): Implement better management for this so that ideally `die` is always present by default
-command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;} # Termination Helper
+command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;}
 
-# Check current system if no argument is provided
+# Resolve the machine alias to its target nixosConfiguration via _derivationName attribute
+derivation=$(nix eval ".#nixosConfigurations.nixos-$hostname._derivationName" --raw 2>/dev/null || echo "$hostname")
+
 [ "$#" != 0 ] || {
-	# FIXME(Krey): This needs logic to determine the distribution and release
-	echo "Deploying Stable Release of NixOS distribution on current system '$hostname'"
+	echo "Deploying current system: $hostname ($derivation)"
 
 	nixos-rebuild switch \
-		--flake "git+file://$FLAKE_ROOT#nixos-$hostname-stable" \
+		--flake "git+file://$FLAKE_ROOT#$hostname" \
 		--option eval-cache false \
 		--verbose \
-		--show-trace || die 1 "Deployment of the stable release of NixOS distribution on the current system failed"
+		--show-trace || die 1 "Deployment of system '$hostname' ($derivation) failed"
 
-	exit 0 # Success
+	exit 0
 }
 
-# If only 1 argument is provided then deploy the configured system on said unique machine name
 [ "$#" != 1 ] || {
 	machine="$1"
-	derivation="$(grep "$machine" "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
 
-	echo "Deploying configured derivation for '$machine', which is: $derivation"
+	echo "Deploying machine '$machine'"
 
 	echo "Looking for localIP"
 	localIP="$("ssh.$machine" "ip -4 addr show scope global | grep inet | awk '{print \$2}' | cut -d/ -f1 | head -1")"
@@ -37,75 +36,70 @@ command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;} # Ter
 	if [ "$(ssh "root@$localIP" hostname || true)" = "$machine" ]; then
 		echo "Deploying over local IP"
 		nixos-rebuild switch \
-			--flake "git+file://$FLAKE_ROOT#$derivation" \
+			--flake "git+file://$FLAKE_ROOT#$machine" \
 			--option eval-cache false \
 			--verbose \
-			--target-host "root@$localIP" || die 1 "Deployment of the configured derivation '$derivation' on machine '$machine' failed"
+			--target-host "root@$localIP" || die 1 "Deployment of system '$machine' over local IP failed"
 	else
 		echo "Deploying over Tor"
 		nixos-rebuild switch \
-			--flake "git+file://$FLAKE_ROOT#$derivation" \
+			--flake "git+file://$FLAKE_ROOT#$machine" \
 			--option eval-cache false \
 			--verbose \
-			--target-host "root@$machine.systems.nx" || die 1 "Deployment of the configured derivation '$derivation' on machine '$machine' failed"
+			--target-host "root@$machine.systems.nx" || die 1 "Deployment of system '$machine' over Tor failed"
 	fi
 
-		exit 0 # Success
+	exit 0
 }
 
-# If special argument 'all' is used then deploy the specified distribution and release on all systems
 [ "$1" != "all" ] || {
-	for system in $(grep -vP "^#" "$FLAKE_ROOT/config/machine-derivations.conf" | grep -vP "^/n$" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\1#g' | tr '\n' ' '); do
-		derivation="$(grep mracek "$FLAKE_ROOT/config/machine-derivations.conf" | sed -E 's#^(\w+)(\s)([a-z\-]+)#\3#g')"
+	nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | sed "s#^$FLAKE_ROOT/src/nixos/machines/##g" | tr '\n' ' ')"
 
+	for system in $nixosSystems; do
 		nixos-rebuild switch \
-		--flake "git+file://$FLAKE_ROOT#$derivation" \
-		--option eval-cache false \
-		--target-host "root@$system.systems.nx" || echo "WARNING: derivation '$derivation' failed deployment for system '$system'"
+			--flake "git+file://$FLAKE_ROOT#$system" \
+			--option eval-cache false \
+			--target-host "root@$system.systems.nx" || echo "WARNING: Deployment of system '$system' failed"
 	done
 }
 
-# Process Arguments
-distro="$1" # e.g. nixos
-machine="$2" # e.g. tupac, tsvetan, sinnenfreude
-release="${3-"stable"}" # Optional argument uses stable as default, ability to set supported release e.g. unstable or master
+distro="$1"
+machine="$2"
+# shellcheck disable=SC2034 # release is reserved for future use when per-machine release override is needed
+release="$3"
 
-nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | sed "s#^$FLAKE_ROOT/src/nixos/machines/##g" | tr '\n' ' ')" # Get a space-separated list of all systems in the nixos distribution of NiXium
+nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | sed "s#^$FLAKE_ROOT/src/nixos/machines/##g" | tr '\n' ' ')"
 
 case "$distro" in
-	"nixos") # NixOS Management
-
-		# Process all systems in NixOS distribution if `nixos all` is used
+	"nixos")
 		[ "$machine" != "all" ] || {
 			for system in $nixosSystems; do
 				status="$(cat "$FLAKE_ROOT/src/nixos/machines/$system/status")"
 				case "$status" in
 					"OK")
-						echo "Deploying NixOS distribution release '$release' on system '$system'"
+						echo "Deploying system '$system'"
 
 						nixos-rebuild switch \
-							--flake "git+file://$FLAKE_ROOT#nixos-$system-$release}" \
+							--flake "git+file://$FLAKE_ROOT#$system" \
 							--option eval-cache false \
-							--target-host "root@$system.systems.nx" || die 1 "System '$system' in distribution '$distro' and release '$release' failed deployment!"
+							--target-host "root@$system.systems.nx" || die 1 "Deployment of system '$system' failed!"
 					;;
-					"WIP") echo "Configuration for system '$system' in distribution '$distro' is marked a Work-in-Progress, skipping build.." ;;
-					"KIA") echo "System '$system' is reported as Killed In Action, skipping.." ;;
-					*) echo "System '$system' reports undeclared status state: $status"
+					"WIP") echo "System '$system' is Work-in-Progress, skipping.." ;;
+					"KIA") echo "System '$system' is Killed In Action, skipping.." ;;
+					*) echo "System '$system' has undeclared status: $status"
 				esac
 			done
 		}
 
-		# Check if the system is defined
-		[ -d "$FLAKE_ROOT/src/nixos/machines/$machine" ] || die 1 "This system '$machine' is not implemented in NiXium's management of distribution '$distro'"
+		[ -d "$FLAKE_ROOT/src/nixos/machines/$machine" ] || die 1 "System '$machine' is not defined in NiXium"
 
-		# Process the system
-		echo "Deploying system '$machine' in distribution '$distro' and release '$release'"
+		echo "Deploying system '$machine'"
 
 		nixos-rebuild \
 			switch \
-			--flake "git+file://$FLAKE_ROOT#nixos-$machine-$release" \
+			--flake "git+file://$FLAKE_ROOT#$machine" \
 			--option eval-cache false \
-			--target-host "root@$machine.systems.nx"  || echo "WARNING: System '$machine' in distribution '$distro' failed evaluation!"
+			--target-host "root@$machine.systems.nx" || echo "WARNING: Deployment of system '$machine' failed!"
 	;;
 	*) die 1 "Distribution '$distro' is not implemented for deployments!"
 esac

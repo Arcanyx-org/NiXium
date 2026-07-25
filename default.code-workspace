@@ -20,6 +20,7 @@
 		// Large scrollback so long build/test output is not truncated in the terminal
 		"terminal.integrated.scrollback": 20000,
 		// Enable nil LSP for Nix files (syntax checking, go-to-definition, etc.)
+		"nixEnvSelector.useFlakes": true,
 		"nix.enableLanguageServer": true,
 		"nix.serverPath": "nil",
 		"nix.serverSettings": {

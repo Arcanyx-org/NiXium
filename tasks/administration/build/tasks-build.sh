@@ -1,101 +1,96 @@
+# DNC(Krey): These scripts do not conform to the coding quality of Arcanyx organization and are used for research to figure out the spec for proper implementation
+
 # shellcheck shell=sh # POSIX
 set +u # Do not fail on nounset as we use command-line arguments for logic
 
-hostname="$(hostname --short)" # Capture the hostname of the current system
+hostname="$(hostname --short)"
 
 # FIXME(Krey): Implement better management for this so that ideally `die` is always present by default
-command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;} # Termination Helper
+command -v die 1>/dev/null || die() { printf "FATAL: %s\n" "$2"; exit 1 ;}
+command -v success 1>/dev/null || success() { printf "SUCCESS: %s\n" "$1"; exit 0 ;}
 
-command -v success 1>/dev/null || success() { printf "SUCCESS: %s\n" "$1"; exit 0 ;} # Termination Helper
+# Resolve the machine alias to its target nixosConfiguration via _derivationName attribute
+derivation=$(nix eval ".#nixosConfigurations.nixos-$hostname._derivationName" --raw 2>/dev/null || echo "$hostname")
 
-# Check current system if no argument is provided
 [ "$#" != 0 ] || {
-	# FIXME(Krey): This needs logic to determine the distribution and release
-	echo "Building current system: $hostname"
+	echo "Building current system: $hostname ($derivation)"
 
 	nixos-rebuild build \
-		--flake "git+file://$FLAKE_ROOT#nixos-$hostname-stable" \
+		--flake "git+file://$FLAKE_ROOT#$hostname" \
 		--option eval-cache false \
-		--show-trace || die 1 "Build of the current system failed"
+		--show-trace || die 1 "Build of system '$hostname' ($derivation) failed"
 
-	exit 0 # Success
+	exit 0
 }
 
-# Assume that we are always checking against nixos distribution with stable release
 [ "$#" != 1 ] || {
-	echo "Building stable release of system '$1' in NixOS distribution"
+	echo "Building system '$1'"
 
 	nixos-rebuild build \
-		--flake "git+file://$FLAKE_ROOT#nixos-$1-stable" \
+		--flake "git+file://$FLAKE_ROOT#$1" \
 		--option eval-cache false \
-		--show-trace || die 1 "Build of the '$1' system on NixOS distribution using stable release failed"
+		--show-trace || die 1 "Build of system '$1' failed"
 
-	success "Build of derivation '$1' was successful"
+	success "Build of system '$1' was successful"
 }
 
-nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | sed "s#^$FLAKE_ROOT/src/nixos/machines/##g" | tr '\n' ' ')" # Get a space-separated list of all systems in the nixos distribution of NiXium
+nixosSystems="$(find "$FLAKE_ROOT/src/nixos/machines/"* -maxdepth 0 -type d | sed "s#^$FLAKE_ROOT/src/nixos/machines/##g" | tr '\n' ' ')"
 
-# If special argument 'all' is used then build all systems across all distributions and all releases
 [ "$1" != "all" ] || {
-	# NixOS Distribution
 	for system in $nixosSystems; do
 		status="$(cat "$FLAKE_ROOT/src/nixos/machines/$system/status")"
 
 		case "$status" in
 			"OK")
-				echo "Checking system '$system' in distribution '$distro'"
+				echo "Building system '$system'"
 
 				nixos-rebuild \
 					dry-build \
-					--flake "git+file://$FLAKE_ROOT#nixos-$system-${release:-"stable"}" \
+					--flake "git+file://$FLAKE_ROOT#$system" \
 					--option eval-cache false \
-					--show-trace || echo "WARNING: System '$system' in distribution '$distro' failed evaluation!"
+					--show-trace || echo "WARNING: System '$system' failed evaluation!"
 			;;
-			"WIP") echo "Configuration for system '$system' in distribution '$distro' is marked a Work-in-Progress, skipping build.." ;;
-			*) echo "System '$system' reports undeclared status state: $status"
+			"WIP") echo "System '$system' is Work-in-Progress, skipping.." ;;
+			*) echo "System '$system' has undeclared status: $status"
 		esac
 	done
 }
 
-# Process Arguments
-distro="$1" # e.g. nixos
-machine="$2" # e.g. tupac, tsvetan, sinnenfreude
-release="$3" # Optional argument uses stable as default, ability to set supported release e.g. unstable or master
+distro="$1"
+machine="$2"
+# shellcheck disable=SC2034 # release is reserved for future use when per-machine release override is needed
+release="$3"
 
 case "$distro" in
-	"nixos") # NixOS Management
-
-		# Process all systems in NixOS distribution if `nixos all` is used
+	"nixos")
 		[ "$machine" != "all" ] || {
 			for system in $nixosSystems; do
 				status="$(cat "$FLAKE_ROOT/src/nixos/machines/$system/status")"
 				case "$status" in
 					"OK")
-						echo "Building system '$system' in distribution '$distro'"
+						echo "Building system '$system'"
 
 						nixos-rebuild \
 							build \
-							--flake "git+file://$FLAKE_ROOT#nixos-$system-${release:-"stable"}" \
+							--flake "git+file://$FLAKE_ROOT#$system" \
 							--option eval-cache false \
-							--show-trace || echo "WARNING: System '$system' in distribution '$distro' failed build!"
+							--show-trace || echo "WARNING: System '$system' failed build!"
 					;;
-					"WIP") echo "Configuration for system '$system' in distribution '$distro' is marked a Work-in-Progress, skipping build.." ;;
-					*) echo "System '$system' reports undeclared status state: $status"
+					"WIP") echo "System '$system' is Work-in-Progress, skipping.." ;;
+					*) echo "System '$system' has undeclared status: $status"
 				esac
 			done
 		}
 
-		# Check if the system is defined
-		[ -d "$FLAKE_ROOT/src/nixos/machines/$machine" ] || die 1 "This system '$machine' is not implemented in NiXium's management of distribution '$distro'"
+		[ -d "$FLAKE_ROOT/src/nixos/machines/$machine" ] || die 1 "System '$machine' is not defined in NiXium"
 
-		# Process the system
-		echo "Building system '$machine' in distribution '$distro'"
+		echo "Building system '$machine'"
 
 		nixos-rebuild \
 			build \
-			--flake "git+file://$FLAKE_ROOT#nixos-$machine-${release:-"stable"}" \
+			--flake "git+file://$FLAKE_ROOT#$machine" \
 			--option eval-cache false \
-			--show-trace || echo "WARNING: System '$machine' in distribution '$distro' failed evaluation!"
+			--show-trace || echo "WARNING: System '$machine' failed evaluation!"
 	;;
 	*) die 1 "Distribution '$distro' is not implemented!"
 esac

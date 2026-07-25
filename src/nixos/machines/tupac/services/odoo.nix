@@ -1,8 +1,9 @@
-{ pkgs,... }:
+{ config, pkgs, lib, ... }:
 
-{
+let
+	inherit (lib) mkIf;
+in mkIf config.services.odoo.enable {
 	services.odoo = {
-		enable = true;
 		domain = "127.0.0.1";
 		addons = [
 			# (pkgs.fetchFromGitHub {
@@ -75,4 +76,9 @@
 				};
 			};
 	};
+
+	# Ananicy process scheduling
+	services.ananicy.extraRules = [
+		{ name = "odoo-bin"; type = "Service"; }
+	];
 }

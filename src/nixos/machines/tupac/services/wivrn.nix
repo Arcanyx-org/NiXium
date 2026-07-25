@@ -1,4 +1,4 @@
-{ config, lib, pkgs, unstable, ... }:
+{ config, lib, pkgs, stardust-xr, stardust-startup-script, ... }:
 
 ###! # WiVRn service management on TUPAC
 ###!
@@ -16,57 +16,31 @@
 ###! Client: META Quest 3
 ###! * OS: FreeXR pseudo-ROM
 ###! * Firmware: V76
-###!
-###! ## This setup kinda has a lot of issues:
-###! 1. Vaapi fails with <unknown vulkan error>
-###! 2. It is not possible to run group of encoders one using the iGPU and the other offloading on dGPU if the iGPU is running out of system resources for the processing as this is PRIME system that requires `nvidia-offload` to use the Nvidia dGPU which then blocks the iGPU from being used and without it the dGPU can't be used (results in not implemented error)
-###! 3. After few seconds of usse it starts to compression artifacts that progressively get worse until the stream crashes which in total takes 6 seconds max no matter what I try to do:
-###! 	* Connectiong even over WiFi 6E: On 200Mb/s BT it doesn't even lauch, on 50 Mb/s BT it's somewhat stable but fails after like 14 sec
-###!  * Super-speed USB-C: Fails nearly immediately
-###! 	* Disabling Hand Tracking: Can't tell if it's getting better
-###! 4. Using Stock OS on the client doesn't influence the result
 
-# FIXME(Krey): Remove hard-coded 200mbps max for bitrate
+# FIXME(Krey): When moving head around at moderate speed the view fails to render and shows passthrough
+# FIXME(Krey): AV1 codec not available? Fallsback to something..
+# FIXME(Krey): Major performance issues
 
 let
 	inherit (builtins) concatStringsSep;
 	inherit (lib) mkIf;
 	inherit (pkgs) runCommand;
 
-	# Wrap StardustXR as a session package for GDM
-		stardustXRSession = runCommand "stardust-xr-session" {
-			buildInputs = [ pkgs.stardust-xr-server ];
-			passthru = {
-				providedSessions = [ "stardust-xr-server" ]; # session name must match the .desktop filename (without extension)
-			};
+	# Script that launches StardustXR inside the WiVRn session
+	# StardustXR v0.51.0 (Bevy-based) provides a compositor with native hand tracking
+	# Rendering stays on the Intel iGPU (default) and WiVRn encodes on the iGPU via VAAPI;
+	# encoding on the NVIDIA dGPU (NVENC) causes frame drops after a few seconds because the
+	# dGPU goes idle and drops to P8, starving NVENC.
+		vrApp = runCommand "wivrn-app" {
+			buildInputs = [ stardust-xr stardust-startup-script ];
+			meta.mainProgram = "wivrn-app";
 		} (concatStringsSep "\n" [
-			"mkdir -p $out/share/wayland-sessions"
-			"cat > $out/share/wayland-sessions/stardust-xr-server.desktop <<EOF"
-				"[Desktop Entry]"
-				"Name=stardust-xr-server"
-				"Comment=Launch StardustXR"
-				"Exec=${pkgs.stardust-xr-server}/bin/stardust-xr-server"
-				"TryExec=${pkgs.stardust-xr-server}/bin/stardust-xr-server"
-				"Type=Application"
+			"mkdir -p $out/bin"
+			"cat > $out/bin/wivrn-app <<'EOF'"
+				"#!${pkgs.bash}/bin/bash"
+				"exec ${stardust-xr}/bin/stardust-xr-server --xr-only -e ${stardust-startup-script}/bin/startup_script \"$@\""
 			"EOF"
-		]);
-
-	# Wrap wlx-overlay-s as a session package for GDM
-		wlxOverlaySSession = runCommand "wlx-overlay-s-session" {
-			buildInputs = [ pkgs.wlx-overlay-s ];
-			passthru = {
-				providedSessions = [ "wlx-overlay-s" ]; # session name must match the .desktop filename (without extension)
-			};
-		} (concatStringsSep "\n" [
-			"mkdir -p $out/share/wayland-sessions"
-			"cat > $out/share/wayland-sessions/wlx-overlay-s.desktop <<EOF"
-				"[Desktop Entry]"
-				"Name=wlx-overlay-s"
-				"Comment=Launch wlx-overlay-s"
-				"Exec=${pkgs.wlx-overlay-s}/bin/wlx-overlay-s"
-				"TryExec=${pkgs.wlx-overlay-s}/bin/wlx-overlay-s"
-				"Type=Application"
-			"EOF"
+			"chmod +x $out/bin/wivrn-app"
 		]);
 in mkIf config.services.wivrn.enable {
 	# Required for discovery by the WiVRn client
@@ -78,10 +52,6 @@ in mkIf config.services.wivrn.enable {
 		};
 	};
 
-	programs.adb.enable = true; # Required for Wired WiVRn
-
-	services.wivrn.defaultRuntime = true; # Use Monado
-
 	# FIXME-SECURITY(Krey): Use Tunnel e.g. VPN
 	services.wivrn.openFirewall = true; # Open ports for Wivrn
 
@@ -89,72 +59,73 @@ in mkIf config.services.wivrn.enable {
 
 	services.wivrn.highPriority = true; # Set High Priority Scheduling
 
-	services.wivrn.autoStart = false; # Run on system startup
+	services.wivrn.autoStart = false; # Don't auto-start on system startup (launch manually)
 
-	services.wivrn.package = pkgs.wivrn.override { config.cudaSupport = true; }; # Include Nvidia Support for NVENC
+	services.wivrn.package = pkgs.wivrn.override { config.cudaSupport = true; }; # NVENC built-in but we encode on the Intel iGPU via VAAPI to avoid dGPU P8 drops
 
 	# Config for Monado (https://monado.freedesktop.org/getting-started.html#environment-variables)
 	services.wivrn.monadoEnvironment = {
-		IPC_EXIT_ON_DISCONNECT = toString false; # Exit the service whenever a client quits
-		WMR_HANDTRACKING = toString true; # Enable hand tracking
-		U_PACING_COMP_MIN_TIME_MS = toString 5;
+		IPC_EXIT_ON_DISCONNECT = "off"; # Don't exit the service when a client quits
+		WMR_HANDTRACKING = "1"; # Enable hand tracking
+		U_PACING_COMP_MIN_TIME_MS = "5"; # Address headset view stuttering on NixOS
 
-		# Enable the Nvidia dGPU
-			# NOTE(Krey): Those are needed for CUDA support to not fail as it runs on iGPU otherwise (PRIME)
-			__NV_PRIME_RENDER_OFFLOAD = toString true;
-			__NV_PRIME_RENDER_OFFLOAD_PROVIDER = "NVIDIA-G0";
-			__GLX_VENDOR_LIBRARY_NAME = "nvidia";
-			__VK_LAYER_NV_optimus = "NVIDIA_only";
+		XRT_COMPOSITOR_USE_PRESENT_WAIT = "1"; # Reduces Latency on NVIDIA
+		XRT_COMPOSITOR_COMPUTE = "1"; # Prevents stuttering if system dips below the maximum refresh rate
+		U_PACING_COMP_TIME_FRACTION_PERCENT = "90"; # Commonly paired with Nvidia setups to improve stability []
 
-		# For VAAPI
-			# LIBVA_DRIVER_NAME = "iHD";
+		# For VAAPI (Intel iGPU encode) — encoding on the iGPU is stable and avoids
+		# the dGPU P8 power-drop that starves NVENC after a few seconds
+		LIBVA_DRIVER_NAME = "iHD";
+		LIBVA_DRIVERS_PATH = "/run/opengl-driver/lib/dri";
 	};
 
 	# Config for WiVRn (https://github.com/WiVRn/WiVRn/blob/master/docs/configuration.md)
 	services.wivrn.config = {
 		enable = true;
 		json = {
-			# application = runCommand "stardustxr" (concatStringsSep "\n" [
-			# 	"${pkgs.stardust-xr-server}/bin/stardust-xr-server &"
-			# 	"${pkgs.stardust-xr-flatland}/bin/stardust-xr-flatland &"
-			# ]);
-			# scale = 0.5; # foveation scaling
-			# 50~100 Mb/s recommended for wireless, 200 Mb/s for wired, 200 Mb/s is hard coded max
-			bitrate = 1000000 * 10; # Mb/s
-			# FIXME(Krey): Try to use vaapi to offload the load on iGPU
-			encoders = [
-				{
-					# dGPU
-					encoder = "nvenc";
-					codec = "av1";
-					width = 1;
-					height = 1;
-					offset_x = 0;
-					offset_y = 0;
-					group = 0;
-				}
-				# { # iGPU
-				# 	encoder = "vaapi";
-				# 	device = "/dev/dri/renderD128";
-				# 	codec = "h264";
-				# 	width = 1;
-				# 	height = 1;
-				# 	offset_x = 0;
-				# 	offset_y = 0;
-				# 	# group = 1;
-				# }
-			];
+			# Launch StardustXR automatically when the Quest connects
+			# StardustXR provides a Wayland compositor with native hand tracking
+			application = vrApp;
+
+		# 50~100 Mb/s recommended for wireless, 200 Mb/s for wired, 200 Mb/s is hard coded max
+		bitrate = 50000000; # 50 Mb/s
+
+		# Encode on the Intel iGPU via VAAPI/QuickSync.
+		# Encoding on the NVIDIA dGPU (NVENC) causes frame drops after a few seconds
+		# because the dGPU goes idle and drops to P8, starving NVENC.
+		encoders = [
+			{
+				encoder = "vaapi";
+				codec = "h265";
+				device = "/dev/dri/renderD128"; # Intel iGPU render node
+			}
+		];
 		};
 	};
 
-	# GDM
-		services.displayManager.sessionPackages = [
-			stardustXRSession # Add StardustXR into GDM
-			wlxOverlaySSession # Add wlx-overlay-s into GDM
-		];
+	# Ananicy process scheduling — VR streaming is latency-critical, protected from OOM
+	services.ananicy.extraRules = [
+		{ name = "wivrn"; type = "Streaming-Server"; oom_score_adj = -900; }
+		{ name = "stardust-xr"; type = "Streaming-Server"; oom_score_adj = -900; }
+	];
 
 	# Need Git LFS for hand tracking data
 		programs.git.enable = true;
 			programs.git.lfs.enable = true;
 
+	# StardustXR writes its cursor model to /tmp/stardust_server/models/cursor.glb at startup.
+	# oxr_controller.rs does `fs::write(...).expect(...)` and PANICS if the dir is not writable.
+	# The dir can be left root-owned (mode 755) if StardustXR was ever launched as root
+	# (e.g. a stray root user-service), after which the kreyren-launched transient unit
+	# (wivrn-application-*) cannot write to it and the whole VR session crashes.
+	# HACK: pre-create the directory world-writable so the write never fails.
+	# FIXME-UPSTREAM: StardustXR should handle this write failure gracefully instead of panicking.
+	systemd.tmpfiles.rules = [
+		# Always enforce 0777 on these dirs (no `!`) so a stale root-owned dir
+		# from a previous root wivrn run gets its permissions corrected on next boot.
+		"d /tmp/stardust_server 0777 root root -"
+		"d /tmp/stardust_server/models 0777 root root -"
+		# Remove stale root-owned cursor.glb so kreyren's stardust can recreate it.
+		"R /tmp/stardust_server/models/cursor.glb - - - -"
+	];
 }

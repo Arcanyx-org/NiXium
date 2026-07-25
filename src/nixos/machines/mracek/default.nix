@@ -3,6 +3,11 @@
 # Flake management of MRACEK system
 
 {
+	# FIXME(Krey): Sub-optimal — _derivationName is used because alias resolution via
+	# derivation path comparison (nix eval + toplevel.outPath) fails when configs can't
+	# evaluate their toplevel (missing paths, broken modules, etc.)
+	flake.nixosConfigurations."nixos-mracek" = self.nixosConfigurations."nixos-mracek-stable" // { _derivationName = "nixos-mracek-stable"; };
+
 	flake.nixosModules."nixos-mracek" = {
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration

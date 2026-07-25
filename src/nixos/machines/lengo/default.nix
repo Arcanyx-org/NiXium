@@ -3,6 +3,11 @@
 # Flake management of LENGO system
 
 {
+	# FIXME(Krey): Sub-optimal — _derivationName is used because alias resolution via
+	# derivation path comparison (nix eval + toplevel.outPath) fails when configs can't
+	# evaluate their toplevel (missing paths, broken modules, etc.)
+	flake.nixosConfigurations."nixos-lengo" = self.nixosConfigurations."nixos-lengo-stable" // { _derivationName = "nixos-lengo-stable"; };
+
 	flake.nixosModules."nixos-lengo" = {
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration

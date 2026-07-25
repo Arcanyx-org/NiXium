@@ -3,6 +3,12 @@ let
 	inherit (self.lib) mkVM;
 in {
 	# Flake management of ENCHILADA system
+
+	# FIXME(Krey): Sub-optimal — _derivationName is used because alias resolution via
+	# derivation path comparison (nix eval + toplevel.outPath) fails when configs can't
+	# evaluate their toplevel (missing paths, broken modules, etc.)
+	flake.nixosConfigurations."nixos-enchilada" = self.nixosConfigurations."nixos-enchilada-stable" // { _derivationName = "nixos-enchilada-stable"; };
+
 	flake.nixosModules."nixos-enchilada" = {
 		imports = [
 			self.nixosModules.default # Load NiXium's Global configuration

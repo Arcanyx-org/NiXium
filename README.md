@@ -387,7 +387,7 @@ let
 	inherit (lib.trivial) release;
 in mkMerge [
 	{
-		"${optionalString (elem release [ "24.05" "24.11" "25.05" ]) release}" = { /* ... */ };
+		"${optionalString (elem release [ "24.05" "24.11" "25.05" "26.05" ]) release}" = { /* ... */ };
 		"25.11" = { /* ... */ };
   }."${release}" or (throw "Release is not implemented: ${release}")
 ]
