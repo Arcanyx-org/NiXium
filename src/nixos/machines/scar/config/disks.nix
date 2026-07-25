@@ -64,6 +64,7 @@ in mkMerge [
 		age.identityPaths = [ "/nix/persist/system/etc/ssh/ssh_host_ed25519_key" ]; # Change the identity path to use our disko path
 
 		fileSystems."/nix/persist/system".neededForBoot = true;
+		fileSystems."/nix".neededForBoot = true;
 
 		# FIXME(Krey): Figure out how to do labels
 		disko.devices = {
