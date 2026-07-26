@@ -16,8 +16,8 @@ in {
 	# FIXME-QA(Krey): Set to false by `/nixos/modules/services/networking/networkmanager.nix`, better management needed
 	networking.networkmanager = {
 		enable = mkForce true;
-		wifi.backend = "iwd";
-		dhcp = "internal";
+		# wifi.backend = "iwd";
+		# dhcp = "internal";
 	};
 
 	hardware.wirelessRegulatoryDatabase = true;
