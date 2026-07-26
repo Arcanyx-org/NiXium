@@ -64,7 +64,7 @@ in {
 				services.seatd.enable = true;
 				services.seatd.user = "kreyren";
 				# FIXME-QA(Krey): Commented out for deployment — OOM on target host
-				# programs.steam.enable = true;
+				programs.steam.enable = true;
 				programs.noisetorch.enable = true; # Microphone filtering
 				programs.nix-ld.enable = true;
 				# programs.appimage = {
