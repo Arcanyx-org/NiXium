@@ -22,7 +22,9 @@ in mkIf config.services.openssh.enable {
 	# Set the pubkey
 	environment.etc."ssh/ssh_host_ed25519_key.pub".text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC0VBKxpvraJTZ0eLHdUpzQM0c8Belq26/gqSpGJcQkD kreyren@scar";
 
-	services.openssh.hostKeys = mkForce []; # Do not generate SSH keys
+	services.openssh.hostKeys = mkForce []; # Do not generate SSH keys — deployed via age
+
+	systemd.services.sshd-keygen.enable = mkForce false; # hostKeys = [] creates empty ExecStart service; disable since keys deployed via age
 
 	users.users.root.openssh.authorizedKeys.keys = mkIf config.services.openssh.enable [
 		"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzh6FRxWUemwVeIDsr681fgJ2Q2qCnwJbvFe4xD15ve kreyren@fsfe.org" # Allow root access for the Super Administrator (KREYREN)

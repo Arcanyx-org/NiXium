@@ -102,8 +102,8 @@ in mkMerge [
 				"/var/lib/bluetooth"
 				"/var/lib/systemd/coredump"
 				"/etc/NetworkManager/system-connections"
-				{ directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "u=rwx,g=rx,o="; }
-				{ directory = "/var/lib/private"; user = "root"; group = "root"; mode = "u=rwx,g=,o="; }
+				{ directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "0750"; }
+				{ directory = "/var/lib/private"; user = "root"; group = "root"; mode = "0700"; }
 			] ++ lib.optional config.virtualisation.waydroid.enable "/var/lib/waydroid"
 				++ lib.optional config.services.fprintd.enable "/var/lib/fprint"
 				++ lib.optional config.services.ollama.enable "/var/lib/private/ollama";

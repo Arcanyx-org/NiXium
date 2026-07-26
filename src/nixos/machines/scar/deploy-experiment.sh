@@ -1,68 +1,77 @@
 #!/usr/bin/env bash
 
 # Scar Deployment Script — Boot live ISO, then run this from dev machine.
-# FIXME: User passwords (kreyren/kira/wifi) won't decrypt — scar-system missing from all-systems in secrets.nix
-
-set -ex
 
 targetIP="192.168.0.188"
-ageIdentity="/nix/persist/users/kreyren/.ssh/id_ed25519"
-nixiumDir="/nix/persist/NiXium"
-localToplevel="/nix/store/zna7i2b1gqqkn2f4jb1shi8lw2wp9ylr-nixos-system-scar-26.05.20260710.8f0500b"
+targetFlake="github:Arcanyx-org/NiXium/346aca0d592402651ad46c655fb7bebb7fa382d2#nixos-scar-stable"
 
-ssh_target() { ssh -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new root@$targetIP "$@"; }
+set -e # Exit on false return
 
-# LUKS + swap
-ssh_target "echo -n 000000 | cryptsetup luksOpen /dev/sda3 scar-store --key-file=-"
-ssh_target "echo -n 000000 | cryptsetup luksOpen /dev/sda2 scar-swap --key-file=-"
-ssh_target "mkswap /dev/mapper/scar-swap && swapon /dev/mapper/scar-swap"
+set -x # Debug
 
-# Mount
-ssh_target "mount -o subvolid=5 /dev/mapper/scar-store /mnt"
-ssh_target "mkdir -p /mnt/boot /mnt/nix /mnt/nix/persist/system /mnt/nix/persist/users"
-ssh_target "mount -o subvolid=256 /dev/mapper/scar-store /mnt/nix"
-ssh_target "mount -o subvolid=257 /dev/mapper/scar-store /mnt/nix/persist/system"
-ssh_target "mount -o subvolid=258 /dev/mapper/scar-store /mnt/nix/persist/users"
-ssh_target "mount /dev/sda1 /mnt/boot"
+# ssh "root@$targetIP" mkdir --verbose --parents  /run/agenix.d/1
 
-# Free RAM + tmpfs space
-ssh_target "mount -o remount,size=20G /nix/.rw-store || true"
-ssh_target "systemctl stop gdm 2>/dev/null; pkill -f gnome 2>/dev/null; true"
+# ssh "root@$targetIP" ln --verbose --symbolic /run/agenix.d/1 /run/agenix # Perform the symlink
 
-# sbctl keys (--disable-landlock required in live ISO)
-ssh_target "nix --extra-experimental-features 'flakes nix-command' run nixpkgs#sbctl -- --disable-landlock create-keys"
-ssh_target "mkdir -p /mnt/nix/persist/system/var/lib"
-ssh_target "cp -r /var/lib/sbctl /mnt/nix/persist/system/var/lib/sbctl"
-ssh_target "chmod -R 400 /mnt/nix/persist/system/var/lib/sbctl/keys/*"
-ssh_target "mkdir -p /mnt/var/lib/sbctl"
-ssh_target "cp -r /var/lib/sbctl/* /mnt/var/lib/sbctl/"
-ssh_target "chmod -R 400 /mnt/var/lib/sbctl/keys/*"
+# ssh "root@$targetIP" chown --verbose "root:root" "/run/agenix.d/1" # Ensure expected ownership
 
-# SSH host key
-ssh_target "mkdir -p /mnt/nix/persist/system/etc/ssh"
-age -i "$ageIdentity" -d "$nixiumDir/src/nixos/machines/scar/secrets/scar-ssh-ed25519-private.age" | ssh_target "cat > /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key"
-ssh_target "chmod 600 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key"
+# ssh "root@$targetIP" chmod --verbose 700 "/run/agenix.d/1" # Ensure expected permission
 
-# Copy pre-built closure
-nix copy --to "ssh://root@$targetIP" "$localToplevel"
+# ssh "root@$targetIP" 'echo 000000 > /run/agenix/scar-disks-password'
 
-# Install
-ssh_target "nixos-install --system $localToplevel --no-root-passwd"
+# ssh "root@$targetIP" 'cat > /etc/ssh/ssh_host_ed25519_key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/scar/secrets/scar-ssh-ed25519-private.age || true)
 
-# User access
-ssh_target "mkdir -p /mnt/root/.ssh"
-ssh_target "cat $ageIdentity.pub > /mnt/root/.ssh/authorized_keys"
-ssh_target "chmod 700 /mnt/root/.ssh && chmod 600 /mnt/root/.ssh/authorized_keys"
-ssh_target "mkdir -p /mnt/nix/persist/users/kreyren/.ssh"
-cat /nix/persist/users/kreyren/.ssh/id_ed25519 | ssh_target "cat > /mnt/nix/persist/users/kreyren/.ssh/id_ed25519"
-cat /nix/persist/users/kreyren/.ssh/id_ed25519.pub | ssh_target "cat > /mnt/nix/persist/users/kreyren/.ssh/id_ed25519.pub"
-ssh_target "chmod 600 /mnt/nix/persist/users/kreyren/.ssh/id_ed25519 && chmod 644 /mnt/nix/persist/users/kreyren/.ssh/id_ed25519.pub"
-ssh_target "chown -R 1000:users /mnt/nix/persist/users/kreyren"
+# ssh "root@$targetIP" 'cat > /key' < <(age -i ~/.ssh/id_ed25519 -d ./src/nixos/machines/scar/secrets/scar-unlock-key.age || true)
 
-# Reboot + enroll Secure Boot keys
-ssh_target "reboot"
-sleep 60
-ssh_target "nix run nixpkgs#sbctl -- --disable-landlock enroll-keys --microsoft || true"
-ssh_target "reboot"
+# ssh "root@$targetIP" 'dd if=/key of=/dev/disk/by-id/mmc-NCard_0x23904944 conv=sync status=progress'
 
-echo "Done"
+# ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' run github:nix-community/disko/bb8b1838a7a9142a05f5e368c8f5811158834513#disko -- --mode destroy,format,mount --yes-wipe-all-disks --root-mountpoint /mnt --debug --flake $targetFlake"
+
+ssh "root@$targetIP" "swapon /dev/mapper/swap"
+
+ssh "root@$targetIP" 'mount -v -o remount,size=20G,noatime /nix/.rw-store'
+ssh "root@$targetIP" 'mount -v -o remount,size=10G,noatime /'
+
+ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' run nixpkgs#sbctl -- create-keys"
+
+ssh "root@$targetIP" 'mkdir -v -p /mnt/nix/persist/system/var/lib/'
+
+ssh "root@$targetIP" 'cp -v -r /var/lib/sbctl /mnt/nix/persist/system/var/lib/sbctl'
+
+ssh "root@$targetIP" 'mkdir -v -p /mnt/var/lib/sbctl'
+
+ssh "root@$targetIP" 'cp -v -r /var/lib/sbctl/* /mnt/var/lib/sbctl'
+
+ssh "root@$targetIP" 'mkdir -v -p /mnt/nix/persist/system/etc/ssh'
+
+ssh "root@$targetIP" 'cp -v /etc/ssh/ssh_host_ed25519_key /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key'
+
+ssh "root@$targetIP" 'chmod --verbose 400 /mnt/nix/persist/system/etc/ssh/ssh_host_ed25519_key' # Ensure correct permission
+
+# nix copy --to ssh://root@$targetIP "$(nix build 'git+file:///nix/persist/NiXium#nixosConfigurations."nixos-scar-stable".config.system.build.toplevel' --print-out-paths || true)"
+
+# FIXME(Krey): This takes the longest ~20 min as the build has to re-build itself on the remote
+ssh "root@$targetIP" "nix --extra-experimental-features 'flakes nix-command' shell nixpkgs#nixos-install-tools --command nixos-install --verbose --root /mnt --flake $targetFlake"
+
+ssh "root@$targetIP" 'mkdir -v -p /mnt/nix/persist/users/kreyren/.ssh'
+
+# ssh "root@$targetIP" 'cat > /mnt/nix/persist/users/kreyren/.ssh/id_ed25519' < <(cat /home/kreyren/.ssh/id_ed25519 || true)
+
+# ssh "root@$targetIP" 'chmod -v 400 /mnt/nix/persist/users/kreyren/.ssh/id_ed25519'
+
+ssh "root@$targetIP" 'chown -v -R 1000:users /mnt/nix/persist/users/kreyren'
+
+ssh "root@$targetIP" reboot
+
+while [ "$(ssh "root@$targetIP" echo "booted" || true)" != "booted" ]; do
+	sleep 5
+done
+
+# FIXME(Krey): Change known hosts
+
+# Has to be done after the system boots for the first time on a boot derivation that is signed
+ssh "root@$targetIP" 'nix run nixpkgs#sbctl -- enroll-keys --microsoft'
+
+ssh "root@$targetIP" reboot
+
+echo "NiXium Experimental Installer Finished!"

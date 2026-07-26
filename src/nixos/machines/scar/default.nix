@@ -29,14 +29,13 @@
 			self.nixosModules.users-kreyren
 			# self.homeManagerModules."kreyren@scar"
 			self.nixosModules.users-kira
-			# self.homeManagerModules."kira@scar"
+			self.homeManagerModules."kira@scar"
 
 			# Files
 			./config/autoUpgrade.nix
 			./config/bootloader.nix
 			./config/disks.nix
 			./config/firmware.nix
-			./config/hardware-acceleration.nix
 			./config/hardware.nix
 			./config/initrd.nix
 			./config/input.nix

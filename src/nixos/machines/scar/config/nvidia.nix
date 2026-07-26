@@ -12,9 +12,11 @@ in {
 		hardware.nvidia = {
 			modesetting.enable = true;
 
-			powerManagement.finegrained = false;
+			powerManagement.finegrained = true;
 
-			open = true;
+			# GTX 1060 (GP106, Pascal) does NOT support the open kernel module
+			# (requires Turing/RTX 20 series or newer). Must use proprietary.
+			open = false;
 
 			nvidiaSettings = true;
 
@@ -27,6 +29,7 @@ in {
 				offload.enableOffloadCmd = true;
 			};
 
+			# nvidiaPackages.stable on 24.11 (545.x) supports GTX 1060 natively
 			package = config.boot.kernelPackages.nvidiaPackages.stable;
 		};
 
@@ -51,7 +54,9 @@ in {
 				offload.enableOffloadCmd = true;
 			};
 
-			package = config.boot.kernelPackages.nvidiaPackages.production;
+			# GTX 1060 (GP106) requires legacy 580.xx driver
+			# The production branch (595.xx) ignores this GPU
+			package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
 		};
 
 		services.xserver.videoDrivers = [ "nvidia" ];

@@ -77,7 +77,7 @@ in {
 			"/nix/var/nix/profiles/per-user" # Profiles
 		];
 		files = [
-			{ file = "/etc/nix/id_rsa"; parentDirectory = { mode = "u=rwx,g=rx,o=rx"; }; }
+			{ file = "/etc/nix/id_rsa"; parentDirectory = { mode = "0755"; }; }
 		];
 	};
 }

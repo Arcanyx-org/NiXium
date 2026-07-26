@@ -52,7 +52,7 @@ let
 	in {
 	options.hardware.thermal.targetTemp = mkOption {
 		type = lib.types.int;
-		default = 80;
+		default = 75;
 		description = ''
 			Maximum CPU package temperature in degrees Celsius under sustained load.
 			The intel_pstate max_perf_pct is derived empirically from stress testing

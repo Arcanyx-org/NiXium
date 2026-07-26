@@ -762,3 +762,54 @@ Telescope's `flake.nix` references them with `git+file:///` paths and `inputs.ni
 ### crane `inputs.nixpkgs.follows` Warning
 
 The warning `input 'telescope/<package>/crane' has an override for a non-existent input 'nixpkgs'` is harmless — latest crane removed its `nixpkgs` input (commit `6f7504ad`). The `follows` is silently ignored.
+
+---
+
+## Hardware-Specific Fixes: Common Patterns
+
+### sshd-keygen Service Failure
+
+**Problem:** Setting `services.openssh.hostKeys = mkForce []` (for agenix-managed keys) creates a systemd unit with no `ExecStart` because NixOS's ssh-keygen module iterates the (empty) hostKeys list. systemd logs: `Service has no ExecStart=, ExecStop=, or SuccessAction=. Refusing.`
+
+**Fix:** Always pair `hostKeys = mkForce []` with:
+```nix
+systemd.services.sshd-keygen.enable = mkForce false;
+```
+
+Reference: `src/nixos/machines/sinnenfreude/services/openssh.nix` has this fix. `scar` and `tupac` originally didn't.
+
+### NVIDIA GTX 1060 Legacy Driver
+
+The GTX 1060 (GP106 Pascal) is NOT supported by the `production` (595.xx) or `stable` NVIDIA driver branches. dmesg shows:
+```
+NVRM: supported through the NVIDIA 580.xx Legacy drivers
+NVRM: The 595.71.05 NVIDIA driver will ignore this GPU
+```
+
+**Fix:** Use `nvidiaPackages.legacy_580` for the nvidia package. Available branches in nixpkgs (verified): `legacy_340`, `legacy_390`, `legacy_470`, `legacy_535`, `legacy_580`.
+
+**Hardware verification:** Always verify actual GPU hardware via `lspci | grep VGA` before setting nvidia config — the README may describe different hardware.
+
+### Tmpfiles Symbolic Mode Regression
+
+systemd 260.2 (NixOS 26.05) rejects some symbolic mode formats in tmpfiles.d that worked in earlier versions. Specifically, trailing empty groups like `u=rwx,g=rx,o=` fail with `Invalid mode`.
+
+**Fix:** Use octal notation exclusively in tmpfiles modes: `0750` instead of `u=rwx,g=rx,o=`, `0700` instead of `u=rwx,g=,o=`.
+
+### SMT Disabling for CPU Vulnerabilities
+
+The option `security.allowSimultaneousMultithreading` defaults to `true` (SMT allowed). When set to `mkForce false`, NixOS adds `nosmt` to kernel cmdline.
+
+**Note:** `tupac` and `scar` both had `mkForce true` with a comment saying "Disable SMT" — the comment and value were contradictory. The value `true` **enables** SMT, `false` disables it.
+
+### kira User: Remove from wheel
+
+The `kira` user in `src/nixos/users/users/kira/kira.nix` had `"wheel"` in `extraGroups` granting sudo access. Remove `"wheel"` from the list to revoke admin privileges while keeping other groups (docker, dialout).
+
+### rp_filter: `all` vs Per-Interface
+
+The kernel uses `max(all, iface)` for `rp_filter`. Setting `net.ipv4.conf.all.rp_filter = 0` does NOT disable per-interface settings (each interface = 2 means loose mode is active). Verify by checking individual interfaces, not just `all`.
+
+### martian_logging
+
+Enable with `boot.kernel.sysctl."net.ipv4.conf.all.log_martians" = 1` to log packets dropped by reverse-path filter (spoofing detection). Off by default.

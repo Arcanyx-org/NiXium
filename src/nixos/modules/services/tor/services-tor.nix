@@ -26,13 +26,13 @@ in mkIf config.services.tor.enable {
 					directory = "${config.services.tor.settings.DataDirectory}";
 					user = "tor";
 					group = "tor";
-					mode = "u=rwx,g=rx,o=";
+					mode = "0750";
 				}
 				{
 					directory = "${config.services.tor.settings.DataDirectory}/onion_auth";
 					user = "tor";
 					group = "tor";
-					mode = "u=rwx,g=rx,o=";
+					mode = "0750";
 				}
 			];
 			files = [

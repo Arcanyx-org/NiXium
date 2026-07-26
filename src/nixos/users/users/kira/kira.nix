@@ -12,10 +12,8 @@ in {
 		isNormalUser = true;
 		hashedPasswordFile = config.age.secrets.kira-user-password.path;
 		extraGroups = [
-			"wheel"
 			(mkIf config.virtualisation.docker.enable "docker")
 			"dialout" # To Access e.g. /dev/ttyUSB0 for USB debuggers
-			"disk"
 		] ++ lib.optional (versionOlder release "26.05" && config.programs.adb.enable) "adbusers";
 		openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDWzJOwfuNEniLzxeQJxa9Ys+zna4U0SVh7dw1VYN3A" ];
 	};

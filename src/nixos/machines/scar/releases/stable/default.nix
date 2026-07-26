@@ -165,6 +165,11 @@ in {
 
 				system.autoUpgrade.enable = true;
 
+				security.apparmor.enable = true;
+
+				# Log martian (spoofed) packets dropped by reverse-path filter
+				boot.kernel.sysctl."net.ipv4.conf.all.log_martians" = 1;
+
 				security.sudo.enable = false;
 				security.sudo-rs.enable = true;
 
