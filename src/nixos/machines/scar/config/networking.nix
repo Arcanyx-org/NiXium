@@ -17,6 +17,7 @@ in {
 	networking.networkmanager = {
 		enable = mkForce true;
 		wifi.backend = "iwd";
+		dhcp = "internal";
 	};
 
 	hardware.wirelessRegulatoryDatabase = true;

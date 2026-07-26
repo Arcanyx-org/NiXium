@@ -119,7 +119,7 @@ in {
 		unstable.hydralauncher
 		# unstable.nexusmods-app — discontinued upstream, marked insecure
 		pkgs.flashrom
-		(pkgs.alpaca.override { ollama = pkgs.ollama-cuda; })
+		# (pkgs.alpaca.override { ollama = pkgs.ollama-cuda; })
 		(pkgs.geary.overrideAttrs (super: {
 			nativeBuildInputs = super.nativeBuildInputs ++ [ pkgs.torsocks ];
 			postInstall = (super.postInstall or "") + ''

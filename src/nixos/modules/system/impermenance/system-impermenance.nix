@@ -32,13 +32,25 @@ in mkMerge [
 					"d /nix/persist/users/${username} 0755 ${toString uid} ${gid}"
 				) userNames;
 
-				# Nix per-user profile dir
-				nixProfileRules = map (username: let
-					user = config.users.users.${username};
-					uid = user.uid;
-				in
-					"d /nix/var/nix/profiles/per-user/${username} 0755 ${toString uid} users"
-				) userNames;
+			# Nix per-user profile dir
+			nixProfileRules = map (username: let
+				user = config.users.users.${username};
+				uid = user.uid;
+			in
+				"d /nix/var/nix/profiles/per-user/${username} 0755 ${toString uid} users"
+			) userNames;
+
+			# Home state dirs — tmpfs roots need correct ownership for
+			# home-manager activation (gcroots, profile symlinks, dconf)
+			homeStateRules = map (username: let
+				user = config.users.users.${username};
+				uid = user.uid;
+				gid = if user.group != null then user.group else "users";
+			in [
+				"d /home/${username}/.local/state/home-manager/gcroots 0755 ${toString uid} ${gid} -"
+				"d /home/${username}/.local/state/nix/profiles 0755 ${toString uid} ${gid} -"
+				"d /home/${username}/.config/dconf 0755 ${toString uid} ${gid} -"
+			]) userNames;
 
 				# Generate tmpfiles rules so persistence SOURCE paths exist
 				# before systemd mount units run.
@@ -90,6 +102,7 @@ in mkMerge [
 			in
 				persistDirRules
 				++ nixProfileRules
+				++ flatten homeStateRules
 				++ flatten systemAllStores
 				++ hmStores;
 
