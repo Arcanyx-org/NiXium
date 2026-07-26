@@ -12,6 +12,7 @@ in {
 	];
 
 	imports = [
+		./prompts
 		./system
 		./user-interface
 		./vpn
