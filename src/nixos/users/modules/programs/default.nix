@@ -5,9 +5,11 @@ let
 in {
 	flake.homeManagerModules.programs.imports = [
 		homeManagerModules.programs-appimage
+		homeManagerModules.programs-steam
 	];
 
 	imports = [
 		./appimage
+		./steam
 	];
 }

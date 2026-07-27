@@ -1,4 +1,4 @@
-{ lib, config, nixosConfig, ... }:
+{ lib, config, ... }:
 
 let
 	inherit (lib) mkIf;

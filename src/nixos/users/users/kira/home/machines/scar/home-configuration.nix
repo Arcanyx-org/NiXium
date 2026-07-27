@@ -146,6 +146,10 @@ in {
 	];
 
 	dconf.settings = {
+		# Disable DWP, because it makes gaming with touchpad pretty annoying
+		"org/gnome/desktop/peripherals/touchpad" = {
+			disable-while-typing = false;
+		};
 		"org/gnome/settings-daemon/plugins/power" = {
 			power-button-action = "hibernate";
 			sleep-inactive-ac-timeout = 2*60*60;

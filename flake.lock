@@ -1384,11 +1384,11 @@
     },
     "impermanence": {
       "locked": {
-        "lastModified": 1783807938,
-        "narHash": "sha256-ZEN9l7gNXQ1EqW8l+/zN3ajSJF7A+m9CP9hiJP8XBCs=",
+        "lastModified": 1785184129,
+        "narHash": "sha256-iku2hz5BbFr4vMbGY1KQi88H6LHJ0HkjWC1ztjpDJ4U=",
         "owner": "Arcanyx-org",
         "repo": "impermanence",
-        "rev": "0be3485faf43a2a49cf4f599a36607294c17601d",
+        "rev": "5f193d92cd2062ae823fb67ea48ccbd31016df89",
         "type": "github"
       },
       "original": {

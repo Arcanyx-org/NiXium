@@ -813,3 +813,58 @@ The kernel uses `max(all, iface)` for `rp_filter`. Setting `net.ipv4.conf.all.rp
 ### martian_logging
 
 Enable with `boot.kernel.sysctl."net.ipv4.conf.all.log_martians" = 1` to log packets dropped by reverse-path filter (spoofing detection). Off by default.
+
+---
+
+## Steam Auth Persistence for Auto-Login
+
+### Minimal File Set
+
+To survive a reboot (tmpfs root) and retain Steam auto-login, persist these 4 items from the same consistent session:
+
+| Path | Why |
+|------|-----|
+| `~/.steam/steam.token` | Client auth token (generated per session, rotates) |
+| `~/.local/share/Steam/config/loginusers.vdf` | User list with `AutoLogin=1`, `RememberPassword=1` flags |
+| `~/.local/share/Steam/config/config.vdf` | CMWebSocket connection state (auto-login fails without it) |
+| `~/.local/share/Steam/userdata/<accountID>/config/localconfig.vdf` | Contains `SharedAuth.AuthData` (password-derived credential) |
+
+`~/.steam/registry.vdf` is **optional** — it only stores language/Settings and is not required for auto-login.
+
+### Key Findings
+
+1. **`steam.token` rotates** — Steam changes it on every session (or during login). The persisted copy will be one session behind, but auto-login still works because Steam accepts the previous token.
+2. **`AuthData` is persistent** — The `SharedAuth.AuthData` value in `localconfig.vdf` does NOT change between sessions. It's derived from the password and remains valid across token rotations.
+3. **All files must be from a consistent state** — If `steam.token` and `AuthData` are from different sessions, auto-login fails (shows user selection screen with password prompt). Capturing a backup immediately after login ensures consistency.
+4. **Without `config.vdf`** — Steam shows "Logging in..." briefly, then falls back to user selection and asks for password. CMWebSocket data in `config.vdf` is required for the client to reach the auth servers.
+5. **No SSFN files** — Modern Steam (1.0.0.85+) on Linux does NOT use SSFN files at all. The auth mechanism is entirely `SharedAuth.AuthData` in `localconfig.vdf` + `steam.token` as client identifier.
+
+### Impermanence Setup
+
+Use `files` for individual files and `directories` for the userdata config dir:
+
+```nix
+home.persistence."/nix/persist/users/<user>" = {
+  files = [
+    ".steam/steam.token"
+    ".local/share/Steam/config/loginusers.vdf"
+    ".local/share/Steam/config/config.vdf"
+  ];
+  directories = [
+    ".local/share/Steam/userdata/<accountID>/config"
+  ];
+};
+```
+
+The `<accountID>` is `steamID64 - 76561197960265728`. For user kira (steamID `76561198304212039`), it's `343946311`.
+
+### Test Procedure
+
+To verify auto-login works after impermanence restore:
+
+1. Log into Steam manually (one-time setup)
+2. Back up all 4 items from the current session
+3. Kill Steam: `pkill -9 -f bwrap.*steam` (must kill the bubblewrap container)
+4. Restore the 4 items from backup
+5. Start Steam — should auto-login without password prompt
+6. Kill and restart again (without re-restoring) — should still auto-login

@@ -4,6 +4,7 @@ let
 	inherit (config.flake) homeManagerModules;
 in {
 	flake.homeManagerModules.modules-kira.imports = [
+		homeManagerModules.program-kira
 		homeManagerModules.prompts-kira
 		homeManagerModules.system-kira
 		homeManagerModules.ui-kira
@@ -12,6 +13,7 @@ in {
 	];
 
 	imports = [
+		./program
 		./prompts
 		./system
 		./user-interface
