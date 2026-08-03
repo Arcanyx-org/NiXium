@@ -74,6 +74,13 @@ in {
 
 	# Task to perform installation of TUPAC in NixOS distribution, unstable release
 	perSystem = { system, pkgs, inputs', self', ... }: {
+		# VM for testing tupac-unstable configuration
+		packages.nixos-tupac-unstable-vm = self.nixosConfigurations.nixos-tupac-unstable.config.system.build.vmWithDisko;
+		apps.nixos-tupac-unstable-vm = {
+			type = "app";
+			program = "${self.nixosConfigurations.nixos-tupac-unstable.config.system.build.vmWithDisko}/bin/disko-vm";
+		};
+
 		packages.nixos-tupac-unstable-install = pkgs.writeShellApplication {
 				name = "nixos-tupac-unstable-install";
 				bashOptions = [

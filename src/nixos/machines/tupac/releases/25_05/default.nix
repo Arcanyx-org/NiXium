@@ -220,8 +220,15 @@ in {
 		};
 	};
 
-	# Task to perform installation of TUPAC in NixOS distribution, stable release
+	# Task to perform installation of TUPAC in NixOS distribution, 25_05 release
 	perSystem = { system, pkgs, inputs', self', ... }: {
+		# VM for testing tupac-25_05 configuration
+		packages.nixos-tupac-25_05-vm = self.nixosConfigurations.nixos-tupac-25_05.config.system.build.vmWithDisko;
+		apps.nixos-tupac-25_05-vm = {
+			type = "app";
+			program = "${self.nixosConfigurations.nixos-tupac-25_05.config.system.build.vmWithDisko}/bin/disko-vm";
+		};
+
 		packages.nixos-tupac-stable-install = pkgs.writeShellApplication {
 				name = "nixos-tupac-stable-install";
 				bashOptions = [

@@ -1,8 +1,43 @@
+###! SPDX-License-Identifier: EUPL-latest
+###!
+###! This file is part of the Arcanyx project.
+###!
+###! Copyright (C) 2026 - The European Union <cnect-joinup@ec.europa.eu>
+###! Copyright (C) 2026 - Kreyren <kreyren@fsfe.org>
+###!
+###! This Work is licensed under the European Union Public Licence (EUPL),
+###! always under the latest published version.
+###!
+###! The Free Software and Hardware Movement rests on one idea: technology
+###! should respect your freedom.  Free is not a matter of price but of
+###! liberty, spelled out in four freedoms:
+###!
+###!   - the freedom to use the technology however you like,
+###!   - the freedom to study how it works by examining its source and design,
+###!   - the freedom to modify it to serve your needs,
+###!   - the freedom to share your version with others.
+###!
+###! Freedom does not stop at software.  This Work is intended for systems
+###! whose firmware, hardware designs, and fabrication files carry the same
+###! four freedoms, and contain no proprietary blobs.
+###!
+###! To learn more about the Free Software and Hardware, see <https://fsfe.org>.
+###!
+###! The EUPL is the legal framework by the European Union that grants you
+###! these rights: it is issued under the authority of the European Union
+###! and enforced in accordance with its provisions on jurisdiction and
+###! applicable law (Articles 14 and 15 of the EUPL).
+###!
+###! You should have received a copy of the European Union Public Licence
+###! along with this Work.  If not, see <https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12>.
+###!
+###! ------------------------------------------------------------------------------
+###!
 ###! # NiXium VM Library — Shared VM building utilities
 ###!
 ###! SUMMARY: mkVM — single-function interface for building NixOS test VMs with
 ###! Wayland/Xorg/CLI display, exit-code propagation, GPU passthrough, 3-mode
-###! disk strategy, and per-module persistent storage.  Internal helpers
+###! disk strategy, DHCP networking, and per-module persistent storage.  Internal helpers
 ###! (mkVmSystem, mkVmRunner, mkWaylandKioskModule, mkCliAutologinModule,
 ###! mkXorgKioskModule) are not part of the public API.
 ###!
@@ -33,12 +68,12 @@
 ###! mkVM is the ONLY public function.  It returns a record with two building
 ###! blocks — the call site decides what to expose:
 ###!
-###!   let vm = mkVM { inherit pkgs system; name = "editors-vim-kreyren"; ... }; in
+###!   let vm = mkVM { inherit pkgs system; name = "editors-vim-kreyren-vm"; ... }; in
 ###!   {
-###!     packages."nixos-vm-editors-vim-kreyren" = vm.vm;
-###!     apps."nixos-vm-editors-vim-kreyren" = {
+###!     packages."nixos-editors-vim-kreyren-vm" = vm.vm;
+###!     apps."nixos-editors-vim-kreyren-vm" = {
 ###!       type = "app";
-###!       program = "${vm.runner}/bin/nixos-vm-editors-vim-kreyren";
+###!       program = "${vm.runner}/bin/nixos-editors-vim-kreyren-vm";
 ###!     };
 ###!   }
 ###!
@@ -65,9 +100,9 @@
 ###!
 ###! name (required)
 ###!   String used in the runner binary name and disk image filename.
-###!   Example: "editors-vim-kreyren"
-###!   Produces runner: nixos-vm-editors-vim-kreyren
-###!   Produces disk:   ${modulePath}/editors-vim-kreyren.qcow2
+###!   Example: "editors-vim-kreyren-vm"
+###!   Produces runner: nixos-editors-vim-kreyren-vm
+###!   Produces disk:   ${modulePath}/editors-vim-kreyren-vm.qcow2
 ###!   NOTE: The call site chooses the packages/apps/checks key names, not mkVM.
 ###!
 ###! command (required)
@@ -311,6 +346,34 @@
 ###! cores ? 2
 ###! diskSize ? 1024 * 5    (5GB)
 ###!
+###! ### Networking
+###!
+###! networking ? false
+###!   Enable the guest's ethernet interface (eth0) via DHCP.  The qemu-vm
+###!   module always attaches a virtio NIC with SLiRP user-mode networking;
+###!   this flag makes the guest explicitly configure DHCP on eth0 so it
+###!   receives 10.0.2.15 (gateway 10.0.2.2, DNS 10.0.2.3) and has outbound
+###!   internet access.
+###!
+###!   The guest is configured like a regular NixOS system: the firewall
+###!   remains enabled (NiXium default) and ports are opened declaratively
+###!   the standard way, e.g.:
+###!
+###!     systemConfig = {
+###!       networking.firewall.allowedTCPPorts = [ 8080 ];
+###!     };
+###!
+###!   DESIGN DECISION: boolean flag, not an attrset.
+###!   Rationale: outbound internet via SLiRP is the common need for test VMs.
+###!   No firewall or port-forwarding behavior is imposed by mkVM — opening
+###!   ports and other networking policy stays with callers using ordinary
+###!   NixOS options, so the guest behaves like a standard NixOS system.
+###!   Keeping this a simple on/off switch avoids a false abstraction.
+###!
+###!   When false (default), mkVM does NOT touch guest networking — callers
+###!   rely on NixOS defaults or configure networking themselves via
+###!   `systemConfig`.  Existing call sites are unchanged.
+###!
 ###! ### Advanced
 ###!
 ###! extraSpecialArgs ? {}
@@ -370,7 +433,7 @@
 ###!   6. The runner exits with HOST_EXIT
 ###!
 ###! This enables automated testing:
-###!   nix run .#nixos-vm-editors-vim-kreyren
+###!   nix run .#nixos-editors-vim-kreyren-vm
 ###!   echo $?  # Returns the vim command's exit code
 ###!
 ###! The isa-debug-exit device is always included in QEMU options regardless
@@ -390,7 +453,7 @@
 ###! binary based on the system parameter.  No hardcoding needed.
 ###!
 ###! For external users, Nix's standard mechanism handles architecture:
-###!   nix run github:Arcanyx-org/NiXium#packages.aarch64-linux.nixos-vm-...
+###!   nix run github:Arcanyx-org/NiXium#packages.aarch64-linux.nixos-...-vm
 ###!
 ###! ## ERROR MESSAGES
 ###!
@@ -427,17 +490,17 @@
 ###!   { perSystem = { system, pkgs, ... }:
 ###!       let vm = mkVM {
 ###!         inherit pkgs system;
-###!         name = "editors-vim-kreyren";
+###!         name = "editors-vim-kreyren-vm";
 ###!         command = "vim";
 ###!         modulePath = "$FLAKE_ROOT/src/nixos/.../vim";
 ###!         graphical = "wayland";
 ###!         homeManagerModules = [ self.homeManagerModules.editors-vim-kreyren ];
 ###!         homeManagerConfig = { programs.vim.enable = true; };
 ###!       }; in {
-###!         packages."nixos-vm-editors-vim-kreyren" = vm.vm;
-###!         apps."nixos-vm-editors-vim-kreyren" = {
+###!         packages."nixos-editors-vim-kreyren-vm" = vm.vm;
+###!         apps."nixos-editors-vim-kreyren-vm" = {
 ###!           type = "app";
-###!           program = "${vm.runner}/bin/nixos-vm-editors-vim-kreyren";
+###!           program = "${vm.runner}/bin/nixos-editors-vim-kreyren-vm";
 ###!         };
 ###!       };
 ###!   }
@@ -447,7 +510,7 @@
 ###!   { perSystem = { system, pkgs, ... }:
 ###!       let vm = mkVM {
 ###!         inherit pkgs system;
-###!         name = "editors-vim-kreyren-test";
+###!         name = "editors-vim-kreyren-test-vm";
 ###!         command = "vim -c checkhealth -c qa!";
 ###!         modulePath = "$FLAKE_ROOT/src/nixos/.../vim";
 ###!         graphical = null;
@@ -458,9 +521,9 @@
 ###!       }; in {
 ###!         # The runner is a writeShellApplication — building it runs shellcheck.
 ###!         # Use as an app for `nix run` (which actually executes the VM):
-###!         apps."nixos-vm-editors-vim-kreyren-test" = {
+###!         apps."nixos-editors-vim-kreyren-test-vm" = {
 ###!           type = "app";
-###!           program = "${vm.runner}/bin/nixos-vm-editors-vim-kreyren-test";
+###!           program = "${vm.runner}/bin/nixos-editors-vim-kreyren-test-vm";
 ###!         };
 ###!         # Use as a check for `nix flake check` (builds the derivation, runs shellcheck):
 ###!         checks."editors-vim-kreyren" = vm.runner;
@@ -472,7 +535,7 @@
 ###!   { perSystem = { system, pkgs, ... }:
 ###!       let vm = mkVM {
 ###!         inherit pkgs system;
-###!         name = "editors-vim-kreyren-dev";
+###!         name = "editors-vim-kreyren-dev-vm";
 ###!         command = "vim";
 ###!         modulePath = "$FLAKE_ROOT/src/nixos/.../vim";
 ###!         graphical = "wayland";
@@ -481,9 +544,9 @@
 ###!         homeManagerModules = [ self.homeManagerModules.editors-vim-kreyren ];
 ###!         homeManagerConfig = { programs.vim.enable = true; };
 ###!       }; in {
-###!         apps."nixos-vm-editors-vim-kreyren-dev" = {
+###!         apps."nixos-editors-vim-kreyren-dev-vm" = {
 ###!           type = "app";
-###!           program = "${vm.runner}/bin/nixos-vm-editors-vim-kreyren-dev";
+###!           program = "${vm.runner}/bin/nixos-editors-vim-kreyren-dev-vm";
 ###!         };
 ###!       };
 ###!   }
@@ -493,7 +556,7 @@
 ###!   { perSystem = { system, pkgs, ... }:
 ###!       let vm = mkVM {
 ###!         inherit pkgs system;
-###!         name = "skyrim-modpack";
+###!         name = "skyrim-modpack-vm";
 ###!         command = "...";
 ###!         modulePath = "$FLAKE_ROOT/src/nixos/.../skyrim";
 ###!         graphical = "wayland";
@@ -505,10 +568,10 @@
 ###!           networking.firewall.allowedTCPPorts = [ 47989 47990 48010 ];
 ###!         };
 ###!       }; in {
-###!         packages."nixos-vm-skyrim-modpack" = vm.vm;
-###!         apps."nixos-vm-skyrim-modpack" = {
+###!         packages."nixos-skyrim-modpack-vm" = vm.vm;
+###!         apps."nixos-skyrim-modpack-vm" = {
 ###!           type = "app";
-###!           program = "${vm.runner}/bin/nixos-vm-skyrim-modpack";
+###!           program = "${vm.runner}/bin/nixos-skyrim-modpack-vm";
 ###!         };
 ###!       };
 ###!   }
@@ -518,14 +581,14 @@
 ###!   { perSystem = { system, pkgs, ... }:
 ###!       let vm = mkVM {
 ###!         inherit pkgs system;
-###!         name = "quest3-debug";
+###!         name = "quest3-debug-vm";
 ###!         command = "bash";
 ###!         modulePath = "$FLAKE_ROOT/src/nixos/.../quest3";
 ###!         graphical = null;
 ###!         exitMode = "shell";
 ###!         timeout = null;
 ###!       }; in {
-###!         packages."nixos-vm-quest3-debug" = vm.vm;
+###!         packages."nixos-quest3-debug-vm" = vm.vm;
 ###!       };
 ###!   }
 ###!
@@ -534,7 +597,7 @@
 ###!   { perSystem = { system, pkgs, ... }:
 ###!       let vm = mkVM {
 ###!         inherit pkgs system;
-###!         name = "quest3-debug";
+###!         name = "quest3-debug-vm";
 ###!         command = "bash";
 ###!         modulePath = "$FLAKE_ROOT/src/nixos/.../quest3";
 ###!         graphical = null;
@@ -546,10 +609,10 @@
 ###!           "-machine accel=kvm:tcg"
 ###!         ];
 ###!       }; in {
-###!         packages."nixos-vm-quest3-debug" = vm.vm;
-###!         apps."nixos-vm-quest3-debug" = {
+###!         packages."nixos-quest3-debug-vm" = vm.vm;
+###!         apps."nixos-quest3-debug-vm" = {
 ###!           type = "app";
-###!           program = "${vm.runner}/bin/nixos-vm-quest3-debug";
+###!           program = "${vm.runner}/bin/nixos-quest3-debug-vm";
 ###!         };
 ###!       };
 ###!   }
@@ -652,11 +715,12 @@
 ###!   users.users.Tester.password = "000000"
 ###!   users.users.Tester.extraGroups = [ "video" "wheel" ]
 ###!   home-manager.users.Tester.home.stateVersion = "25.11"
+###!   networking = false
 
 { lib, inputs, self, ... }:
 
 let
-	inherit (lib) mkDefault mkForce mkMerge concatStringsSep;
+	inherit (lib) mkDefault mkForce mkIf mkMerge concatStringsSep;
 
 	# -------------------------------------------------------------------------
 	# mkWaylandKioskModule
@@ -835,6 +899,7 @@ let
 	#   system, pkgs (already resolved — never null),
 	#   user, userConfig, homeManagerModules, homeManagerConfig,
 	#   systemConfig, extraModules, extraSpecialArgs,
+	#   networking,
 	#   displayModule  — pre-built display NixOS module (from one of the mk*KioskModule helpers)
 	#   memorySize, cores, diskSize
 	#
@@ -850,6 +915,7 @@ let
 		systemConfig,
 		extraModules,
 		extraSpecialArgs,
+		networking,
 		displayModule,
 		memorySize,
 		cores,
@@ -935,6 +1001,11 @@ let
 						diskSize = mkDefault diskSize;
 					};
 
+					# Guest ethernet via DHCP (SLiRP user-mode NIC is always present)
+					networking = mkIf networking {
+						interfaces.eth0.useDHCP = mkDefault true;
+					};
+
 					# FIXME-UPSTREAM(Krey): HM doesn't recognise 26.05 yet; use last stable.
 					system.stateVersion = mkDefault "25.11";
 				}
@@ -991,7 +1062,7 @@ let
 			extraQemuOpts = concatStringsSep " " ([ isaDebugExitFlag ] ++ extraQemuOptions);
 		in
 			pkgs.writeShellApplication {
-				name = "nixos-vm-${name}";
+				name = "nixos-${name}";
 				runtimeInputs = with pkgs; [ coreutils pciutils util-linux qemu ];
 				bashOptions = [ "errexit" "nounset" "pipefail" "posix" ];
 
@@ -1069,6 +1140,9 @@ let
 		cores ? 2,
 		diskSize ? 1024 * 5,
 
+		# Networking
+		networking ? false,
+
 		# Advanced
 		extraSpecialArgs ? {},
 	}:
@@ -1101,7 +1175,8 @@ let
 				pkgs = resolvedPkgs;
 				inherit system user userConfig
 					homeManagerModules homeManagerConfig systemConfig extraModules
-					extraSpecialArgs displayModule memorySize cores diskSize;
+					extraSpecialArgs displayModule memorySize cores diskSize
+					networking;
 			};
 
 			# Build the runner script

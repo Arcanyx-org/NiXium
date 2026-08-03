@@ -275,6 +275,31 @@ When writing automated checks that run VMs or execute tests:
 
 3. **Make timeout configurable** - Define as let variable at top of check block so it's easy to adjust.
 
+### `config = mkMerge` Wrapper for Import-Bearing Modules
+
+When a flake-parts module has a top-level `imports` key, that key **cannot** be nested inside `mkMerge`. Attempting to do so produces `The option 'imports' does not exist` at eval.
+
+**Fix:** Keep `imports = [...]` at the top level of the module, and wrap everything else in `config = mkMerge [...]`:
+
+```nix
+{ lib, self, ... }:
+let
+  inherit (lib) mkMerge;
+  inherit (self.lib) mkVM;
+in {
+  imports = [
+    ./themes                 # ← stays at top level, NOT inside mkMerge
+  ];
+
+  config = mkMerge [
+    { flake.homeManagerModules.ui-gnome-kreyren.imports = [ ... ]; }
+    { perSystem = { ... }; }
+  ];
+}
+```
+
+Modules with empty/commented `imports` can drop the top-level `imports` entirely and use the `config = mkMerge [...]` form directly (no `imports = [ # comments ]` needed).
+
 ---
 
 ## Release-Specific Configuration
@@ -351,6 +376,26 @@ Do NOT use `virtualisation.vmVariant.fileSystems` or `virtualisation.vmVariant.v
 
 **Do not** use `mkOverride 140` on fileSystems (replaces entire attrset, losing root fs). Use `mkDefault "none"` on individual entries — NixOS merges submodule attrs correctly.
 
+### `parentDirectory.dirPath` Type — `path` → `str`
+
+In the vendored impermanence fork's `submodule-options.nix`, the `parentDirectory.dirPath` option uses `type = path` which rejects relative paths. When `stripHomePrefix = true`, `dirPath` is set to a relative path (directory name without home prefix), causing a type error at eval:
+
+```
+error: option `...parentDirectory.dirPath' is not of type `absolute path'
+```
+
+**Fix:** Change to `type = str` in `dirOpts`, matching `sourcePath` which already uses `str` for the same reason.
+
+**Location:** `submodule-options.nix:190-193`:
+```nix
+dirPath = mkOption {
+    type = str;  # was `path`
+    internal = true;
+};
+```
+
+**Why this is correct:** `dirPath` is internal and only used for duplicate detection, path generation, and warnings — none of which require the Nix `path` type's strict absolute-path guarantee. `str` accepts both relative and absolute.
+
 ### Vendored HM `stripHomePrefix` Feature
 
 The vendored impermanence at `vendor/impermanence/` has a custom `stripHomePrefix` option (upstream has none).
@@ -369,6 +414,20 @@ home.persistence."/nix/persist/users/kreyren" = {
   directories = [ "Desktop" "Documents" ];
 };
 ```
+
+### stripHomePrefix Parent Dir Ownership Bug (Fixed)
+
+**Problem:** With `stripHomePrefix = true`, the persistent **parent** directories of a store (e.g. `psp/.local`, `psp/.local/share/Steam`) were left **root-owned** even after reboot. Users could not create subdirs under their own persistent tree (e.g. Steam's `userdata/`).
+
+**Two-part root cause & fix (both in vendored fork, commits `104aa0f` and `7b07ee1`):**
+
+1. **`create-directories.bash` only chowned dirs at creation.** Existing dirs (created as root by `mount-file.bash` `mkdir -p` on a prior boot) never got fixed. Fix: add an `else` branch that runs `chown`/`chmod` on existing `realSource` too.
+
+2. **`mkParent` in `nixos.nix` dropped `sourcePath`/`stripHomePrefix`.** Parents of a stripHomePrefix dir resolved to `psp/home/user/<parent>` instead of `psp/<parent>`, so the real persistent parents were never touched. Fix: compute `sourcePath` in `mkParent` respecting `stripHomePrefix` (relative path when stripped), and inherit `stripHomePrefix` (with `or false` default since synthetic `homeDirs`/`persistentStorageDirs` don't define it). Also `parentDirectory` entries in `submodule-options.nix` now carry `stripHomePrefix` so file parents inherit it too.
+
+**Note on `inherit (expr) x;`:** `inherit (dir.stripHomePrefix or false) stripHomePrefix;` is INVALID — `inherit (expr)` requires an attrset. Use `stripHomePrefix = dir.stripHomePrefix or false;` instead.
+
+**Verification:** The activation `persistence-run-create-directories` output must contain entries like `... .local/share/Steam kira users 0755 ...` (relative path, correct owner). Running `/nix/store/*-persistence-run-create-directories` manually should chown all persistent dirs under `psp` to the owning user.
 
 ### Release-Gating Pattern for VSCode/VSCodium
 
@@ -476,6 +535,18 @@ d /nix/persist/users/kreyren/.ssh 0755 kreyren - -
 ```
 
 **Avoid:** Don't rely on activation scripts to create persistence dirs — they run too late. Don't use `mkOverride` on fileSystems or virtualisation.fileSystems to fix this (fragile).
+
+### VM Caveat: `boot.impermanence.enable = mkForce false`
+
+In VMs, `src/nixos/lib/mkVM/lib-mkVM.nix` forces `boot.impermanence.enable = mkForce false` (line 918). This gates **all** persistence mount generation (both system and HM user stores) — the vendored NixOS impermanence module generates mounts inside `mkIf config.boot.impermanence.enable`.
+
+**Consequence:** When writing VM tests for modules that declare `home.persistence` (gated on `home.impermanence.enable`), the **persistence does evaluate** but produces no mount units, no tmpfiles rules, and no create-directories scripts. This is intentional — ephemeral test VMs don't need real persistence.
+
+**Verification in VMs:** To verify that a persistence declaration is active:
+1. Check the gating predicate (e.g., `programs.steam.enable`) by confirming the relevant packages are in the system closure via `nix-store -qR <system-toplevel>`
+2. Persistence-specific assertions (user systemd mount units, tmpfiles rules, `persist/users/` references) will be absent by design — don't treat this as a failure.
+
+**Search tip:** Don't grep for `persist/users/<name>` in the VM closure and expect matches — the HM generation (`home-manager-files`, `activate`, etc.) won't contain persistence entries since the NixOS-level mount generator is disabled.
 
 ---
 
@@ -856,7 +927,7 @@ home.persistence."/nix/persist/users/<user>" = {
 };
 ```
 
-The `<accountID>` is `steamID64 - 76561197960265728`. For user kira (steamID `76561198304212039`), it's `343946311`.
+The `<accountID>` is `steamID64 - 76561197960265728` (the 32-bit account ID from Steam's URL/userdata directory).
 
 ### Test Procedure
 

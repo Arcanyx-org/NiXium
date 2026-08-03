@@ -1,9 +1,10 @@
 { config, lib, ... }:
 
+# Talyz Management and Coding Style Mitigation Module
+
 let
-	inherit (builtins) attrNames attrValues dirOf;
-	inherit (lib) mkIf mkMerge filterAttrs mapAttrsToList flatten
-		hasPrefix filter;
+	inherit (builtins) attrNames listToAttrs attrValues dirOf;
+	inherit (lib) mkIf mkDefault mkMerge mapAttrsToList flatten optional hasPrefix filter isString versions version optionals;
 in mkMerge [
 
 	# Default age identity for VM builds to satisfy ragenix assertion
@@ -52,52 +53,64 @@ in mkMerge [
 				"d /home/${username}/.config/dconf 0755 ${toString uid} ${gid} -"
 			]) userNames;
 
-				# Generate tmpfiles rules so persistence SOURCE paths exist
-				# before systemd mount units run.
-				mkWhat = psp: sourcePath:
-					if hasPrefix "/" sourcePath
-					then "${psp}${sourcePath}"
-					else "${psp}/${sourcePath}";
+		# Generate tmpfiles rules so persistence SOURCE paths exist
+			# before systemd mount units run.
+			mkWhat = psp: sourcePath:
+				if hasPrefix "/" sourcePath
+				then "${psp}${sourcePath}"
+				else "${psp}/${sourcePath}";
 
-				nullToDash = v: if v != null then v else "-";
+			nullToDash = v: if v != null then v else "-";
 
-				mkDirRule = psp: entry: let
-					what = mkWhat psp entry.sourcePath;
-					u = nullToDash (entry.user or null);
-					g = nullToDash (entry.group or null);
-					m = nullToDash (entry.mode or null);
-				in "d ${what} ${m} ${u} ${g} -";
+			mkDirRule = psp: entry: let
+				what = mkWhat psp entry.sourcePath;
+				u = nullToDash (entry.user or null);
+				g = nullToDash (entry.group or null);
+				m = nullToDash (entry.mode or null);
+			in "d ${what} ${m} ${u} ${g} -";
 
-				mkFileParentRule = psp: entry: let
-					what = mkWhat psp entry.sourcePath;
-					parentDir = dirOf what;
-					pd = entry.parentDirectory or {};
-					u = nullToDash (pd.user or null);
-					g = nullToDash (pd.group or null);
-					m = nullToDash (pd.mode or null);
-				in "d ${parentDir} ${m} ${u} ${g} -";
+			mkFileParentRule = psp: entry: let
+				what = mkWhat psp entry.sourcePath;
+				parentDir = dirOf what;
+				pd = entry.parentDirectory or {};
+				u = nullToDash (pd.user or null);
+				g = nullToDash (pd.group or null);
+				m = nullToDash (pd.mode or null);
+			in "d ${parentDir} ${m} ${u} ${g} -";
 
-				mkStoreRules = psp: store:
-					(map (mkDirRule psp) (store.directories or []))
-					++ (map (mkFileParentRule psp) (store.files or []));
+			# Create empty files in persistent storage so bind mounts are
+			# used instead of symlinks. Atomic writes (write-temp-rename)
+			# replace symlinks with regular files, losing persistence.
+			# Only applied to HM (user) stores — system files (SSH keys,
+			# machine-id) have their own creation mechanisms and wrong
+			# permissions break them.
+			mkFileRule = username: psp: entry: let
+				what = mkWhat psp entry.sourcePath;
+			in "f ${what} 0644 ${username} - -";
 
-				# System stores
-				systemStores = filter (s: s.enable or true)
-					(attrValues (config.environment.persistence or {}));
+			mkStoreRules = psp: store: storeUser:
+				(map (mkDirRule psp) (store.directories or []))
+				++ (map (mkFileParentRule psp) (store.files or []))
+				++ optionals (storeUser != null)
+					(map (entry: mkFileRule storeUser psp entry) (store.files or []));
 
-				systemAllStores = flatten (map (store:
-					let psp = store.persistentStoragePath; in
-					[ (mkStoreRules psp store) ]
-					++ (map (userStore: mkStoreRules psp userStore)
-						(attrValues (store.users or {})))
-				) systemStores);
+			# System stores
+			systemStores = filter (s: s.enable or true)
+				(attrValues (config.environment.persistence or {}));
 
-				# HM user persistence SOURCE stores
-				hmStores = flatten (mapAttrsToList (_: hm:
-					map (hmStore:
-						mkStoreRules hmStore.persistentStoragePath hmStore
-					) (attrValues (hm.home.persistence or {}))
-				) (config.home-manager.users or {}));
+			systemAllStores = flatten (map (store:
+				let psp = store.persistentStoragePath; in
+				[ (mkStoreRules psp store null) ]
+				++ (map (userStore: mkStoreRules psp userStore (userStore.user or null))
+					(attrValues (store.users or {})))
+			) systemStores);
+
+			# HM user persistence SOURCE stores
+			hmStores = flatten (mapAttrsToList (username: hm:
+				map (hmStore:
+					mkStoreRules hmStore.persistentStoragePath hmStore username
+				) (attrValues (hm.home.persistence or {}))
+			) (config.home-manager.users or {}));
 
 			in
 				persistDirRules
@@ -117,9 +130,9 @@ in mkMerge [
 				"/etc/NetworkManager/system-connections"
 				{ directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "0750"; }
 				{ directory = "/var/lib/private"; user = "root"; group = "root"; mode = "0700"; }
-			] ++ lib.optional config.virtualisation.waydroid.enable "/var/lib/waydroid"
-				++ lib.optional config.services.fprintd.enable "/var/lib/fprint"
-				++ lib.optional config.services.ollama.enable "/var/lib/private/ollama";
+			] ++ optional config.virtualisation.waydroid.enable "/var/lib/waydroid"
+				++ optional config.services.fprintd.enable "/var/lib/fprint"
+				++ optional config.services.ollama.enable "/var/lib/private/ollama";
 			files = [
 				"/etc/machine-id"
 				"/var/lib/systemd/random-seed"
@@ -136,22 +149,22 @@ in mkMerge [
 	# paths, but NixOS also needs fileSystems entries so the fstab and
 	# systemd-fstab-generator produce correct initrd mount units. Without this,
 	# the fstab gets device="none" which makes systemd-initrd fail to bind-mount.
-	fileSystems = lib.mkMerge [
-		(lib.mkIf (config.environment.persistence ? "/nix/persist/system") (
+	fileSystems = mkMerge [
+		(mkIf (config.environment.persistence ? "/nix/persist/system") (
 			let
 				psp = config.environment.persistence."/nix/persist/system".persistentStoragePath;
-			in builtins.listToAttrs (map (dir:
+			in listToAttrs (map (dir:
 				let
-					name = if lib.isString dir then dir else dir.directory;
-					sourcePath = if lib.isString dir then dir else (dir.sourcePath or dir.directory);
+					name = if isString dir then dir else dir.directory;
+					sourcePath = if isString dir then dir else (dir.sourcePath or dir.directory);
 					device = "${psp}${sourcePath}";
 				in {
 					inherit name;
 					value = {
 						inherit device;
-						fsType = lib.mkDefault "none";
+						fsType = mkDefault "none";
 						options = [ "bind" ];
-						neededForBoot = lib.mkDefault true;
+						neededForBoot = mkDefault true;
 					};
 				}
 			) (config.environment.persistence."/nix/persist/system".directories or []))
@@ -165,6 +178,6 @@ in mkMerge [
 
 		programs.fuse.userAllowOther = true;
 
-		system.stateVersion = lib.versions.majorMinor lib.version;
+		system.stateVersion = versions.majorMinor version;
 	})
 ]

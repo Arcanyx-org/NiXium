@@ -15,7 +15,7 @@
 ###! - nvim: The editor being tested
 ###!
 ###! Usage:
-###!   nix run .#nixos-vm-editors-nvim-kreyren
+###!   nix run .#nixos-home-editors-nvim-kreyren-vm
 
 let
 	inherit (lib) mkMerge;
@@ -30,7 +30,7 @@ in mkMerge [
 			let
 				vm = mkVM {
 					inherit pkgs system;
-					name = "editors-nvim-kreyren";
+					name = "home-editors-nvim-kreyren-vm";
 					command = "nvim";
 					modulePath = "$FLAKE_ROOT/src/nixos/users/users/kreyren/home/modules/editors/nvim";
 					graphical = "wayland";
@@ -40,10 +40,10 @@ in mkMerge [
 					userConfig = { description = "Kreyren"; };
 				};
 			in {
-				packages."nixos-vm-editors-nvim-kreyren" = vm.vm;
-				apps."nixos-vm-editors-nvim-kreyren" = {
+				packages."nixos-home-editors-nvim-kreyren-vm" = vm.vm;
+				apps."nixos-home-editors-nvim-kreyren-vm" = {
 					type = "app";
-					program = "${vm.runner}/bin/nixos-vm-editors-nvim-kreyren";
+					program = "${vm.runner}/bin/nixos-home-editors-nvim-kreyren-vm";
 				};
 			};
 	}

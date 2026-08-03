@@ -15,7 +15,7 @@
 ###! - vim: The editor being tested
 ###!
 ###! Usage:
-###!   nix run .#nixos-vm-editors-vim-kreyren
+###!   nix run .#nixos-home-editors-vim-kreyren-vm
 ###!
 ###! The VM will boot directly into vim via: greetd -> cage -> foot -e vim
 
@@ -32,7 +32,7 @@ in mkMerge [
 			let
 				vm = mkVM {
 					inherit pkgs system;
-					name = "editors-vim-kreyren";
+					name = "home-editors-vim-kreyren-vm";
 					command = "vim";
 					modulePath = "$FLAKE_ROOT/src/nixos/users/users/kreyren/home/modules/editors/vim";
 					graphical = "wayland";
@@ -42,10 +42,10 @@ in mkMerge [
 					userConfig = { description = "Kreyren"; };
 				};
 			in {
-				packages."nixos-vm-editors-vim-kreyren" = vm.vm;
-				apps."nixos-vm-editors-vim-kreyren" = {
+				packages."nixos-home-editors-vim-kreyren-vm" = vm.vm;
+				apps."nixos-home-editors-vim-kreyren-vm" = {
 					type = "app";
-					program = "${vm.runner}/bin/nixos-vm-editors-vim-kreyren";
+					program = "${vm.runner}/bin/nixos-home-editors-vim-kreyren-vm";
 				};
 			};
 	}

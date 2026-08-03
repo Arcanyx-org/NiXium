@@ -48,7 +48,7 @@ in {
 			vm = mkVM {
 				inherit pkgs;
 				system = "aarch64-linux";
-				name = "enchilada-debug";
+				name = "enchilada-debug-vm";
 				command = "bash";
 				modulePath = "$FLAKE_ROOT/src/nixos/machines/enchilada";
 				graphical = null;
@@ -61,10 +61,10 @@ in {
 				];
 			};
 		in {
-			packages."nixos-vm-enchilada-debug" = vm.vm;
-			apps."nixos-vm-enchilada-debug" = {
+			packages."nixos-enchilada-debug-vm" = vm.vm;
+			apps."nixos-enchilada-debug-vm" = {
 				type = "app";
-				program = "${vm.runner}/bin/nixos-vm-enchilada-debug";
+				program = "${vm.runner}/bin/nixos-enchilada-debug-vm";
 			};
 		};
 }

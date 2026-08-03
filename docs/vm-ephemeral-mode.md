@@ -2,7 +2,7 @@
 
 ## Overview
 
-NiXium VMs support an ephemeral mode for external runs (e.g., `nix run github:Arcanyx-org/NiXium#nixos-vm-test`) that avoids creating persistent disk overlay files on the user's system.
+NiXium VMs support an ephemeral mode for external runs (e.g., `nix run github:Arcanyx-org/NiXium#nixos-test-vm`) that avoids creating persistent disk overlay files on the user's system.
 
 ## How It Works
 
@@ -57,7 +57,7 @@ The VM runner uses a 4-tier priority system:
 ### Tier 1: User Override (Highest Priority)
 ```bash
 export NIX_DISK_IMAGE="/custom/path.qcow2"
-nix run .#nixos-vm-test
+nix run .#nixos-test-vm
 # Uses /custom/path.qcow2, persistent mode (no snapshot)
 ```
 
@@ -66,8 +66,8 @@ nix run .#nixos-vm-test
 ### Tier 2: Development Mode
 ```bash
 # Inside NiXium repository with FLAKE_ROOT set
-nix run .#nixos-vm-test
-# Uses $FLAKE_ROOT/nixos-vm-test.qcow2, persistent mode
+nix run .#nixos-test-vm
+# Uses $FLAKE_ROOT/nixos-test-vm.qcow2, persistent mode
 ```
 
 **Behavior:** Disk stored in repository root, changes persist across runs (for development/testing).
@@ -75,8 +75,8 @@ nix run .#nixos-vm-test
 ### Tier 3: Cached Base Disk
 ```bash
 # External run with pre-created cache
-~/.cache/nixium/vm-bases/nixos-vm-base-8G.qcow2 exists
-nix run github:Arcanyx-org/NiXium#nixos-vm-test
+~/.cache/nixium/vm-bases/nixos-base-8G-vm.qcow2 exists
+nix run github:Arcanyx-org/NiXium#nixos-test-vm
 # Uses cached base with snapshot mode (ephemeral)
 ```
 
@@ -89,14 +89,14 @@ temp=$(mktemp)
 qemu-img create -f raw "$temp" 8G
 mkfs.ext4 -L nixos "$temp" -q -F
 qemu-img convert -f raw -O qcow2 "$temp" \
-    ~/.cache/nixium/vm-bases/nixos-vm-base-8G.qcow2
+    ~/.cache/nixium/vm-bases/nixos-base-8G-vm.qcow2
 rm "$temp"
 ```
 
 ### Tier 4: Ephemeral Base Disk (Fallback)
 ```bash
 # External run, no cache
-nix run github:Arcanyx-org/NiXium#nixos-vm-test
+nix run github:Arcanyx-org/NiXium#nixos-test-vm
 # Creates /var/tmp/nixium-vm-<PID>-<RANDOM>.qcow2 on first run
 # Uses snapshot mode (ephemeral)
 ```
@@ -131,7 +131,7 @@ When running VMs externally, users should be informed:
 
 > **VM Disk Storage:**
 > 
-> When running NiXium VMs externally (e.g., `nix run github:Arcanyx-org/NiXium#nixos-vm-test`), 
+> When running NiXium VMs externally (e.g., `nix run github:Arcanyx-org/NiXium#nixos-test-vm`), 
 > a small base disk (~7.7MB) is created in `/var/tmp/nixium-vm-*.qcow2` for better performance.
 > 
 > **This base disk is reusable across runs and does not grow.** All VM changes are written to 
@@ -172,7 +172,7 @@ Current /var/tmp usage: <show df output>
 #!/usr/bin/env bash
 set -e
 
-VM_NAME="nixos-vm-example"
+VM_NAME="nixos-example-vm"
 VM_PATH="/nix/store/...-nixos-vm"
 FLAKE_ROOT="${FLAKE_ROOT:-}"
 
@@ -186,7 +186,7 @@ elif [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT" ]; then
 # Tier 3 & 4: External mode
 else
 	CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/nixium/vm-bases"
-	BASE_DISK="$CACHE_DIR/nixos-vm-base-8G.qcow2"
+	BASE_DISK="$CACHE_DIR/nixos-base-8G-vm.qcow2"
 	
 	if [ ! -f "$BASE_DISK" ]; then
 		# Tier 4: Create ephemeral base
@@ -229,11 +229,11 @@ unset FLAKE_ROOT
 unset NIX_DISK_IMAGE
 
 # Get base disk md5
-BASE=/var/tmp/nixos-vm-test-*.qcow2
+BASE=/var/tmp/nixos-test-vm-*.qcow2
 md5sum $BASE
 
 # Run VM
-nix run github:Arcanyx-org/NiXium#nixos-vm-test -- -nographic
+nix run github:Arcanyx-org/NiXium#nixos-test-vm -- -nographic
 
 # Verify base unchanged
 md5sum $BASE  # Should match

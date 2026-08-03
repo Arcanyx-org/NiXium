@@ -62,6 +62,10 @@ in {
 		kira kreyren tupac-system
 	];
 
+	"./users/users/kira/home/secrets/kira-steam-accountid.age".publicKeys = [
+		kira kreyren scar-system
+	];
+
 	# FLEXY (system)
 	"./machines/flexy/secrets/flexy-disks-password.age".publicKeys = [
 		kreyren flexy-system

@@ -36,17 +36,17 @@ in mkMerge [
 		perSystem = { system, pkgs, ... }:
 			let vm = mkVM {
 				inherit pkgs system;
-				name = "my-app-test";
+				name = "my-app-test-vm";
 				command = "my-app";
 				modulePath = "$FLAKE_ROOT/src/nixos/.../my-app";
 				graphical = "wayland";
 				homeManagerModules = [ self.homeManagerModules.my-app ];
 				homeManagerConfig = { programs.my-app.enable = true; };
 			}; in {
-				packages."nixos-vm-my-app-test" = vm.vm;
-				apps."nixos-vm-my-app-test" = {
+				packages."nixos-my-app-test-vm" = vm.vm;
+				apps."nixos-my-app-test-vm" = {
 					type = "app";
-					program = "${vm.runner}/bin/nixos-vm-my-app-test";
+					program = "${vm.runner}/bin/nixos-my-app-test-vm";
 				};
 			};
 	}
@@ -72,10 +72,10 @@ in mkMerge [
 				graphical = null;
 			};
 		in {
-			packages.x86_64-linux."nixos-vm-my-external-vm" = vm.vm;
-			apps.x86_64-linux."nixos-vm-my-external-vm" = {
+			packages.x86_64-linux."nixos-my-external-vm" = vm.vm;
+			apps.x86_64-linux."nixos-my-external-vm" = {
 				type = "app";
-				program = "${vm.runner}/bin/nixos-vm-my-external-vm";
+				program = "${vm.runner}/bin/nixos-my-external-vm";
 			};
 		};
 }
@@ -88,31 +88,31 @@ The call site chooses what to expose — no forced outputs, no bloat:
 ```nix
 # Package only — hand VM image to upstream for reproduction
 let vm = mkVM { ... }; in {
-	packages."nixos-vm-quest3-debug" = vm.vm;
+	packages."nixos-quest3-debug-vm" = vm.vm;
 }
 
 # App only — interactive development
-let vm = mkVM { name = "quest3-dev"; exitMode = "shell"; timeout = null; ... }; in {
-	apps."nixos-vm-quest3-dev" = {
+let vm = mkVM { name = "quest3-dev-vm"; exitMode = "shell"; timeout = null; ... }; in {
+	apps."nixos-quest3-dev-vm" = {
 		type = "app";
-		program = "${vm.runner}/bin/nixos-vm-quest3-dev";
+		program = "${vm.runner}/bin/nixos-quest3-dev-vm";
 	};
 }
 
 # Check only — automated CI test
-let vm = mkVM { name = "editors-vim-test"; exitMode = "propagate"; timeout = 60; ... }; in {
+let vm = mkVM { name = "editors-vim-test-vm"; exitMode = "propagate"; timeout = 60; ... }; in {
 	checks."editors-vim-kreyren" = pkgs.runCommand "check-editors-vim-kreyren" {} ''
-		timeout 60 ${vm.runner}/bin/nixos-vm-editors-vim-test
+		timeout 60 ${vm.runner}/bin/nixos-editors-vim-test-vm
 		touch $out
 	'';
 }
 
 # All three from one mkVM call
 let vm = mkVM { ... }; in {
-	packages."nixos-vm-my-app" = vm.vm;
-	apps."nixos-vm-my-app" = {
+	packages."nixos-my-app-vm" = vm.vm;
+	apps."nixos-my-app-vm" = {
 		type = "app";
-		program = "${vm.runner}/bin/nixos-vm-my-app";
+		program = "${vm.runner}/bin/nixos-my-app-vm";
 	};
 }
 ```
@@ -121,9 +121,9 @@ let vm = mkVM { ... }; in {
 
 ```nix
 :lf .
-vm = lib.mkVM { pkgs = null; system = "x86_64-linux"; name = "repl-test"; command = "echo hello"; modulePath = "$FLAKE_ROOT/test"; graphical = null; exitMode = "propagate"; timeout = 60; }
+vm = lib.mkVM { pkgs = null; system = "x86_64-linux"; name = "repl-test-vm"; command = "echo hello"; modulePath = "$FLAKE_ROOT/test"; graphical = null; exitMode = "propagate"; timeout = 60; }
 vm.vm       # «derivation ...-nixos-vm.drv»
-vm.runner    # «derivation ...-nixos-vm-repl-test.drv»
+vm.runner    # «derivation ...-nixos-repl-test-vm.drv»
 :b vm.vm    # build the VM image
 :b vm.runner # build the runner
 ```
@@ -134,13 +134,14 @@ vm.runner    # «derivation ...-nixos-vm-repl-test.drv»
 |-----------|----------|---------|-------------|
 | `pkgs` | No | `null` (vanilla nixpkgs) | Package set for the guest system |
 | `system` | Yes | — | Host system architecture |
-| `name` | Yes | — | VM name (runner binary name, disk image filename) |
+| `name` | Yes | — | VM name (runner binary name, disk image filename). Convention: `<module-key>-vm` for NixOS modules, `home-<module-key>-vm` for home-manager modules — producing `nixos-<name>` runners |
 | `command` | Yes | — | Command to run in the VM |
 | `modulePath` | Yes | — | Path for dev-mode disk storage |
 | `graphical` | No | `null` | `null`/`"machine"`/`"wayland"`/`"xorg"` |
 | `exitMode` | No | `"propagate"` | `"propagate"`/`"poweroff"`/`"shell"` |
 | `timeout` | No | `300` | Seconds before VM kill (null to disable) |
 | `gpuPassthrough` | No | `null` | `null`/`"auto"`/PCI address |
+| `networking` | No | `false` | Enable DHCP ethernet (eth0) in the guest |
 
 ## pkgs Override Examples
 
@@ -172,6 +173,26 @@ mkVM {
 - **`"wayland"`** — Wayland kiosk. greetd → cage → foot → command.
 - **`"xorg"`** — X11 kiosk. xinit → xterm -e command.
 
+## Networking
+
+Set `networking = true` to give the guest outbound internet. The qemu-vm NIC
+(eth0, SLiRP user-mode NAT) is always present; this flag enables DHCP so the
+guest gets `10.0.2.15` (gateway `10.0.2.2`, DNS `10.0.2.3`). The guest behaves
+like a regular NixOS system — the firewall stays enabled and ports are opened
+the standard way:
+
+```nix
+mkVM {
+	networking = true;
+	systemConfig = {
+		networking.firewall.allowedTCPPorts = [ 8080 ];
+	};
+	...
+}
+```
+
+No firewall or port-forwarding behavior is imposed by mkVM.
+
 ## Disk Strategy (3 modes)
 
 1. **Dev mode** (`$FLAKE_ROOT` is valid): Persistent disk next to module
@@ -183,7 +204,7 @@ mkVM {
 When `exitMode = "propagate"` (default), the VM forwards the command's exit code to the host via isa-debug-exit:
 
 ```bash
-nix run .#nixos-vm-my-app
+nix run .#nixos-my-app-vm
 echo $?  # Returns the command's exit code
 ```
 

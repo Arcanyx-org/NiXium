@@ -106,6 +106,13 @@ in {
 				text = builtins.readFile ./tupac-nixos-master-install.sh;
 			};
 
+		# VM for testing tupac-master configuration
+		packages.nixos-tupac-master-vm = self.nixosConfigurations.nixos-tupac-master.config.system.build.vmWithDisko;
+		apps.nixos-tupac-master-vm = {
+			type = "app";
+			program = "${self.nixosConfigurations.nixos-tupac-master.config.system.build.vmWithDisko}/bin/disko-vm";
+		};
+
 		# Declare for `nix run`
 		apps.nixos-tupac-master-install.program = self'.packages.nixos-tupac-master-install;
 

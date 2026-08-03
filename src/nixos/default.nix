@@ -16,7 +16,6 @@ in {
 
 				nixosModules.overlays
 
-				nixosModules.apps
 				nixosModules.programs
 				nixosModules.security
 				nixosModules.services

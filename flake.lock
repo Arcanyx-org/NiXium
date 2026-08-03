@@ -1217,19 +1217,20 @@
     "hm": {
       "inputs": {
         "nixpkgs": [
-          "nixpkgs-unstable"
+          "nixpkgs-26_05"
         ]
       },
       "locked": {
-        "lastModified": 1783800036,
-        "narHash": "sha256-jncDHDD8REkePWvQmfH+ScPHxLL8LN4Hd/KjCdlLgD0=",
+        "lastModified": 1785119570,
+        "narHash": "sha256-Rgs2xKnGLFWQscxUaXX07oyZeuMDOHEbqDOsgliLFGM=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "0992a2948749a61d54065e96df26d75d1b1da50f",
+        "rev": "d4fd24667c8cbef124bb70a20380cab75ec8474d",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
+        "ref": "release-26.05",
         "repo": "home-manager",
         "type": "github"
       }
@@ -1360,6 +1361,26 @@
         "type": "github"
       }
     },
+    "hm-unstable": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785531816,
+        "narHash": "sha256-vkMnV0JIyw+g/NmcfoajlGaAO+9a0ezia+FZohQJrik=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "bf9ce9fec78f95f374e8dd3b503863a3ec128ebe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -1384,11 +1405,11 @@
     },
     "impermanence": {
       "locked": {
-        "lastModified": 1785184129,
-        "narHash": "sha256-iku2hz5BbFr4vMbGY1KQi88H6LHJ0HkjWC1ztjpDJ4U=",
+        "lastModified": 1785522220,
+        "narHash": "sha256-PcvjTXqajEeX/5XZYESHbXRWoA4nZZmvMl0rbMLSODA=",
         "owner": "Arcanyx-org",
         "repo": "impermanence",
-        "rev": "5f193d92cd2062ae823fb67ea48ccbd31016df89",
+        "rev": "7b07ee19942b1082304220c9b4fb18f489d10992",
         "type": "github"
       },
       "original": {
@@ -2302,6 +2323,7 @@
         "hm-25_05": "hm-25_05",
         "hm-25_11": "hm-25_11",
         "hm-26_05": "hm-26_05",
+        "hm-unstable": "hm-unstable",
         "impermanence": "impermanence",
         "lanzaboote": "lanzaboote",
         "mission-control": "mission-control",

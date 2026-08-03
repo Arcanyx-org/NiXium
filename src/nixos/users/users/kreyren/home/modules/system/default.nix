@@ -11,11 +11,14 @@ in {
 		# homeManagerModules.system-pac-kreyren
 	];
 
+	# ./pac imported for module registration (VM reference), not added to
+	# system-kreyren.imports to keep it inactive for the real user.
 	imports = [
+		./defaultApplications
 		./flatpak
 		./gtk
 		./impermanence
 		./nix
-		# ./pac
+		./pac
 	];
 }

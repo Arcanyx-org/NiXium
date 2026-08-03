@@ -245,6 +245,16 @@ in {
 
 	# Task to perform installation of TUPAC in NixOS distribution, stable release
 	perSystem = { system, pkgs, inputs', self', ... }: {
+		# VM for testing tupac-stable configuration
+		packages.nixos-tupac-stable-vm = self.nixosConfigurations.nixos-tupac-stable.config.system.build.vmWithDisko;
+		apps.nixos-tupac-stable-vm = {
+			type = "app";
+			program = "${self.nixosConfigurations.nixos-tupac-stable.config.system.build.vmWithDisko}/bin/disko-vm";
+		};
+
+		# Alias: nixos-tupac-vm → nixos-tupac-stable-vm
+		apps.nixos-tupac-vm = self'.apps.nixos-tupac-stable-vm;
+
 		packages.nixos-tupac-stable-install = pkgs.writeShellApplication {
 				name = "nixos-tupac-stable-install";
 				bashOptions = [

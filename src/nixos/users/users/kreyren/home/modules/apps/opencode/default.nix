@@ -15,7 +15,7 @@ in mkMerge [
 			let
 				vm = mkVM {
 					inherit pkgs system;
-					name = "apps-opencode-kreyren";
+					name = "home-apps-opencode-kreyren-vm";
 					command = "opencode";
 					modulePath = "$FLAKE_ROOT/src/nixos/users/users/kreyren/home/modules/apps/opencode";
 					graphical = "wayland";
@@ -31,10 +31,10 @@ in mkMerge [
 					userConfig = { description = "Kreyren"; };
 				};
 			in {
-				packages."nixos-vm-apps-opencode-kreyren" = vm.vm;
-				apps."nixos-vm-apps-opencode-kreyren" = {
+				packages."nixos-home-apps-opencode-kreyren-vm" = vm.vm;
+				apps."nixos-home-apps-opencode-kreyren-vm" = {
 					type = "app";
-					program = "${vm.runner}/bin/nixos-vm-apps-opencode-kreyren";
+					program = "${vm.runner}/bin/nixos-home-apps-opencode-kreyren-vm";
 				};
 			};
 	}
